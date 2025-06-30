@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Access Forbidden</title>
+  <link rel="stylesheet" href="css/forbidden.css">
+</head>
+<body>
+<div class="forbidden-container">
+  <div class="forbidden-card">
+    <div class="forbidden-header">
+      <h1>Access Forbidden</h1>
+      <p>PAY AS YOU GO - AR IoT Solutions</p>
+    </div>
+    <div class="error-message">
+      You do not have permission to access this page.
+    </div>
+    <button class="back-btn" onclick="redirectToLogin()">Back to Login</button>
+  </div>
+</div>
+<script>
+  async function redirectToLogin() {
+    try {
+      // Replace with your actual API endpoint
+      const response = await fetch('https://localhost:8080/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ redirectTo: 'login' })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // if (data.redirectUrl) {
+        //   window.location.href = data.redirectUrl; // Redirect to URL from API
+        // } else {
+        //   // Fallback to index.html if no redirect URL is provided
+        //   window.location.href = 'index.html';
+        // }
+      } else {
+        console.error('API call failed:', response.status);
+        // Fallback redirect
+        window.location.href = 'index.html';
+      }
+    } catch (error) {
+      console.error('Error calling API:', error);
+      // Fallback redirect in case of error
+      window.location.href = 'index.html';
+    }
+  }
+</script>
+</body>
+</html>

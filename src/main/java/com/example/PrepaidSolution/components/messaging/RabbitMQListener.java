@@ -1,8 +1,6 @@
-package com.example.PrepaidSolution.messaging;
+package com.example.PrepaidSolution.components.messaging;
 
-import com.example.PrepaidSolution.config.RabbitMQConfig;
 import com.example.PrepaidSolution.util.UtilityServices;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

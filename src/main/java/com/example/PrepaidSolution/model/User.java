@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,12 +22,18 @@ public class Users {
     @Column(nullable = false, unique = true, length = 100)
     private String username;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    private Role role;
+//    @Enumerated(EnumType.STRING)
+//    @Column(nullable = false, length = 10)
+//    private Role role;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -36,7 +43,7 @@ public class Users {
         this.createdAt = LocalDateTime.now();
     }
 
-    public enum Role {
-        ADMIN, OWNER, TENANT
-    }
+//    public enum Role {
+//        ADMIN, OWNER, TENANT
+//    }
 }
