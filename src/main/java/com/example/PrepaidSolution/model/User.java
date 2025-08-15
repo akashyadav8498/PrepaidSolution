@@ -1,5 +1,6 @@
 package com.example.PrepaidSolution.model;
 
+import com.example.PrepaidSolution.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,12 +29,9 @@ public class User {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false, length = 10)
-//    private Role role;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Role role;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -43,7 +41,5 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-//    public enum Role {
-//        ADMIN, OWNER, TENANT
-//    }
+
 }
