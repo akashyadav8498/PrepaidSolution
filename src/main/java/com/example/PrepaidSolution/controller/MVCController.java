@@ -43,7 +43,7 @@ public class MVCController {
 
     @GetMapping("/meter_management_pwa")
     public String getPWAAdmin() {
-        return "forward:/pwa/meter_management_pwa.html";
+        return "forward:/pwa/meter_management_mobile.html";
     }
 
 }
