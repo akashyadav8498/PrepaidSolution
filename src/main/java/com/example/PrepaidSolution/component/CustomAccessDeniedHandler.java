@@ -1,4 +1,4 @@
-package com.example.PrepaidSolution.components.security;
+package com.example.PrepaidSolution.component;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

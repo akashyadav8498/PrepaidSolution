@@ -1,7 +1,11 @@
 package com.example.PrepaidSolution.config;
 
-import com.example.PrepaidSolution.components.security.*;
+import com.example.PrepaidSolution.component.CustomAccessDeniedHandler;
+import com.example.PrepaidSolution.component.CustomAuthenticationEntryPoint;
+import com.example.PrepaidSolution.component.CustomAuthenticationFailureHandler;
+import com.example.PrepaidSolution.component.CustomAuthenticationSuccessHandler;
 import com.example.PrepaidSolution.enums.Role;
+import com.example.PrepaidSolution.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

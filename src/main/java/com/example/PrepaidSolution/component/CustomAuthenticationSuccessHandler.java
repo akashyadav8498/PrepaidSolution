@@ -1,4 +1,4 @@
-package com.example.PrepaidSolution.components.security;
+package com.example.PrepaidSolution.component;
 
 import com.example.PrepaidSolution.enums.Role;
 import com.fasterxml.jackson.databind.ObjectMapper;

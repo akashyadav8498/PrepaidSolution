@@ -1,4 +1,4 @@
-package com.example.PrepaidSolution.components.security;
+package com.example.PrepaidSolution.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
