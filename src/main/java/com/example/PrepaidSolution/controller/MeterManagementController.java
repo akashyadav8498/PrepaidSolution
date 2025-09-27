@@ -1,6 +1,7 @@
 package com.example.PrepaidSolution.controller;
 
 import com.example.PrepaidSolution.service.MeterManagementService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,9 @@ public class MeterManagementController {
     @Autowired
     private MeterManagementService meterManagementService;
 
-    @GetMapping("/get_live_readings")
-    public ResponseEntity<?> getLiveReadings() {
-        return meterManagementService.getLiveReadings();
+    @GetMapping("/get_onload_data")
+    public ResponseEntity<?> getOnloadData(HttpServletRequest httpServletRequest) {
+        return meterManagementService.getOnloadData(httpServletRequest);
     }
 
     @PostMapping("/add_owner")

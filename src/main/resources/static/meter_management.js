@@ -560,7 +560,7 @@ meterPG.addEventListener("change", () => {
 });
 
 function loadMeterReadings() {
-  fetch("/api/meter/get_live_readings")
+  fetch("/api/meter/get_onload_data")
     .then(res => res.json())
     .then(data => {
       const tbody = document.getElementById("meterTableBody");

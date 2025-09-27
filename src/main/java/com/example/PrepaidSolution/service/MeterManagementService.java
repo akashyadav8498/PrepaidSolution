@@ -3,6 +3,8 @@ package com.example.PrepaidSolution.service;
 import com.example.PrepaidSolution.model.*;
 import com.example.PrepaidSolution.repository.*;
 import com.example.PrepaidSolution.util.Utility;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -39,8 +41,12 @@ public class MeterManagementService {
     @Autowired
     private EmailService emailService;
 
-    public ResponseEntity<?> getLiveReadings() {
+    public ResponseEntity<?> getOnloadData(HttpServletRequest httpServletRequest) {
         try {
+            HttpSession session = httpServletRequest.getSession(false);
+            String userName = (String) session.getAttribute("userName");
+            User.Role userRole = (User.Role) session.getAttribute("userRole");
+            String user_role = userRole.toString();
             List<MeterReadings> liveReadings = meterReadingsRepository.findAll();
             return new ResponseEntity<>(Map.of("liveReadings", liveReadings), HttpStatusCode.valueOf(HttpStatus.OK.value()));
         } catch (Exception e) {
