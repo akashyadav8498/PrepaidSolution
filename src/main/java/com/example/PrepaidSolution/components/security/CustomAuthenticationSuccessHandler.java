@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -41,6 +40,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 break;
             } else if (grantedAuthority.getAuthority().equals("ROLE_"+Role.OWNER.toString())) {
                 redirectUrl = "/owner/dashboard";
+                break;
+            } else if (grantedAuthority.getAuthority().equals("ROLE_"+Role.TENANT.toString())) {
+                redirectUrl = "/tenant/dashboard";
                 break;
             }
         }

@@ -2,26 +2,27 @@ package com.example.PrepaidSolution.controller;
 
 
 import ch.qos.logback.core.model.Model;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 
 @Controller
-@RestController
-public class DashboardController
+public class MVCController
 {
-//    @GetMapping("/loginError")
-//    public String loginError(){
-//        return "loginError";
-//    }
     @GetMapping("/admin/dashboard")
+    @PreAuthorize("hasRole('ADMIN')")
     public String adminDashboard(Model model) {
-        // Add any model attributes here if needed
-        return "admin-dashboard"; // Name of the HTML template (e.g., admin-dashboard.html)
+        return "/admin.html";
     }
     @GetMapping("/owner/dashboard")
+    @PreAuthorize("hasRole('OWNER')")
     public String ownerDashboard(Model model) {
-        return "owner-dashboard";
+        return "/owner.html";
+    }
+    @GetMapping("/tenant/dashboard")
+    @PreAuthorize("hasRole('TENANT')")
+    public String tenantDashboard(Model model){
+        return "/tenant.html";
     }
 }

@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 @Component
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
     private final ObjectMapper objectMapper ;
