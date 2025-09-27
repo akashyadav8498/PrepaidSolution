@@ -45,8 +45,7 @@ public class MeterManagementService {
         try {
             HttpSession session = httpServletRequest.getSession(false);
             String userName = (String) session.getAttribute("userName");
-            User.Role userRole = (User.Role) session.getAttribute("userRole");
-            String user_role = userRole.toString();
+            String userRole = (String) session.getAttribute("userRole");
             List<MeterReadings> liveReadings = meterReadingsRepository.findAll();
             return new ResponseEntity<>(Map.of("liveReadings", liveReadings), HttpStatusCode.valueOf(HttpStatus.OK.value()));
         } catch (Exception e) {
