@@ -32,8 +32,8 @@ public class User {
         ADMIN
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Owner> owners;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Owner owner;
 
 }
 
