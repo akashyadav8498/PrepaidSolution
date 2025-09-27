@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay-as-You-Go AR IoT Solutions - Login</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<!-- Login Page -->
+<div id="loginPage" class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>PAY AS YOU GO</h1>
+            <p>AR IoT Solutions Dashboard</p>
+        </div>
+
+        <form id="loginForm">
+<!--            <div class="role-selector">-->
+<!--                <div class="role-option active" data-role="admin">-->
+<!--                    <div>👨‍💼 Admin</div>-->
+<!--                </div>-->
+<!--                <div class="role-option" data-role="owner">-->
+<!--                    <div>🏠 Owner</div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+
+            <div id="loginMessage"></div>
+        </form>
+
+<!--        <div class="demo-credentials">-->
+<!--            <h4>Demo Credentials</h4>-->
+<!--            <strong>Admin Login:</strong><br>-->
+<!--            Username: admin<br>-->
+<!--            Password: admin123<br><br>-->
+<!--            <strong>Owner Login:</strong><br>-->
+<!--            Username: owner<br>-->
+<!--            Password: owner123-->
+<!--        </div>-->
+    </div>
+</div>
+
+<script src="js/index.js"></script>
+</body>
+</html>

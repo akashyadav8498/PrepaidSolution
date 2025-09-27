@@ -1,4 +1,4 @@
-package com.example.PrepaidSolution.messaging;
+package com.example.PrepaidSolution.components.messaging;
 
 import com.example.PrepaidSolution.config.RabbitMQConfig;
 import com.hivemq.client.mqtt.MqttClient;
