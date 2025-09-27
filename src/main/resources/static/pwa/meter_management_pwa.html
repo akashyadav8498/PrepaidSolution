@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pay-as-You-Go AR IoT Solutions - Admin</title>
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="/pwa/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="apple-touch-icon" href="../icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            touch-action: manipulation;
+        }
+
+        /* App Header */
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px 16px 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 100%;
+        }
+
+        .app-title {
+            flex: 1;
+        }
+
+        .app-title h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .app-title p {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .profile-btn, .menu-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:active, .menu-btn:active {
+            transform: scale(0.95);
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        /* Main Content */
+        .main-container {
+            padding-top: 100px;
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+
+        .content-section {
+            padding: 0 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Mobile Cards */
+        .mobile-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Stats Grid Mobile */
+        .stats-grid-mobile {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card-mobile {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card-mobile:active {
+            transform: scale(0.98);
+        }
+
+        .stat-number-mobile {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .stat-label-mobile {
+            font-size: 11px;
+            color: #666;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* Install prompt banner */
+        .install-banner {
+            position: fixed;
+            top: 100px;
+            left: 16px;
+            right: 16px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            z-index: 999;
+            transform: translateY(-120px);
+            transition: all 0.3s ease;
+        }
+
+        .install-banner.show {
+            transform: translateY(0);
+        }
+
+        .install-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .install-icon {
+            font-size: 24px;
+        }
+
+        .install-text {
+            flex: 1;
+        }
+
+        .install-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .install-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .install-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .install-btn {
+            padding: 8px 16px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .install-btn:active {
+            transform: scale(0.95);
+        }
+
+        .install-btn.primary {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 0 20px;
+            z-index: 1000;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @supports (padding: max(0px)) {
+            .app-header {
+                padding-top: max(20px, env(safe-area-inset-top));
+            }
+            
+            .bottom-nav {
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Install App Banner -->
+    <div class="install-banner" id="installBanner">
+        <div class="install-content">
+            <span class="install-icon">📱</span>
+            <div class="install-text">
+                <div class="install-title">Install App</div>
+                <div class="install-subtitle">Add to your home screen for better experience</div>
+            </div>
+        </div>
+        <div class="install-actions" style="margin-top: 12px;">
+            <button class="install-btn primary" onclick="installApp()">Install</button>
+            <button class="install-btn" onclick="dismissInstallBanner()">Maybe Later</button>
+        </div>
+    </div>
+
+    <!-- App Header -->
+    <div class="app-header">
+        <div class="header-content">
+            <div class="app-title">
+                <h1>PAY AS YOU GO</h1>
+                <p>AR IoT Solutions</p>
+            </div>
+            <div class="header-actions">
+                <button class="profile-btn" onclick="openProfile()">👤</button>
+                <button class="menu-btn" onclick="openMenu()">☰</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="content-section">
+            <div class="stats-grid-mobile">
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">10</div>
+                    <div class="stat-label-mobile">Total PG</div>
+                </div>
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">7</div>
+                    <div class="stat-label-mobile">Total Owners</div>
+                </div>
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">125</div>
+                    <div class="stat-label-mobile">Total Tenants</div>
+                </div>
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">125</div>
+                    <div class="stat-label-mobile">Total Meters</div>
+                </div>
+            </div>
+
+            <div class="mobile-card">
+                <h3 style="margin-bottom: 16px; color: #333; font-size: 16px;">Today's Summary</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; color: #666;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-weight: 500;">Consumption:</span>
+                        <span style="font-weight: 600; color: #333;">23.45 kWh</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-weight: 500;">Recharge:</span>
+                        <span style="font-weight: 600; color: #333;">₹5,456</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-items">
+            <div class="nav-item active">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">📡</span>
+                <span>Live Data</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">💳</span>
+                <span>Recharge</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/pwa/sw.js')
+                    .then(reg => console.log('✅ Service Worker registered:', reg))
+                    .catch(err => console.error('❌ Service Worker registration failed:', err));
+            });
+        }
+
+        // PWA Install Functionality
+        let deferredPrompt;
+        let installBannerDismissed = false;
+
+        // Check if banner was previously dismissed
+        function checkBannerDismissed() {
+            const dismissed = localStorage.getItem('installBannerDismissed');
+            const dismissedTime = localStorage.getItem('installBannerDismissedTime');
+            
+            if (dismissed && dismissedTime) {
+                // Show banner again after 7 days
+                const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+                if (parseInt(dismissedTime) < sevenDaysAgo) {
+                    localStorage.removeItem('installBannerDismissed');
+                    localStorage.removeItem('installBannerDismissedTime');
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        // Check if app is already installed
+        function isAppInstalled() {
+            // Check if running in standalone mode
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+                return true;
+            }
+            
+            // Check if PWA was previously installed (additional check)
+            if (localStorage.getItem('pwaInstalled') === 'true') {
+                return true;
+            }
+            
+            return false;
+        }
+
+        // Detect mobile device and browser
+        function getMobileInfo() {
+            const userAgent = navigator.userAgent;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+            const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+            const isAndroid = /Android/.test(userAgent);
+            const isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
+            const isSamsung = /SamsungBrowser/.test(userAgent);
+            const isFirefox = /Firefox/.test(userAgent);
+            const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+            
+            return {
+                isMobile,
+                isIOS,
+                isAndroid,
+                isChrome,
+                isSamsung,
+                isFirefox,
+                isSafari,
+                userAgent
+            };
+        }
+
+        // Show install banner with mobile detection
+        function showInstallBanner() {
+            const mobileInfo = getMobileInfo();
+            console.log('Mobile Info:', mobileInfo);
+            
+            // Don't show if app is already installed or banner was dismissed recently
+            if (isAppInstalled() || checkBannerDismissed()) {
+                console.log('App already installed or banner dismissed');
+                return;
+            }
+            
+            // Show banner for mobile devices
+            if (mobileInfo.isMobile) {
+                const installBanner = document.getElementById('installBanner');
+                if (installBanner) {
+                    // Update banner text based on device
+                    const subtitle = installBanner.querySelector('.install-subtitle');
+                    if (mobileInfo.isIOS) {
+                        subtitle.textContent = 'Tap Share → Add to Home Screen';
+                    } else if (mobileInfo.isAndroid && mobileInfo.isChrome) {
+                        subtitle.textContent = 'Tap menu → Add to Home screen';
+                    } else {
+                        subtitle.textContent = 'Add to your home screen for better experience';
+                    }
+                    
+                    installBanner.classList.add('show');
+                    console.log('Install banner shown for mobile device');
+                }
+            }
+        }
+
+        // Handle beforeinstallprompt event (for supported browsers)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt event fired');
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallBanner();
+        });
+
+        // Install app function
+        function installApp() {
+            const mobileInfo = getMobileInfo();
+            
+            // If we have the native install prompt (Chrome, Edge, etc.)
+            if (deferredPrompt) {
+                hideInstallBanner();
+                deferredPrompt.prompt();
+                
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        localStorage.setItem('pwaInstalled', 'true');
+                        showToast('App installed successfully!');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                        showToast('Installation cancelled');
+                    }
+                    deferredPrompt = null;
+                });
+                return;
+            }
+            
+            // For other browsers, show instructions
+            hideInstallBanner();
+            showInstallInstructions(mobileInfo);
+        }
+
+        // Show install instructions for different browsers
+        function showInstallInstructions(mobileInfo) {
+            let title = 'Install This App';
+            let instructions = '';
+            
+            if (mobileInfo.isIOS) {
+                if (mobileInfo.isSafari) {
+                    title = 'Add to Home Screen';
+                    instructions = `
+                        <div style="text-align: left; line-height: 1.6;">
+                            <p><strong>To install this app on your iPhone/iPad:</strong></p>
+                            <ol style="margin: 12px 0; padding-left: 20px;">
+                                <li>Tap the <strong>Share button</strong> <span style="background: #007AFF; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px;">⬆️</span> at the bottom of Safari</li>
+                                <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                                <li>Tap <strong>"Add"</strong> in the top right corner</li>
+                            </ol>
+                            <p style="font-size: 13px; color: #666;">The app will appear on your home screen like a native app!</p>
+                        </div>
+                    `;
+                } else {
+                    instructions = 'Please open this page in Safari browser to install the app.';
+                }
+            } else if (mobileInfo.isAndroid) {
+                if (mobileInfo.isChrome) {
+                    instructions = `
+                        <div style="text-align: left; line-height: 1.6;">
+                            <p><strong>To install this app on Android Chrome:</strong></p>
+                            <ol style="margin: 12px 0; padding-left: 20px;">
+                                <li>Tap the <strong>menu (⋮)</strong> at the top right</li>
+                                <li>Look for <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
+                                <li>Tap <strong>"Install"</strong> or <strong>"Add"</strong></li>
+                            </ol>
+                            <p style="font-size: 13px; color: #666;">The app will be installed like a native app!</p>
+                        </div>
+                    `;
+                } else if (mobileInfo.isSamsung) {
+                    instructions = `
+                        <div style="text-align: left; line-height: 1.6;">
+                            <p><strong>To install this app on Samsung Browser:</strong></p>
+                            <ol style="margin: 12px 0; padding-left: 20px;">
+                                <li>Tap the <strong>menu (☰)</strong></li>
+                                <li>Tap <strong>"Add page to"</strong></li>
+                                <li>Select <strong>"Home screen"</strong></li>
+                            </ol>
+                        </div>
+                    `;
+                } else if (mobileInfo.isFirefox) {
+                    instructions = `
+                        <div style="text-align: left; line-height: 1.6;">
+                            <p><strong>To install this app on Firefox:</strong></p>
+                            <ol style="margin: 12px 0; padding-left: 20px;">
+                                <li>Tap the <strong>menu (⋮)</strong></li>
+                                <li>Look for <strong>"Add to Home Screen"</strong></li>
+                                <li>Tap <strong>"Add"</strong></li>
+                            </ol>
+                        </div>
+                    `;
+                } else {
+                    instructions = `
+                        <div style="text-align: left; line-height: 1.6;">
+                            <p>To install this app, look for <strong>"Add to Home Screen"</strong> option in your browser menu.</p>
+                            <p style="font-size: 13px; color: #666; margin-top: 12px;">For best experience, try using Chrome or Samsung Browser.</p>
+                        </div>
+                    `;
+                }
+            } else {
+                instructions = 'This feature is optimized for mobile devices. Please visit on your phone or tablet.';
+            }
+            
+            showInstallModal(title, instructions);
+        }
+
+        // Show install modal
+        function showInstallModal(title, instructions) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 10001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 90%;
+                width: 400px;
+                max-height: 80vh;
+                overflow-y: auto;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                animation: slideUp 0.3s ease-out;
+            `;
+            
+            content.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 16px;">📱</div>
+                <h3 style="color: #333; margin-bottom: 16px; font-size: 18px;">${title}</h3>
+                ${instructions}
+                <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" 
+                        style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%;">
+                    Got It
+                </button>
+            `;
+            
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+            
+            // Remove modal when clicking outside
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+            
+            // Add animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Dismiss install banner
+        function dismissInstallBanner() {
+            hideInstallBanner();
+            localStorage.setItem('installBannerDismissed', 'true');
+            localStorage.setItem('installBannerDismissedTime', Date.now().toString());
+            showToast('You can install the app anytime from your browser menu');
+        }
+
+        // Hide install banner
+        function hideInstallBanner() {
+            const installBanner = document.getElementById('installBanner');
+            if (installBanner) {
+                installBanner.classList.remove('show');
+            }
+        }
+
+        // Show toast message
+        function showToast(message, duration = 3000) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 120px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-size: 14px;
+                z-index: 10000;
+                max-width: 90%;
+                text-align: center;
+                backdrop-filter: blur(10px);
+                animation: slideInUp 0.3s ease-out;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInUp {
+                    from { transform: translate(-50%, 100px); opacity: 0; }
+                    to { transform: translate(-50%, 0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 20px)';
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // Handle app installation
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App was installed successfully');
+            localStorage.setItem('pwaInstalled', 'true');
+            hideInstallBanner();
+            showToast('App installed successfully!');
+        });
+
+        // Initialize app
+        window.addEventListener('load', () => {
+            console.log('App loaded');
+            
+            // Show install banner after a short delay if conditions are met
+            setTimeout(() => {
+                showInstallBanner();
+            }, 2000);
+            
+            // Log debug info
+            const mobileInfo = getMobileInfo();
+            console.log('PWA Debug Info:', {
+                ...mobileInfo,
+                isInstalled: isAppInstalled(),
+                bannerDismissed: checkBannerDismissed(),
+                hasDeferredPrompt: !!deferredPrompt,
+                isStandalone: window.matchMedia('(display-mode: standalone)').matches,
+                hasServiceWorker: 'serviceWorker' in navigator
+            });
+        });
+
+        // Placeholder functions
+        function openProfile() {
+            showToast('Profile opened');
+        }
+
+        function openMenu() {
+            showToast('Menu opened');
+        }
+    </script>
+</body>
+</html>
