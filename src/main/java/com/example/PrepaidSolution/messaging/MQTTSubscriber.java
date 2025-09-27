@@ -4,6 +4,7 @@ import com.example.PrepaidSolution.config.RabbitMQConfig;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class MQTTSubscriber {
 
     @Value("${mqtt.broker.serverHost}")
@@ -43,18 +45,18 @@ public class MQTTSubscriber {
                 .send()
                 .whenComplete((connAck, throwable) -> {
                     if (throwable == null) {
-                        System.out.println("Connected to MQTT broker");
+                        log.info("Connected to MQTT broker");
 
                         client.subscribeWith()
                                 .topicFilter(topic)
                                 .callback(publish -> {
                                     String payload = new String(publish.getPayloadAsBytes(), StandardCharsets.UTF_8);
-                                    System.out.println("Received message: " + payload);
+                                    log.info("MQTT: Received message -> {}", payload);
                                     sendMessage(payload);
                                 })
                                 .send();
                     } else {
-                        System.err.println("Connection failed: " + throwable.getMessage());
+                        log.error("MQTT Connection failed: {}", throwable.getMessage());
                     }
                 });
     }

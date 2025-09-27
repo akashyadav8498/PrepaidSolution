@@ -1,7 +1,7 @@
 package com.example.PrepaidSolution.controller;
 
-import com.example.PrepaidSolution.model.Users;
-import com.example.PrepaidSolution.repository.UsersRepo;
+import com.example.PrepaidSolution.model.User;
+import com.example.PrepaidSolution.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RestController {
 
     @Autowired
-    private UsersRepo userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping
-    public Users createUser(@RequestBody Users user) {
-        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
+    public User createUser(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 }

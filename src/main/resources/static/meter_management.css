@@ -528,3 +528,82 @@
 .hidden {
     display: none;
 }
+
+.submenu {
+    display: none;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+.submenu.open {
+    display: flex;
+}
+
+#addOwnerView .form-container,
+#addPGView .form-container,
+#addMeterView .form-container,
+#addTenantView .form-container,
+#addRoomView .form-container {
+width: 100%;
+max-width: none;
+margin: 0;
+min-height: calc(100vh - 120px);
+padding: 40px;
+background: #fff;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+}
+
+.btn-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* spacing between button and loader */
+}
+
+.dot-loading {
+  font-weight: bold;
+  font-size: 14px;
+  color: #555;
+}
+
+.dots::after {
+  content: "";
+  animation: dots 1s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ""; }
+  40% { content: "."; }
+  60% { content: ".."; }
+  80%, 100% { content: "..."; }
+}
+
+.hidden {
+  display: none;
+}
+
+
+.popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f0f0f0;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 999;
+}
+
+.popup .close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.popup.hidden { display: none; }
