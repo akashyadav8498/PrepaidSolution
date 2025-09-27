@@ -59,7 +59,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         final HttpSession session = request.getSession();
         session.setAttribute("userName", user.getOwner().getName());
-        session.setAttribute("userRole", user.getRole());
+        session.setAttribute("userRole", user.getRole().toString());
 
         if (user.getRole().toString().equalsIgnoreCase("tenant")) return "/tenant";
         else return "/meter_management";
