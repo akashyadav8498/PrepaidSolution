@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "room")
@@ -19,6 +20,9 @@ public class Room {
     @ManyToOne
     @JoinColumn(name = "pg_id", nullable = false)
     private PG pg;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<Tenant> tenants;
 
     @Column(nullable = false)
     private String roomNo;

@@ -21,12 +21,13 @@ public class Tenant {
     private User user;
 
     private String name;
+    private String email;
     private String address;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "pg_id")
-    private PG pg;
+    @JoinColumn(name = "room_id")
+    private Room room;
 
 }

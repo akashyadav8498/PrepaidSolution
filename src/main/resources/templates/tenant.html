@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR IOT Solutions - Tenant</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQVIgSU9UIFNvbHV0aW9ucyIsInNob3J0X25hbWUiOiJBUklPVCIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsInRoZW1lX2NvbG9yIjoiIzJkNGFhNyIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEQ5NGJXd2dkbVZ5YzJsdmJqMGlNUzR3SWlCbGJtTnZaR2x1WnowaVZWUkdMVGdpUHo0OEMzWm5JR2hsYVdkb2REMGlNak0ySWlCM2FXUjBhRDBpTWpNMklpQjJhV1YzUW05NGQwNGlNQ0F3SURJek5pQXlNell6TmlJK1BHSmNMak5LNTRNR01tSWo4N0hhRFpvQzJnOGFEaG9QR2c4YUR4b1BHZzhMaWRnUERBdlluTWpvZD09IiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjI1Nng0MDAifV19">
+    <link rel="stylesheet" href="css/tenant.css">
+    <meta name="theme-color" content="#2d4aa7">
+
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1>PAY AS YOU GO</h1>
+        <div class="subtitle">AR IOT SOLUTIONS</div>
+    </header>
+
+    <div class="welcome-section">
+        <div class="welcome-text">WELCOME, Tenant</div>
+    </div>
+
+    <nav class="nav-tabs">
+        <div class="nav-tab active" data-tab="dashboard">DASHBOARD</div>
+        <div class="nav-tab" data-tab="recharge">RECHARGE</div>
+        <div class="nav-tab" data-tab="deduction">DEDUCTION</div>
+        <div class="nav-tab" data-tab="usage">USAGE</div>
+        <div class="nav-tab" data-tab="alert">ALERT</div>
+    </nav>
+
+    <div class="tab-content active" id="dashboard">
+        <div class="dashboard-card">
+            <div class="room-info">
+                <div class="room-details">
+                    <h3>Room No. 102</h3>
+                    <p>Meter ID: 801234</p>
+                </div>
+                <div class="balance">
+                    <div class="balance-amount">-150/-</div>
+                    <div class="balance-status">Low Balance</div>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-value">234.56</div>
+                    <div class="metric-label">VOLT</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">1.45</div>
+                    <div class="metric-label">AMP</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">326</div>
+                    <div class="metric-label">POWER</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">0.96</div>
+                    <div class="metric-label">PF</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">49.50</div>
+                    <div class="metric-label">FREQ</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">12.45</div>
+                    <div class="metric-label">KWH</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-card warning">
+            <div class="relay-status">
+                <div class="status-indicator"></div>
+                <strong>Relay Status: ON</strong>
+            </div>
+            <div>Alert: Low Balance</div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 5px;">
+                Last Update: 23/06/25 10:42
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="recharge">
+        <div class="history-item">
+            <div class="history-header">
+                <div class="history-amount">₹2000.00</div>
+                <div class="history-date">25/06/25 12:55</div>
+            </div>
+            <div class="history-details">
+                <div><strong>Payment Mode:</strong> UPI</div>
+                <div><strong>Status:</strong> Success</div>
+                <div><strong>Gateway:</strong> PayTm</div>
+                <div><strong>Ref ID:</strong> amit03734473</div>
+            </div>
+        </div>
+
+        <div class="history-item">
+            <div class="history-header">
+                <div class="history-amount">₹1000.00</div>
+                <div class="history-date">12/06/25 10:45</div>
+            </div>
+            <div class="history-details">
+                <div><strong>Payment Mode:</strong> Cash</div>
+                <div><strong>Status:</strong> Success</div>
+                <div><strong>Gateway:</strong> Cash</div>
+                <div><strong>Ref ID:</strong> amit03734473</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="deduction">
+        <div class="history-item">
+            <div class="history-header">
+                <div class="history-date">25-06-2025</div>
+                <div class="history-amount">-₹214.00</div>
+            </div>
+            <div class="history-details">
+                <div><strong>Consumption:</strong> 32.00 kWh</div>
+                <div><strong>Available Balance:</strong> ₹423.67</div>
+                <div><strong>Cumulative kWh:</strong> 234.56</div>
+                <div></div>
+            </div>
+        </div>
+
+        <div class="history-item">
+            <div class="history-header">
+                <div class="history-date">24-06-2025</div>
+                <div class="history-amount">-₹104.00</div>
+            </div>
+            <div class="history-details">
+                <div><strong>Consumption:</strong> 52.00 kWh</div>
+                <div><strong>Available Balance:</strong> ₹437.67</div>
+                <div><strong>Cumulative kWh:</strong> 232.56</div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="usage">
+        <div class="chart-container">
+            <div class="chart-title">DAILY USAGE</div>
+            <div class="history-item">
+                <div class="history-header">
+                    <div class="history-date">25-06-2025</div>
+                    <div>234.56 kWh</div>
+                </div>
+                <div style="font-size: 12px; color: #64748b;">
+                    Average Load: 2345 Watt
+                </div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-header">
+                    <div class="history-date">24-06-2025</div>
+                    <div>134.56 kWh</div>
+                </div>
+                <div style="font-size: 12px; color: #64748b;">
+                    Average Load: 1245 Watt
+                </div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-header">
+                    <div class="history-date">23-06-2025</div>
+                    <div>34.56 kWh</div>
+                </div>
+                <div style="font-size: 12px; color: #64748b;">
+                    Average Load: 345 Watt
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">TRENDS (Last 30 Days)</div>
+            <div class="simple-chart">
+                <div class="chart-bar" style="height: 60%;"></div>
+                <div class="chart-bar" style="height: 80%;"></div>
+                <div class="chart-bar" style="height: 40%;"></div>
+                <div class="chart-bar" style="height: 90%;"></div>
+                <div class="chart-bar" style="height: 70%;"></div>
+                <div class="chart-bar" style="height: 50%;"></div>
+                <div class="chart-bar" style="height: 85%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="alert">
+        <div class="alert-item critical">
+            <div class="alert-time">25-06-2025 / 13:34</div>
+            <div class="alert-message">Relay Cut-Off</div>
+        </div>
+
+        <div class="alert-item">
+            <div class="alert-time">24-06-2025 / 10:55</div>
+            <div class="alert-message">Low Balance</div>
+        </div>
+
+        <div class="alert-item">
+            <div class="alert-time">23-06-2025 / 10:55</div>
+            <div class="alert-message">Low Balance</div>
+        </div>
+
+        <div class="alert-item">
+            <div class="alert-time">22-06-2025 / 10:55</div>
+            <div class="alert-message">Low Balance</div>
+        </div>
+
+        <h3 style="margin: 30px 0 15px 0; color: #1f2937;">NOTIFICATIONS</h3>
+
+        <div class="notification-item">
+            <div class="notification-header">
+                <div class="notification-sender">AR IOT SOLUTIONS</div>
+                <div class="notification-time">25-06-2025 / 13:34</div>
+            </div>
+            <div class="notification-message">
+                Your A/C for Room No. –A007, Meter No. -801234 has been credit with 2000. Your current balance is 1169.254 from Sav Engineer Pvt. Ltd.
+            </div>
+        </div>
+
+        <div class="notification-item">
+            <div class="notification-header">
+                <div class="notification-sender">AR IOT SOLUTIONS</div>
+                <div class="notification-time">23-06-2025 / 10:12</div>
+            </div>
+            <div class="notification-message">
+                Your meter Room No. -203, Meter No. -801234 Low Balance Alert: Your balance is Rs. 88.56. Please recharge for uninterrupted power supply.
+            </div>
+        </div>
+
+        <div class="notification-item">
+            <div class="notification-header">
+                <div class="notification-sender">AR IOT SOLUTIONS</div>
+                <div class="notification-time">22-06-2025 / 12:45</div>
+            </div>
+            <div class="notification-message">
+                Your meter Room No. -203, Meter No. -801234 has been supply switch off due to low balance from Sav Engineers Pvt. Ltd.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/tenant.js"></script>
+</body>
+</html>

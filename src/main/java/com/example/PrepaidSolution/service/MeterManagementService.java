@@ -39,6 +39,9 @@ public class MeterManagementService {
     private RoomRepository roomRepository;
 
     @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
     private EmailService emailService;
 
     public ResponseEntity<?> getOnloadData(HttpServletRequest httpServletRequest) {
@@ -87,7 +90,7 @@ public class MeterManagementService {
         owner.setMobile(ownerMobile);
         ownerRepository.save(owner);
 
-        return Map.of("username", username, "password", password, "name", ownerAddress, "email", ownerEmail);
+        return Map.of("username", username, "password", password, "name", ownerName, "email", ownerEmail);
     }
 
     public ResponseEntity<?> addPG(Map<String, String> requestMap) {
@@ -105,7 +108,7 @@ public class MeterManagementService {
         String pgOwnerId = requestMap.get("pgOwnerId");
         String pgAddress = requestMap.get("pgAddress");
 
-        Owner owner = ownerRepository.findById(Long.valueOf(pgOwnerId)).get();
+        Owner owner = ownerRepository.findById(Long.valueOf(pgOwnerId)).orElse(null);
 
         PG pg = new PG();
         pg.setOwner(owner);
@@ -135,6 +138,46 @@ public class MeterManagementService {
         room.setRoomNo(roomNumber);
         room.setStatus(Room.Status.VACANT);
         roomRepository.save(room);
+    }
+
+    public ResponseEntity<?> addTenant(Map<String, String> requestMap) {
+        try {
+            Map<String, String> tenantDetails = saveTenant(requestMap);
+            emailService.sendCredentialsEmail(tenantDetails);
+            return new ResponseEntity<>(Map.of("message", "Tenant added successfully"), HttpStatusCode.valueOf(HttpStatus.OK.value()));
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of("message", "Tenant could not be added"), HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        }
+    }
+
+    @Transactional
+    public Map<String, String> saveTenant(Map<String, String> requestMap) {
+        Long tenantRoom = Long.valueOf(requestMap.get("tenantRoom"));
+        String tenantName = requestMap.get("tenantName");
+        String tenantEmail = requestMap.get("tenantEmail");
+        String tenantMobile = requestMap.get("tenantMobile");
+        String tenantAddress = requestMap.get("tenantAddress");
+
+        String username = Utility.generateUsername(tenantName, tenantMobile, 7);
+        String password = Utility.generatePassword(7);
+
+        Room room = roomRepository.findById(tenantRoom).orElse(null);
+
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(User.Role.TENANT);
+        User savedUser = userRepository.save(user);
+
+        Tenant tenant = new Tenant();
+        tenant.setUser(savedUser);
+        tenant.setName(tenantName);
+        tenant.setEmail(tenantEmail);
+        tenant.setAddress(tenantAddress);
+        tenant.setRoom(room);
+        tenantRepository.save(tenant);
+
+        return Map.of("username", username, "password", password, "name", tenantName, "email", tenantEmail);
     }
 
     public ResponseEntity<?> getRooms(String pgId) {

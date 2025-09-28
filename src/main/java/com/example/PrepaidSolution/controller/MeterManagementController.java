@@ -35,6 +35,11 @@ public class MeterManagementController {
         return meterManagementService.addRoom(requestMap);
     }
 
+    @PostMapping("/add_tenant")
+    public ResponseEntity<?> addTenant(@RequestBody Map<String,String> requestMap) {
+        return meterManagementService.addTenant(requestMap);
+    }
+
     @GetMapping("/get_rooms")
     public ResponseEntity<?> getRooms(@RequestParam("pg_id") String pgId) {
         return meterManagementService.getRooms(pgId);

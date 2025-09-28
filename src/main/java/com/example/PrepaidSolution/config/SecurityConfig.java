@@ -69,9 +69,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (careful in production!)//Disable CSRF for non-browser clients like Postman
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/**", "/index", "/login", "/js/**", "/css/**", "/images/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole(String.valueOf(Role.ADMIN))
-                        .requestMatchers("/owner/**").hasRole(String.valueOf(Role.OWNER))
-                        .requestMatchers("/tenant/**").hasRole(String.valueOf(Role.TENANT))
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

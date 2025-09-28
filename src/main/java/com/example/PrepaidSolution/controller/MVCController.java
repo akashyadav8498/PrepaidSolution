@@ -30,7 +30,7 @@ public class MVCController {
     private MeterTypeRepository meterTypeRepository;
 
     @GetMapping("/meter_management")
-    public String getAdmin(Model model) {
+    public String getMeterManagement(Model model) {
         List<Owner> owners = ownerRepository.findAll();
         List<PG> pgs = pgRepository.findAll();
         List<MeterType> meterTypes = meterTypeRepository.findAll();
@@ -42,8 +42,13 @@ public class MVCController {
     }
 
     @GetMapping("/meter_management_pwa")
-    public String getPWAAdmin() {
-        return "forward:/pwa/meter_management_mobile.html";
+    public String getMeterManagementMobile() {
+        return "meter_management_mobile";
+    }
+
+    @GetMapping("/tenant")
+    public String getTenant() {
+        return "tenant";
     }
 
 }

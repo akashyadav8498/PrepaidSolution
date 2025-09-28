@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pay-as-You-Go AR IoT Solutions - Admin</title>
-    <link rel="stylesheet" th:href="@{/meter_management.css}" />
-    <script th:src="@{/meter_management.js}" defer></script>
+    <link rel="stylesheet" th:href="@{/css/meter_management.css}" />
+    <script th:src="@{/js/meter_management.js}" defer></script>
   </head>
   <body>
     <!-- Meter Details Modal -->
@@ -652,6 +652,18 @@
               <h3 style="margin-bottom: 20px">Add New Tenant</h3>
               <form id="addTenantForm">
                 <div class="form-group">
+                  <label>PG *</label>
+                  <select id="tenantPG" required>
+                    <option value="">Select PG</option>
+                    <th:block th:each="pg : ${pgs}">
+                      <option
+                        th:value="${pg.id}"
+                        th:text="${pg.name}"
+                      ></option>
+                    </th:block>
+                  </select>
+                </div>
+                <div class="form-group">
                   <label>Room *</label>
                   <select id="tenantRoom" required>
                     <option value="">Select Room</option>
@@ -669,6 +681,15 @@
                     type="text"
                     id="tenantName"
                     placeholder="Enter tenant name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Tenant Email *</label>
+                  <input
+                    type="text"
+                    id="tenantEmail"
+                    placeholder="Enter tenant email"
                     required
                   />
                 </div>

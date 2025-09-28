@@ -58,10 +58,17 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         com.example.PrepaidSolution.model.User user = userRepository.findByUsername(username);
 
         final HttpSession session = request.getSession();
-        session.setAttribute("userName", user.getOwner().getName());
         session.setAttribute("userRole", user.getRole().toString());
 
-        if (user.getRole().toString().equalsIgnoreCase("tenant")) return "/tenant";
-        else return "/meter_management";
+        if (user.getRole().toString().equalsIgnoreCase("tenant")) {
+            session.setAttribute("userName", user.getTenant().getName());
+            return "/tenant";
+        }
+        else {
+            if(user.getRole().toString().equalsIgnoreCase("owner"))
+            session.setAttribute("userName", user.getOwner().getName());
+            else session.setAttribute("userName", user.getAdmin().getName());
+            return "/meter_management";
+        }
     }
 }

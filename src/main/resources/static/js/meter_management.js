@@ -525,6 +525,52 @@ document
     }
   });
 
+  document
+  .getElementById("addTenantForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("addTenantBtn");
+    const loader = document.getElementById("tenantLoading");
+
+    // Disable button & show loading
+    btn.disabled = true;
+    loader.classList.remove("hidden");
+
+    const data = {
+      tenantRoom: document.getElementById("tenantRoom").value,
+      tenantName: document.getElementById("tenantName").value,
+      tenantEmail: document.getElementById("tenantEmail").value,
+      tenantMobile: document.getElementById("tenantMobile").value,
+      tenantAddress: document.getElementById("tenantAddress").value,
+    };
+
+    try {
+      const response = await fetch("/api/meter/add_tenant", {
+        // replace with your API
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const respObj = await response.json();
+
+      if (response.ok) {
+        showOwnerPopup(respObj.message);
+        // Clear form
+        document.getElementById("addTenantForm").reset();
+      } else {
+        showOwnerPopup(respObj.message);
+      }
+    } catch (err) {
+      console.error(err);
+      showOwnerPopup("Network error!");
+    } finally {
+      btn.disabled = false;
+      loader.classList.add("hidden");
+    }
+  });
+
 function showOwnerPopup(message) {
   const popup = document.getElementById("ownerPopup");
   const msg = document.getElementById("ownerPopupMessage");
@@ -554,6 +600,26 @@ meterPG.addEventListener("change", () => {
       }
 
       const roomSelector = document.getElementById("meterRoom");
+      roomSelector.innerHTML = roomsOptions;
+    })
+    .catch((error) => console.error("Error:", error));
+});
+
+const tenantPG = document.getElementById("tenantPG");
+tenantPG.addEventListener("change", () => {
+  const tenantPGValue = tenantPG.value;
+
+  fetch(`/api/meter/get_rooms?pg_id=${tenantPGValue}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const rooms = data.rooms;
+      let roomsOptions = "<option value=''>Select Room</option>";
+
+      for (let i = 0; i < rooms.length; i++) {
+        roomsOptions += `<option value="${rooms[i].id}">${rooms[i].roomNo}</option>`;
+      }
+
+      const roomSelector = document.getElementById("tenantRoom");
       roomSelector.innerHTML = roomsOptions;
     })
     .catch((error) => console.error("Error:", error));

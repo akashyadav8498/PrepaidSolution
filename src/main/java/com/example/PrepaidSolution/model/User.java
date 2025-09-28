@@ -33,7 +33,13 @@ public class User {
     }
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Admin admin;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Owner owner;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Tenant tenant;
 
 }
 
