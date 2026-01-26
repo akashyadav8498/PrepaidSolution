@@ -21,9 +21,6 @@ import java.util.Map;
 public class MeterManagementService {
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private MeterReadingsRepository meterReadingsRepository;
 
     @Autowired
@@ -78,7 +75,7 @@ public class MeterManagementService {
 
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(Utility.passwordEncoder.encode(password));
         user.setRole(User.Role.OWNER);
         User savedUser = userRepository.save(user);
 
@@ -165,7 +162,7 @@ public class MeterManagementService {
 
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
+        user.setPassword(Utility.passwordEncoder.encode(password));
         user.setRole(User.Role.TENANT);
         User savedUser = userRepository.save(user);
 

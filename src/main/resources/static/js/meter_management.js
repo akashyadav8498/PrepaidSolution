@@ -658,3 +658,207 @@ function loadMeterReadings() {
     })
     .catch(err => console.error("Error loading readings:", err));
 }
+
+/**
+ * Toggles the visibility of different views in the main content area.
+ * @param {string} viewId The ID of the view to show (e.g., 'dashboard', 'liveData').
+ */
+function showView(viewId) {
+    const views = ['dashboardView', 'liveDataView', 'rechargeView', 'addOwnerView', 'addPGView', 'addRoomView', 'addMeterView', 'addTenantView'];
+
+    // Hide all views
+    views.forEach(id => {
+        const view = document.getElementById(id);
+        if (view) {
+            view.classList.add('hidden');
+        }
+    });
+
+    // Show the requested view
+    const activeView = document.getElementById(viewId);
+    if (activeView) {
+        activeView.classList.remove('hidden');
+    }
+
+    // Update the content title
+    const title = document.getElementById('contentTitle');
+    if (title) {
+        if (viewId === 'dashboardView') title.textContent = 'Dashboard';
+        else if (viewId === 'liveDataView') title.textContent = 'Live Meter Data';
+        else if (viewId === 'rechargeView') title.textContent = 'Recharge Details';
+        else if (viewId.startsWith('add')) title.textContent = 'Add New ' + viewId.substring(3).replace(/([A-Z])/g, ' $1').trim();
+    }
+
+    // Update active state in sidebar
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    const activeLink = document.querySelector(`.nav-link[onclick*="showView('${viewId}')"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+
+    // **IMPORTANT:** Initialize charts when dashboard is shown
+    if (viewId === 'dashboardView' && typeof Chart !== 'undefined') {
+        // We use a small timeout to ensure the canvas elements are fully rendered before Chart.js tries to access them
+        setTimeout(initializeCharts, 100);
+    }
+}
+
+/**
+ * Toggles the visibility of a submenu.
+ * @param {string} submenuId The ID of the submenu to toggle (e.g., 'addNewSubmenu').
+ */
+function toggleSubmenu(submenuId) {
+    const submenu = document.getElementById(submenuId);
+    if (submenu) {
+        submenu.classList.toggle('open');
+    }
+}
+
+// Set initial view to dashboard and initialize charts on load
+document.addEventListener('DOMContentLoaded', () => {
+    // Ensure the dashboard is the default view on load
+    showView('dashboardView');
+});
+
+
+// --- Chart.js Implementation ---
+
+// Sample data for demonstration. In a real application, this would come from an API call.
+const mockData = {
+    monthly: {
+        labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'],
+        data: [4500, 3800, 5100, 4200, 5500, 5800]
+    },
+    status: {
+        labels: ['Connected', 'Disconnected', 'Maintenance'],
+        data: [100, 20, 5],
+        colors: ['#28a745', '#dc3545', '#ffc107']
+    },
+    consumers: {
+        labels: ['Room 101', 'Room 205', 'Room 310', 'Room 102', 'Room 401'],
+        data: [120, 115, 95, 80, 75]
+    }
+};
+
+/**
+ * Initializes and renders all Chart.js charts on the dashboard.
+ */
+function initializeCharts() {
+    // 1. Monthly Energy Consumption (Line Chart)
+    const monthlyCtx = document.getElementById('monthlyConsumptionChart');
+    if (monthlyCtx) {
+        // Destroy existing chart if it exists to prevent overlap
+        if (monthlyCtx.chart) monthlyCtx.chart.destroy();
+
+        monthlyCtx.chart = new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: mockData.monthly.labels,
+                datasets: [{
+                    label: 'Total kWh Consumed',
+                    data: mockData.monthly.data,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Consumption (kWh)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+
+    // 2. Meter Connection Status (Doughnut Chart)
+    const statusCtx = document.getElementById('meterStatusChart');
+    if (statusCtx) {
+        // Destroy existing chart if it exists
+        if (statusCtx.chart) statusCtx.chart.destroy();
+
+        statusCtx.chart = new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: mockData.status.labels,
+                datasets: [{
+                    data: mockData.status.data,
+                    backgroundColor: mockData.status.colors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+
+    // 3. Top 5 Consumers (Horizontal Bar Chart)
+    const consumersCtx = document.getElementById('topConsumersChart');
+    if (consumersCtx) {
+        // Destroy existing chart if it exists
+        if (consumersCtx.chart) consumersCtx.chart.destroy();
+
+        consumersCtx.chart = new Chart(consumersCtx, {
+            type: 'bar',
+            data: {
+                labels: mockData.consumers.labels,
+                datasets: [{
+                    label: 'kWh (Last 7 Days)',
+                    data: mockData.consumers.data,
+                    backgroundColor: '#764ba2',
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Makes it a horizontal bar chart
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Consumption (kWh)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+}

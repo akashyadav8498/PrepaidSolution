@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/prepaid_solution
+    username: app_user
+    password: ME@live_db8498
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: akay8498
+    password: ME@r@bb!tmq8498
+
+server:
+  port: 8080

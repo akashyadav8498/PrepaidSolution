@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pay-as-You-Go AR IoT Solutions - Admin</title>
     <link rel="stylesheet" th:href="@{/css/meter_management.css}" />
+      <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     <script th:src="@{/js/meter_management.js}" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   </head>
   <body>
     <!-- Meter Details Modal -->
@@ -120,21 +123,21 @@
 
         <nav class="nav-menu">
           <div class="nav-item">
-            <a href="#" class="nav-link active" onclick="showView('dashboard')">
+            <a href="#" class="nav-link active" onclick="showView('dashboardView')">
               <span class="nav-icon">📊</span>
               Dashboard
             </a>
           </div>
 
           <div class="nav-item">
-            <a href="#" class="nav-link" onclick="showView('liveData')">
+            <a href="#" class="nav-link" onclick="showView('liveDataView')">
               <span class="nav-icon">📡</span>
               Live Data
             </a>
           </div>
 
           <div class="nav-item">
-            <a href="#" class="nav-link" onclick="showView('recharge')">
+            <a href="#" class="nav-link" onclick="showView('rechargeView')">
               <span class="nav-icon">💳</span>
               Recharge Details
             </a>
@@ -151,23 +154,23 @@
               <span style="margin-left: auto">▼</span>
             </a>
             <div class="submenu" id="addNewSubmenu">
-              <a href="#" class="nav-link" onclick="showView('addOwner')">
+              <a href="#" class="nav-link" onclick="showView('addOwnerView')">
                 <span class="nav-icon">👤</span>
                 Owner
               </a>
-              <a href="#" class="nav-link" onclick="showView('addPG')">
+              <a href="#" class="nav-link" onclick="showView('addPGView')">
                 <span class="nav-icon">🏠</span>
                 PG
               </a>
-              <a href="#" class="nav-link" onclick="showView('addRoom')">
+              <a href="#" class="nav-link" onclick="showView('addRoomView')">
                 <span class="nav-icon">🛏️</span>
                 Room
               </a>
-              <a href="#" class="nav-link" onclick="showView('addMeter')">
+              <a href="#" class="nav-link" onclick="showView('addMeterView')">
                 <span class="nav-icon">⚡</span>
                 Meter
               </a>
-              <a href="#" class="nav-link" onclick="showView('addTenant')">
+              <a href="#" class="nav-link" onclick="showView('addTenantView')">
                 <span class="nav-icon">👥</span>
                 Tenant
               </a>
@@ -190,54 +193,108 @@
 
         <div class="content-body">
           <!-- Dashboard View -->
-          <div id="dashboardView">
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-number">10</div>
-                <div class="stat-label">Total PG</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">7</div>
-                <div class="stat-label">Total Owners</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">125</div>
-                <div class="stat-label">Total Tenants</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">125</div>
-                <div class="stat-label">Total Meters</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">125</div>
-                <div class="stat-label">Total Rooms</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">20</div>
-                <div class="stat-label">Critical Alerts</div>
-              </div>
-            </div>
+            <div id="dashboardView">
 
-            <div
-              class="stats-grid"
-              style="
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-              "
-            >
-              <div class="stat-card">
-                <div class="stat-number">23.45 kWh</div>
-                <div class="stat-label">Total Consumption Today</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">₹5456.34</div>
-                <div class="stat-label">Total Recharge Today</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">₹1234.34</div>
-                <div class="stat-label">Total Deduction Today</div>
-              </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card stat-flex">
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-building stat-icon"></i>
+                        </div>
+
+                        <div class="stat-content">
+                            <div class="stat-number">10</div>
+                            <div class="stat-number" style="font-size: larger;">Total PG</div>
+                        </div>
+                    </div>
+
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-user-tie stat-icon"></i>
+                            <div class="stat-number">7</div>
+                        </div>
+                        <div class="stat-label">Total Owners</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-users stat-icon"></i>
+                            <div class="stat-number">125</div>
+                        </div>
+                        <div class="stat-label">Total Tenants</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-bolt stat-icon"></i>
+                            <div class="stat-number">125</div>
+                        </div>
+                        <div class="stat-label">Total Meters</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-bed stat-icon"></i>
+                            <div class="stat-number">125</div>
+                        </div>
+                        <div class="stat-label">Total Rooms</div>
+                    </div>
+
+                    <div class="stat-card critical">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-triangle-exclamation stat-icon critical-icon"></i>
+                            <div class="stat-number critical-text">20</div>
+                        </div>
+                        <div class="stat-label">Critical Alerts</div>
+                    </div>
+                </div>
+
+
+                <div class="analytics-grid">
+                    <div class="chart-card large-card">
+                        <div class="card-header">Monthly Energy Consumption (kWh)</div>
+                        <div class="chart-container">
+                            <canvas id="monthlyConsumptionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="summary-stats-column">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Consumption **This Month**</div>
+                            <div class="stat-number">3456.78 kWh</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Recharge **This Month**</div>
+                            <div class="stat-number" style="color: #28a745;">₹ 12,345.00</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Average Price per kWh</div>
+                            <div class="stat-number" style="color: #ef6c00;">₹ 8.50</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Low Balance Meters</div>
+                            <div class="stat-number" style="color: #c62828;">15</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="secondary-analytics-grid">
+                    <div class="chart-card small-card">
+                        <div class="card-header">Meter Connection Status</div>
+                        <div class="chart-container">
+                            <canvas id="meterStatusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card small-card">
+                        <div class="card-header">Top 5 Consumers (Last 7 Days)</div>
+                        <div class="chart-container">
+                            <canvas id="topConsumersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
 
           <!-- Live Data View -->
           <div id="liveDataView" class="hidden">

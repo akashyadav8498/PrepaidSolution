@@ -1,5 +1,8 @@
 package com.example.PrepaidSolution.util;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -12,6 +15,7 @@ public class Utility {
     private static final String SPECIALS = "!@#$%^&*()-_+=<>?";
     private static final String PASSWORD_CHARS = CHAR_LOWER + CHAR_UPPER + DIGITS + SPECIALS;
     private static final SecureRandom random = new SecureRandom();
+    public static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();

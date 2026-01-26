@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: PrepaidSolution
+
+  profiles:
+    active: dev
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: akashyadav.8498@gmail.com
+    password: hwmsjjclrstgzsoy
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+aws:
+  iot:
+    certPath: ${AWS_IOT_CERT_PATH}
+    keyPath: ${AWS_IOT_KEY_PATH}
