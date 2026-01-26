@@ -1,0 +1,47 @@
+package com.example.PrepaidSolution.controller;
+
+import com.example.PrepaidSolution.service.MeterManagementService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@org.springframework.web.bind.annotation.RestController
+@RequestMapping("/api/meter/")
+public class MeterManagementController {
+
+    @Autowired
+    private MeterManagementService meterManagementService;
+
+    @GetMapping("/get_onload_data")
+    public ResponseEntity<?> getOnloadData(HttpServletRequest httpServletRequest) {
+        return meterManagementService.getOnloadData(httpServletRequest);
+    }
+
+    @PostMapping("/add_owner")
+    public ResponseEntity<?> addOwner(@RequestBody Map<String,String> requestMap) {
+        return meterManagementService.addOwner(requestMap);
+    }
+
+    @PostMapping("/add_pg")
+    public ResponseEntity<?> addPG(@RequestBody Map<String,String> requestMap) {
+        return meterManagementService.addPG(requestMap);
+    }
+
+    @PostMapping("/add_room")
+    public ResponseEntity<?> addRoom(@RequestBody Map<String,String> requestMap) {
+        return meterManagementService.addRoom(requestMap);
+    }
+
+    @PostMapping("/add_tenant")
+    public ResponseEntity<?> addTenant(@RequestBody Map<String,String> requestMap) {
+        return meterManagementService.addTenant(requestMap);
+    }
+
+    @GetMapping("/get_rooms")
+    public ResponseEntity<?> getRooms(@RequestParam("pg_id") String pgId) {
+        return meterManagementService.getRooms(pgId);
+    }
+}

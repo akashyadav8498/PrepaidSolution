@@ -1,0 +1,31 @@
+package com.example.PrepaidSolution.model;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Entity
+@Table(name = "admin")
+@Getter
+@Setter
+public class Admin {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    private String name;
+    private String email;
+    private String mobile;
+    private String address;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+}

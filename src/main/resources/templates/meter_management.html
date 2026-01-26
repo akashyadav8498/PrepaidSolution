@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pay-as-You-Go AR IoT Solutions - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/meter_management.css}" />
+      <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <script th:src="@{/js/meter_management.js}" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <!-- Meter Details Modal -->
+    <div id="meterDetailsModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">
+            Meter Details - ID: <span id="modalMeterId"></span>
+          </h3>
+          <span class="close" onclick="closeMeterModal()">&times;</span>
+        </div>
+
+        <div class="modal-body">
+          <!-- Time Range Filter -->
+          <div class="time-filter">
+            <button
+              class="filter-btn active"
+              onclick="changeTimeRange('3months')"
+            >
+              Last 3 Months
+            </button>
+            <button class="filter-btn" onclick="changeTimeRange('6months')">
+              Last 6 Months
+            </button>
+          </div>
+
+          <!-- View Toggle -->
+          <div class="view-toggle">
+            <!-- <button class="toggle-btn active" onclick="toggleView('infinite')">
+              Infinite Scroll
+            </button> -->
+            <!-- <button class="toggle-btn" onclick="toggleView('pagination')">
+              Pagination
+            </button> -->
+          </div>
+
+          <!-- Data Table -->
+          <div class="modal-table-container">
+            <table id="meterDataTable">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Cum kWh</th>
+                  <th>Voltage (V)</th>
+                  <th>Current (A)</th>
+                  <th>Power (W)</th>
+                  <th>Relay Status</th>
+                  <th>Connection</th>
+                </tr>
+              </thead>
+              <tbody id="meterDataBody">
+                <!-- Data will be populated here -->
+              </tbody>
+            </table>
+
+            <!-- Loading indicator for infinite scroll -->
+            <div id="loadingIndicator" class="loading-indicator hidden">
+              <div class="spinner"></div>
+              <p>Loading more data...</p>
+            </div>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div id="paginationControls" class="pagination-controls hidden">
+            <button
+              class="pagination-btn"
+              onclick="goToPage('first')"
+              id="firstBtn"
+            >
+              First
+            </button>
+            <button
+              class="pagination-btn"
+              onclick="goToPage('prev')"
+              id="prevBtn"
+            >
+              Previous
+            </button>
+            <span class="page-info">
+              Page <span id="currentPage">1</span> of
+              <span id="totalPages">1</span>
+            </span>
+            <button
+              class="pagination-btn"
+              onclick="goToPage('next')"
+              id="nextBtn"
+            >
+              Next
+            </button>
+            <button
+              class="pagination-btn"
+              onclick="goToPage('last')"
+              id="lastBtn"
+            >
+              Last
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h3>PAY AS YOU GO</h3>
+          <p>AR IOT SOLUTIONS</p>
+        </div>
+
+        <div class="welcome-section">
+          <h4>WELCOME, Admin</h4>
+        </div>
+
+        <nav class="nav-menu">
+          <div class="nav-item">
+            <a href="#" class="nav-link active" onclick="showView('dashboardView')">
+              <span class="nav-icon">📊</span>
+              Dashboard
+            </a>
+          </div>
+
+          <div class="nav-item">
+            <a href="#" class="nav-link" onclick="showView('liveDataView')">
+              <span class="nav-icon">📡</span>
+              Live Data
+            </a>
+          </div>
+
+          <div class="nav-item">
+            <a href="#" class="nav-link" onclick="showView('rechargeView')">
+              <span class="nav-icon">💳</span>
+              Recharge Details
+            </a>
+          </div>
+
+          <div class="nav-item">
+            <a
+              href="#"
+              class="nav-link"
+              onclick="toggleSubmenu('addNewSubmenu')"
+            >
+              <span class="nav-icon">➕</span>
+              Add New
+              <span style="margin-left: auto">▼</span>
+            </a>
+            <div class="submenu" id="addNewSubmenu">
+              <a href="#" class="nav-link" onclick="showView('addOwnerView')">
+                <span class="nav-icon">👤</span>
+                Owner
+              </a>
+              <a href="#" class="nav-link" onclick="showView('addPGView')">
+                <span class="nav-icon">🏠</span>
+                PG
+              </a>
+              <a href="#" class="nav-link" onclick="showView('addRoomView')">
+                <span class="nav-icon">🛏️</span>
+                Room
+              </a>
+              <a href="#" class="nav-link" onclick="showView('addMeterView')">
+                <span class="nav-icon">⚡</span>
+                Meter
+              </a>
+              <a href="#" class="nav-link" onclick="showView('addTenantView')">
+                <span class="nav-icon">👥</span>
+                Tenant
+              </a>
+            </div>
+          </div>
+
+          <div class="nav-item">
+            <a href="#" class="nav-link" onclick="logout()">
+              <span class="nav-icon">🚪</span>
+              Logout
+            </a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="main-content">
+        <div class="content-header">
+          <h2 id="contentTitle">Dashboard</h2>
+        </div>
+
+        <div class="content-body">
+          <!-- Dashboard View -->
+            <div id="dashboardView">
+
+
+                <div class="stats-grid">
+                    <div class="stat-card stat-flex">
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-building stat-icon"></i>
+                        </div>
+
+                        <div class="stat-content">
+                            <div class="stat-number">10</div>
+                            <div class="stat-number" style="font-size: larger;">Total PG</div>
+                        </div>
+                    </div>
+
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-user-tie stat-icon"></i>
+                            <div class="stat-number">7</div>
+                        </div>
+                        <div class="stat-label">Total Owners</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-users stat-icon"></i>
+                            <div class="stat-number">125</div>
+                        </div>
+                        <div class="stat-label">Total Tenants</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-bolt stat-icon"></i>
+                            <div class="stat-number">125</div>
+                        </div>
+                        <div class="stat-label">Total Meters</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-bed stat-icon"></i>
+                            <div class="stat-number">125</div>
+                        </div>
+                        <div class="stat-label">Total Rooms</div>
+                    </div>
+
+                    <div class="stat-card critical">
+                        <div class="stat-top">
+                            <i class="fa-solid fa-triangle-exclamation stat-icon critical-icon"></i>
+                            <div class="stat-number critical-text">20</div>
+                        </div>
+                        <div class="stat-label">Critical Alerts</div>
+                    </div>
+                </div>
+
+
+                <div class="analytics-grid">
+                    <div class="chart-card large-card">
+                        <div class="card-header">Monthly Energy Consumption (kWh)</div>
+                        <div class="chart-container">
+                            <canvas id="monthlyConsumptionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="summary-stats-column">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Consumption **This Month**</div>
+                            <div class="stat-number">3456.78 kWh</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Recharge **This Month**</div>
+                            <div class="stat-number" style="color: #28a745;">₹ 12,345.00</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Average Price per kWh</div>
+                            <div class="stat-number" style="color: #ef6c00;">₹ 8.50</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Low Balance Meters</div>
+                            <div class="stat-number" style="color: #c62828;">15</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="secondary-analytics-grid">
+                    <div class="chart-card small-card">
+                        <div class="card-header">Meter Connection Status</div>
+                        <div class="chart-container">
+                            <canvas id="meterStatusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card small-card">
+                        <div class="card-header">Top 5 Consumers (Last 7 Days)</div>
+                        <div class="chart-container">
+                            <canvas id="topConsumersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          <!-- Live Data View -->
+          <div id="liveDataView" class="hidden">
+            <div class="filter-tabs">
+              <div class="filter-tab active" onclick="filterLiveData('all')">
+                All Meters
+              </div>
+              <div class="filter-tab" onclick="filterLiveData('connected')">
+                Connected
+              </div>
+              <div class="filter-tab" onclick="filterLiveData('disconnected')">
+                Disconnected
+              </div>
+              <div class="filter-tab" onclick="filterLiveData('online')">
+                Online
+              </div>
+              <div class="filter-tab" onclick="filterLiveData('offline')">
+                Offline
+              </div>
+            </div>
+
+            <div class="table-container">
+              <div class="table-header">Live Meter Data</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Meter ID</th>
+                    <th>RTC</th>
+                    <th>Cum kWh</th>
+                    <th>Voltage (V)</th>
+                    <th>Current (A)</th>
+                    <th>Power (W)</th>
+                    <th>Relay</th>
+                    <th>Status</th>
+                    <th>Mode</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="meterTableBody">
+                  <tr class="connected online">
+                    <td>801234</td>
+                    <td>29-06-25</td>
+                    <td>23.45</td>
+                    <td>240.34</td>
+                    <td>10.45</td>
+                    <td>1245</td>
+                    <td><span class="status-badge status-on">ON</span></td>
+                    <td><span class="status-badge status-online">OK</span></td>
+                    <td>
+                      <span class="status-badge status-online">ONLINE</span>
+                    </td>
+                    <td>
+                      <button
+                        class="view-btn"
+                        onclick="viewMeterDetails('801234')"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="disconnected online">
+                    <td>801235</td>
+                    <td>29-06-25</td>
+                    <td>18.92</td>
+                    <td>238.21</td>
+                    <td>8.23</td>
+                    <td>956</td>
+                    <td><span class="status-badge status-off">OFF</span></td>
+                    <td><span class="status-badge status-online">OK</span></td>
+                    <td>
+                      <span class="status-badge status-online">ONLINE</span>
+                    </td>
+                    <td>
+                      <button
+                        class="view-btn"
+                        onclick="viewMeterDetails('801235')"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="connected offline">
+                    <td>801236</td>
+                    <td>28-06-25</td>
+                    <td>31.67</td>
+                    <td>242.15</td>
+                    <td>12.34</td>
+                    <td>1456</td>
+                    <td><span class="status-badge status-on">ON</span></td>
+                    <td><span class="status-badge status-online">OK</span></td>
+                    <td>
+                      <span class="status-badge status-offline">OFFLINE</span>
+                    </td>
+                    <td>
+                      <button
+                        class="view-btn"
+                        onclick="viewMeterDetails('801236')"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="connected online">
+                    <td>801237</td>
+                    <td>29-06-25</td>
+                    <td>15.34</td>
+                    <td>239.87</td>
+                    <td>6.78</td>
+                    <td>824</td>
+                    <td><span class="status-badge status-on">ON</span></td>
+                    <td><span class="status-badge status-online">OK</span></td>
+                    <td>
+                      <span class="status-badge status-online">ONLINE</span>
+                    </td>
+                    <td>
+                      <button
+                        class="view-btn"
+                        onclick="viewMeterDetails('801237')"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="disconnected offline">
+                    <td>801238</td>
+                    <td>27-06-25</td>
+                    <td>27.91</td>
+                    <td>241.56</td>
+                    <td>11.23</td>
+                    <td>1367</td>
+                    <td><span class="status-badge status-off">OFF</span></td>
+                    <td><span class="status-badge status-online">OK</span></td>
+                    <td>
+                      <span class="status-badge status-offline">OFFLINE</span>
+                    </td>
+                    <td>
+                      <button
+                        class="view-btn"
+                        onclick="viewMeterDetails('801238')"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recharge View -->
+          <div id="rechargeView" class="hidden">
+            <div class="filter-tabs">
+              <div
+                class="filter-tab active"
+                onclick="filterRechargeData('all')"
+              >
+                All Recharges
+              </div>
+              <div class="filter-tab" onclick="filterRechargeData('success')">
+                Success
+              </div>
+              <div class="filter-tab" onclick="filterRechargeData('failure')">
+                Failure
+              </div>
+              <div class="filter-tab" onclick="filterRechargeData('pending')">
+                Pending
+              </div>
+            </div>
+
+            <div class="table-container">
+              <div class="table-header">Recharge Details</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tenant Name</th>
+                    <th>Meter ID</th>
+                    <th>Amount (₹)</th>
+                    <th>Payment Method</th>
+                    <th>Payment Gateway</th>
+                    <th>Date & Time</th>
+                    <th>Reference Id</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="success">
+                    <td>Rajesh Kumar</td>
+                    <td>801234</td>
+                    <td>₹500.00</td>
+                    <td>UPI</td>
+                    <td>Paytm</td>
+                    <td>29-06-25 14:32</td>
+                    <td>TXN001247</td>
+                    <td>
+                      <span class="status-badge status-success">SUCCESS</span>
+                    </td>
+                    <td>
+                      <button
+                        class="view-btn"
+                        onclick="viewTransactionDetails('TXN001247')"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Add Owner Form -->
+          <div id="addOwnerView" class="hidden">
+            <div class="form-container">
+              <form id="addOwnerForm">
+                <div class="form-group">
+                  <label>Name *</label>
+                  <input
+                    type="text"
+                    id="ownerName"
+                    placeholder="Enter owner name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Mobile Number *</label>
+                  <input
+                    type="tel"
+                    id="ownerMobile"
+                    placeholder="Enter mobile number"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    id="ownerEmail"
+                    placeholder="Enter email address"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Address *</label>
+                  <textarea
+                    id="ownerAddress"
+                    placeholder="Enter complete address"
+                    required
+                  ></textarea>
+                </div>
+                <div class="btn-wrapper">
+                  <button
+                    type="submit"
+                    id="addOwnerBtn"
+                    class="btn btn-primary"
+                  >
+                    Add Owner
+                  </button>
+                  <div id="ownerLoading" class="dot-loading hidden">
+                    Please wait<span class="dots"></span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Add PG Form -->
+          <div id="addPGView" class="hidden">
+            <div class="form-container">
+              <form id="addPGForm">
+                <div class="form-group">
+                  <label>PG Name *</label>
+                  <input
+                    type="text"
+                    id="pgName"
+                    placeholder="Enter PG name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Owner *</label>
+                  <select id="pgOwnerId" name="ownerId" required>
+                    <option value="">Select Owner</option>
+                    <th:block th:each="owner : ${owners}">
+                      <option
+                        th:value="${owner.id}"
+                        th:text="${owner.name}"
+                      ></option>
+                    </th:block>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Address *</label>
+                  <textarea
+                    id="pgAddress"
+                    placeholder="Enter PG address"
+                    required
+                  ></textarea>
+                </div>
+                <div class="btn-wrapper">
+                  <button type="submit" id="addPGBtn" class="btn btn-primary">
+                    Add PG
+                  </button>
+                  <div id="pgLoading" class="dot-loading hidden">
+                    Please wait<span class="dots"></span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Add Room Form -->
+          <div id="addRoomView" class="hidden">
+            <div class="form-container">
+              <h3 style="margin-bottom: 20px">Add New Room</h3>
+              <form id="addRoomForm">
+                <!-- <div class="form-group">
+                  <label>Owner *</label>
+                  <select id="roomOwner" required>
+                    <option value="">Select Owner</option>
+                    <th:block th:each="owner : ${owners}">
+                      <option
+                        th:value="${owner.id}"
+                        th:text="${owner.name}"
+                      ></option>
+                    </th:block>
+                  </select>
+                </div> -->
+                <div class="form-group">
+                  <label>PG *</label>
+                  <select id="roomPG" required>
+                    <option value="">Select PG</option>
+                    <th:block th:each="pg : ${pgs}">
+                      <option th:value="${pg.id}" th:text="${pg.name}"></option>
+                    </th:block>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Room Number *</label>
+                  <input
+                    type="text"
+                    id="roomNumber"
+                    placeholder="Enter room number"
+                    required
+                  />
+                </div>
+                <div class="btn-wrapper">
+                  <button type="submit" id="addRoomBtn" class="btn btn-primary">
+                    Add Room
+                  </button>
+                  <div id="roomLoading" class="dot-loading hidden">
+                    Please wait<span class="dots"></span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Add Meter Form -->
+          <div id="addMeterView" class="hidden">
+            <div class="form-container">
+              <h3 style="margin-bottom: 20px">Add New Meter</h3>
+              <form>
+                <div class="form-group">
+                  <label>PG *</label>
+                  <select id="meterPG" required>
+                    <option value="">Select PG</option>
+                    <option
+                      th:each="pg : ${pgs}"
+                      th:value="${pg.id}"
+                      th:text="${pg.name}"
+                    ></option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Room Number *</label>
+                  <select id="meterRoom" required>
+                    <option value="">Select Room</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Meter ID *</label>
+                  <input
+                    type="text"
+                    id="meterId"
+                    placeholder="Enter meter ID"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Meter Type *</label>
+                  <select id="meterType" required>
+                    <option value="">Select Type</option>
+                    <option
+                      th:each="metertype : ${metertypes}"
+                      th:value="${metertype.id}"
+                      th:text="${metertype.type}"
+                    ></option>
+                  </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Meter</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Add Tenant Form -->
+          <div id="addTenantView" class="hidden">
+            <div class="form-container">
+              <h3 style="margin-bottom: 20px">Add New Tenant</h3>
+              <form id="addTenantForm">
+                <div class="form-group">
+                  <label>PG *</label>
+                  <select id="tenantPG" required>
+                    <option value="">Select PG</option>
+                    <th:block th:each="pg : ${pgs}">
+                      <option
+                        th:value="${pg.id}"
+                        th:text="${pg.name}"
+                      ></option>
+                    </th:block>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Room *</label>
+                  <select id="tenantRoom" required>
+                    <option value="">Select Room</option>
+                    <th:block th:each="room : ${rooms}">
+                      <option
+                        th:value="${room.id}"
+                        th:text="${room.roomNo}"
+                      ></option>
+                    </th:block>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Tenant Name *</label>
+                  <input
+                    type="text"
+                    id="tenantName"
+                    placeholder="Enter tenant name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Tenant Email *</label>
+                  <input
+                    type="text"
+                    id="tenantEmail"
+                    placeholder="Enter tenant email"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Mobile Number *</label>
+                  <input
+                    type="tel"
+                    id="tenantMobile"
+                    placeholder="Enter mobile number"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Address</label>
+                  <textarea
+                    id="tenantAddress"
+                    placeholder="Enter tenant address"
+                  ></textarea>
+                </div>
+                <div class="btn-wrapper">
+                  <button
+                    type="submit"
+                    id="addTenantBtn"
+                    class="btn btn-primary"
+                  >
+                    Add Tenant
+                  </button>
+                  <div id="tenantLoading" class="dot-loading hidden">
+                    Please wait<span class="dots"></span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simple change-password modal (inline, re-uses modal styles) -->
+    <div id="changePasswordModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Change Password</h3>
+          <span class="close" onclick="closeChangePassword()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form onsubmit="changePassword(event)">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" id="currentPassword" required />
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="newPassword" required />
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" id="confirmNewPassword" required />
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Update Password
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="ownerPopup" class="popup hidden">
+      <p id="ownerPopupMessage"></p>
+      <span class="close" onclick="closeOwnerPopup()">&times;</span>
+    </div>
+  </body>
+</html>
