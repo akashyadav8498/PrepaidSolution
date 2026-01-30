@@ -12,7 +12,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     }
 
        var xhr = new XMLHttpRequest();
-       xhr.open("POST", "http://localhost:8080/login", true);
+       xhr.open("POST", "/login", true);
        xhr.setRequestHeader("Content-Type", "application/json");
 
        xhr.onreadystatechange = function () {
