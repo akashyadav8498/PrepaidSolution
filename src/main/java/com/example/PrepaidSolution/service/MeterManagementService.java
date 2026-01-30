@@ -21,7 +21,7 @@ import java.util.Map;
 public class MeterManagementService {
 
     @Autowired
-    private MeterReadingsRepository meterReadingsRepository;
+    private LiveMeterReadingsRepository liveMeterReadingsRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -46,7 +46,7 @@ public class MeterManagementService {
             HttpSession session = httpServletRequest.getSession(false);
             String userName = (String) session.getAttribute("userName");
             String userRole = (String) session.getAttribute("userRole");
-            List<MeterReadings> liveReadings = meterReadingsRepository.findAll();
+            List<LiveMeterReadings> liveReadings = liveMeterReadingsRepository.findAll();
             return new ResponseEntity<>(Map.of("liveReadings", liveReadings), HttpStatusCode.valueOf(HttpStatus.OK.value()));
         } catch (Exception e) {
             return new ResponseEntity<>(Map.of("message", "Error while fetching live readings"), HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));

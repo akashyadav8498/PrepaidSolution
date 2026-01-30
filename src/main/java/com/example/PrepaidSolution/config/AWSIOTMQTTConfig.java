@@ -1,8 +1,10 @@
 package com.example.PrepaidSolution.config;
 
+import com.example.PrepaidSolution.messaging.RabbitMQSender;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
@@ -14,9 +16,12 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 @Getter
+@RequiredArgsConstructor
 public class AWSIOTMQTTConfig {
 
     public MqttClientConnection connection;
+
+    final RabbitMQSender rabbitMQSender;
 
     @Value("${aws.iot.certPath}")
     private String certPath;
@@ -78,6 +83,7 @@ public class AWSIOTMQTTConfig {
                             hex.append(String.format("%02X", b));
                         }
 
+                        rabbitMQSender.sendMessage(hex);
                         System.out.println("Received (hex): " + hex);
                     }
             );
