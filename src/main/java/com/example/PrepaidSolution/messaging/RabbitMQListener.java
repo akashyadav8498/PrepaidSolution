@@ -9,6 +9,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class RabbitMQListener {
         LiveMeterReadings liveMeterReadings = new LiveMeterReadings();
         liveMeterReadings.setMeterId(String.valueOf(Long.parseLong(hexPacket, 16)));
         liveMeterReadings.setReading(hexPacket);
+        liveMeterReadings.setCreatedAt(LocalDateTime.now());
         liveMeterReadingsRepository.save(liveMeterReadings);
 
     }

@@ -83,7 +83,8 @@ public class AWSIOTMQTTConfig {
                             hex.append(String.format("%02X", b));
                         }
 
-                        rabbitMQSender.sendMessage(hex);
+                        String hexString = hex.toString();
+                        rabbitMQSender.sendMessage(hexString);
                         System.out.println("Received (hex): " + hex);
                     }
             );
