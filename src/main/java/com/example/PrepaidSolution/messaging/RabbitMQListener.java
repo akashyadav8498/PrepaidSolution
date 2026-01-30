@@ -26,11 +26,11 @@ public class RabbitMQListener {
 
     private void decodeAndSave(String hexPacket) {
 
-        hexPacket = hexPacket.substring(0,8);
-        System.out.println("Meter serial id: --> " + hexPacket);
+        String meterId = hexPacket.substring(0,8);
+        System.out.println("Meter serial id: --> " + meterId);
 
         LiveMeterReadings liveMeterReadings = new LiveMeterReadings();
-        liveMeterReadings.setMeterId(String.valueOf(Long.parseLong(hexPacket, 16)));
+        liveMeterReadings.setMeterId(String.valueOf(Long.parseLong(meterId, 16)));
         liveMeterReadings.setReading(hexPacket);
         liveMeterReadings.setCreatedAt(LocalDateTime.now());
         liveMeterReadingsRepository.save(liveMeterReadings);
