@@ -6,16 +6,14 @@ import com.example.PrepaidSolution.util.Utility;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class MeterManagementService {
@@ -46,8 +44,42 @@ public class MeterManagementService {
             HttpSession session = httpServletRequest.getSession(false);
             String userName = (String) session.getAttribute("userName");
             String userRole = (String) session.getAttribute("userRole");
-            List<LiveMeterReadings> liveReadings = liveMeterReadingsRepository.findAll();
-            return new ResponseEntity<>(Map.of("liveReadings", liveReadings), HttpStatusCode.valueOf(HttpStatus.OK.value()));
+            List<LiveMeterReadings> liveReadings =
+                    liveMeterReadingsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
+            List<Map<String, Number>> resultList =
+                    liveReadings.stream()
+                            .map(reading -> {
+                                Map<String, Number> map = new LinkedHashMap<>();
+
+                                map.put("meterId",    Long.parseLong(reading.getReading().substring(0, 8), 16));
+                                map.put("alarmRelay", Long.parseLong(reading.getReading().substring(8, 12), 16));
+                                map.put("rtc",        Long.parseLong(reading.getReading().substring(12, 20), 16));
+
+                                map.put("kwh_1",      Long.parseLong(reading.getReading().substring(20, 28), 16) / 100.0);
+                                map.put("voltage_1",  Long.parseLong(reading.getReading().substring(28, 32), 16) / 100.0);
+                                map.put("current_1",  Long.parseLong(reading.getReading().substring(32, 36), 16) / 1000.0);
+                                map.put("power_1",    Long.parseLong(reading.getReading().substring(36, 40), 16));
+
+                                map.put("pf_1",       Long.parseLong(reading.getReading().substring(40, 44), 16) / 100.0);
+                                map.put("freq_1",     Long.parseLong(reading.getReading().substring(44, 48), 16) / 100.0);
+
+                                map.put("kwh_2",      Long.parseLong(reading.getReading().substring(48, 56), 16) / 100.0);
+                                map.put("voltage_2",  Long.parseLong(reading.getReading().substring(56, 60), 16) / 100.0);
+                                map.put("current_2",  Long.parseLong(reading.getReading().substring(60, 64), 16) / 1000.0);
+                                map.put("power_2",    Long.parseLong(reading.getReading().substring(64, 68), 16));
+
+                                map.put("pf_2",       Long.parseLong(reading.getReading().substring(68, 72), 16) / 100.0);
+                                map.put("freq_2",     Long.parseLong(reading.getReading().substring(72, 76), 16) / 100.0);
+                                map.put("alarmCount", Long.parseLong(reading.getReading().substring(76, 80), 16));
+
+                                return map;
+                            })
+                            .toList();
+
+
+
+            return new ResponseEntity<>(Map.of("liveReadings", resultList), HttpStatusCode.valueOf(HttpStatus.OK.value()));
         } catch (Exception e) {
             return new ResponseEntity<>(Map.of("message", "Error while fetching live readings"), HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }

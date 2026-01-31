@@ -642,11 +642,21 @@ function loadMeterReadings() {
 
         row.innerHTML = `
           <td>${reading.meterId}</td>
-          <td>${new Date(reading.timestamp).toLocaleDateString()}</td>
-          <td>${reading.energyKWh}</td>
-          <td>${reading.voltage}</td>
-          <td>${reading.current}</td>
-          <td>${reading.readingId}</td>
+          <td>${reading.alarmRelay}</td>
+          <td>${new Date(reading.rtc).toLocaleDateString()}</td>
+          <td>${reading.kwh_1}</td>
+          <td>${reading.voltage_1}</td>
+          <td>${reading.current_1}</td>
+          <td>${reading.power_1}</td>
+          <td>${reading.pf_1}</td>
+          <td>${reading.freq_1}</td>
+          <td>${reading.kwh_2}</td>
+                    <td>${reading.voltage_2}</td>
+                    <td>${reading.current_2}</td>
+                    <td>${reading.power_2}</td>
+                    <td>${reading.pf_2}</td>
+                    <td>${reading.freq_2}</td>
+                    <td>${reading.alarmCount}</td>
           <td><span class="status-badge ${status === "ON" ? "status-on" : "status-off"}">${status}</span></td>
           <td><span class="status-badge status-online">${health}</span></td>
           <td><span class="status-badge ${connection === "ONLINE" ? "status-online" : "status-offline"}">${connection}</span></td>
@@ -684,7 +694,10 @@ function showView(viewId) {
     const title = document.getElementById('contentTitle');
     if (title) {
         if (viewId === 'dashboardView') title.textContent = 'Dashboard';
-        else if (viewId === 'liveDataView') title.textContent = 'Live Meter Data';
+        else if (viewId === 'liveDataView') {
+        title.textContent = 'Live Meter Data';
+        loadMeterReadings()
+        }
         else if (viewId === 'rechargeView') title.textContent = 'Recharge Details';
         else if (viewId.startsWith('add')) title.textContent = 'Add New ' + viewId.substring(3).replace(/([A-Z])/g, ' $1').trim();
     }
@@ -862,3 +875,5 @@ function initializeCharts() {
         });
     }
 }
+
+setInterval(loadMeterReadings, 15000);

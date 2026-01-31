@@ -1,6 +1,8 @@
 package com.example.PrepaidSolution.controller;
 
 import com.example.PrepaidSolution.config.AWSIOTMQTTConfig;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +23,9 @@ public class IndexController {
     private AWSIOTMQTTConfig awsiotmqttConfig;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String,String> payload) {
+    public ResponseEntity<?> login(@RequestBody Map<String,String> payload, HttpServletRequest httpServletRequest) {
+        HttpSession session = httpServletRequest.getSession();
+//        session.setAttribute("userName", );
         return ResponseEntity.ok(Map.of("uri","/meter_management"));
     }
 
