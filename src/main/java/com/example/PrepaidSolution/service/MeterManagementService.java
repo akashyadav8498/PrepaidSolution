@@ -3,6 +3,8 @@ package com.example.PrepaidSolution.service;
 import com.example.PrepaidSolution.model.*;
 import com.example.PrepaidSolution.repository.*;
 import com.example.PrepaidSolution.util.Utility;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,31 +49,35 @@ public class MeterManagementService {
             List<LiveMeterReadings> liveReadings =
                     liveMeterReadingsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 
+
             List<Map<String, Number>> resultList =
                     liveReadings.stream()
                             .map(reading -> {
+
+                                String meterReading = reading.getReading();
+                                JsonObject jsonObject = JsonParser
+                                        .parseString(meterReading)
+                                        .getAsJsonObject();
+                                JsonObject liveData = jsonObject.get("live_data").getAsJsonObject();
+
                                 Map<String, Number> map = new LinkedHashMap<>();
 
-                                map.put("meterId",    Long.parseLong(reading.getReading().substring(0, 8), 16));
-                                map.put("alarmRelay", Long.parseLong(reading.getReading().substring(8, 12), 16));
-                                map.put("rtc",        Long.parseLong(reading.getReading().substring(12, 20), 16));
-
-                                map.put("kwh_1",      Long.parseLong(reading.getReading().substring(20, 28), 16) / 100.0);
-                                map.put("voltage_1",  Long.parseLong(reading.getReading().substring(28, 32), 16) / 100.0);
-                                map.put("current_1",  Long.parseLong(reading.getReading().substring(32, 36), 16) / 1000.0);
-                                map.put("power_1",    Long.parseLong(reading.getReading().substring(36, 40), 16));
-
-                                map.put("pf_1",       Long.parseLong(reading.getReading().substring(40, 44), 16) / 100.0);
-                                map.put("freq_1",     Long.parseLong(reading.getReading().substring(44, 48), 16) / 100.0);
-
-                                map.put("kwh_2",      Long.parseLong(reading.getReading().substring(48, 56), 16) / 100.0);
-                                map.put("voltage_2",  Long.parseLong(reading.getReading().substring(56, 60), 16) / 100.0);
-                                map.put("current_2",  Long.parseLong(reading.getReading().substring(60, 64), 16) / 1000.0);
-                                map.put("power_2",    Long.parseLong(reading.getReading().substring(64, 68), 16));
-
-                                map.put("pf_2",       Long.parseLong(reading.getReading().substring(68, 72), 16) / 100.0);
-                                map.put("freq_2",     Long.parseLong(reading.getReading().substring(72, 76), 16) / 100.0);
-                                map.put("alarmCount", Long.parseLong(reading.getReading().substring(76, 80), 16));
+                                map.put("meterId",    liveData.get("sn").getAsBigDecimal());
+                                map.put("alarmRelay", liveData.get("al_rl").getAsBigDecimal());
+                                map.put("rtc",        liveData.get("rtc").getAsBigDecimal());
+                                map.put("kwh_1",      liveData.get("kwh1").getAsBigDecimal());
+                                map.put("voltage_1",  liveData.get("v1").getAsBigDecimal());
+                                map.put("current_1",  liveData.get("a1").getAsBigDecimal());
+                                map.put("power_1",    liveData.get("p1").getAsBigDecimal());
+                                map.put("pf_1",       liveData.get("pf1").getAsBigDecimal());
+                                map.put("freq_1",     liveData.get("f1").getAsBigDecimal());
+                                map.put("kwh_2",      liveData.get("kwh2").getAsBigDecimal());
+                                map.put("voltage_2",  liveData.get("v2").getAsBigDecimal());
+                                map.put("current_2",  liveData.get("a2").getAsBigDecimal());
+                                map.put("power_2",    liveData.get("p2").getAsBigDecimal());
+                                map.put("pf_2",       liveData.get("pf2").getAsBigDecimal());
+                                map.put("freq_2",     liveData.get("f2").getAsBigDecimal());
+                                map.put("alarmCount", liveData.get("al").getAsBigDecimal());
 
                                 return map;
                             })

@@ -12,6 +12,9 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.BlockingQueue;
+
 @Component
 @Getter
 @RequiredArgsConstructor
@@ -19,6 +22,8 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 public class AWSIOTMQTTConfig {
 
     private MqttClientConnection connection;
+
+    private final BlockingQueue<String> mqttQueue;
 
     @Value("${aws.iot.certPath}")
     private String certPath;
@@ -88,14 +93,16 @@ public class AWSIOTMQTTConfig {
         try {
             byte[] payload = message.getPayload();
 
-            log.info("📡 Packet : {}", toHex(payload));
+//            String hex = toHex(message.getPayload());
+            String hex = toJsonString(message.getPayload());
 
-            // 🚀 enqueue only (NO processing here)
-//            boolean accepted = mqttWorker.enqueue(payload);
+            // 🔥 LOG HERE (every packet)
+            log.info("📥 MQTT Packet Received: {}", hex);
 
-//            if (!accepted) {
-//                log.error("❌ MQTT queue full – packet dropped");
-//            }
+            boolean accepted = mqttQueue.offer(hex);
+            if (!accepted) {
+                log.error("❌ MQTT QUEUE FULL — DROPPING PACKET");
+            }
 
         } catch (Exception e) {
             log.error("❌ Error in MQTT callback", e);
@@ -134,4 +141,9 @@ public class AWSIOTMQTTConfig {
         }
         return sb.toString();
     }
+
+    private String toJsonString(byte[] payload) {
+        return new String(payload, StandardCharsets.UTF_8);
+    }
+
 }

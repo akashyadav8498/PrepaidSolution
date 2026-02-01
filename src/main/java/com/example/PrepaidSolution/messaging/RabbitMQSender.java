@@ -13,8 +13,8 @@ public class RabbitMQSender {
 
     public void sendMessage(Object message) {
         rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE_NAME,
-                RabbitMQConfig.ROUTING_KEY,
+                RabbitMQConfig.EXCHANGE,
+                RabbitMQConfig.ROUTING,
                 message
         );
     }

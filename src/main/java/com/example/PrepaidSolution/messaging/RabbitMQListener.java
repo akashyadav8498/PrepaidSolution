@@ -1,39 +1,27 @@
 package com.example.PrepaidSolution.messaging;
 
 import com.example.PrepaidSolution.config.RabbitMQConfig;
-import com.example.PrepaidSolution.model.LiveMeterReadings;
-import com.example.PrepaidSolution.repository.LiveMeterReadingsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.util.concurrent.BlockingQueue;
 
 @Component
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class RabbitMQListener {
 
-    final LiveMeterReadingsRepository liveMeterReadingsRepository;
+    private final BlockingQueue<String> dbQueue;
 
-    @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
-    private void receive(String message) {
-        log.info("RabbitMQ: Received message -> {}", message);
-        decodeAndSave(message);
-    }
+    @RabbitListener(queues = RabbitMQConfig.QUEUE)
+    public void receive(String message) {
+        log.info("🐇 RabbitMQ Received: {}", message);
 
-    private void decodeAndSave(String hexPacket) {
-
-        String meterId = hexPacket.substring(0,8);
-        System.out.println("Meter serial id: --> " + meterId);
-
-        LiveMeterReadings liveMeterReadings = new LiveMeterReadings();
-        liveMeterReadings.setMeterId(String.valueOf(Long.parseLong(meterId, 16)));
-        liveMeterReadings.setReading(hexPacket);
-        liveMeterReadings.setCreatedAt(LocalDateTime.now());
-        liveMeterReadingsRepository.save(liveMeterReadings);
-
+        boolean accepted = dbQueue.offer(message);
+        if (!accepted) {
+            log.error("❌ DB QUEUE FULL — DROPPING MESSAGE");
+        }
     }
 }
