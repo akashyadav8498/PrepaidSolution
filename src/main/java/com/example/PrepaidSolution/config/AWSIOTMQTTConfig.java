@@ -1,8 +1,5 @@
 package com.example.PrepaidSolution.config;
 
-import com.example.PrepaidSolution.messaging.RabbitMQSender;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Getter;
@@ -15,10 +12,6 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.concurrent.BlockingQueue;
-
 @Component
 @Getter
 @RequiredArgsConstructor
@@ -27,86 +20,118 @@ public class AWSIOTMQTTConfig {
 
     private MqttClientConnection connection;
 
-    private final RabbitMQSender rabbitMQSender;
-
-    private final BlockingQueue<String> mqttQueue;
-
     @Value("${aws.iot.certPath}")
     private String certPath;
 
     @Value("${aws.iot.keyPath}")
     private String keyPath;
 
+    private static final String ENDPOINT =
+            "aq3hbf780ob41-ats.iot.ap-south-1.amazonaws.com";
+
+    private static final String CLIENT_ID =
+            "prepaidsolution-software-client";
+
+    private static final String TOPIC = "esp32_pub";
+
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
+        connectAndSubscribe();
+    }
 
-        String endpoint = "aq3hbf780ob41-ats.iot.ap-south-1.amazonaws.com";
-        String clientId = "prepaidsolution-software-client";
+    private synchronized void connectAndSubscribe() {
+        try {
+            log.info("🔌 Connecting to AWS IoT...");
 
-        try (AwsIotMqttConnectionBuilder builder =
-                     AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
-                             certPath,
-                             keyPath
-                     )) {
+            AwsIotMqttConnectionBuilder builder =
+                    AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
+                            certPath, keyPath
+                    );
 
-            builder.withEndpoint(endpoint)
-                    .withClientId(clientId)
-                    .withCleanSession(true);
+            builder.withEndpoint(ENDPOINT)
+                    .withClientId(CLIENT_ID)
+                    .withCleanSession(false); // ❗ important
 
             connection = builder.build();
+
+            connection.connect().get();
+            log.info("✅ AWS IoT Connected");
+
+            subscribe();
+
+        } catch (Exception e) {
+            log.error("❌ AWS IoT connection failed", e);
+            retryReconnect();
         }
+    }
 
-        connection.connect().get();
-        System.out.println("✅ AWS IoT Connected");
-        subscribe();
+    private void subscribe() {
+        try {
+            connection.subscribe(
+                    TOPIC,
+                    QualityOfService.AT_LEAST_ONCE,
+                    this::handleMessage
+            );
 
+            log.info("📡 Subscribed to topic: {}", TOPIC);
+
+        } catch (Exception e) {
+            log.error("❌ Subscription failed", e);
+        }
+    }
+
+    /**
+     * ⚠️ MQTT CALLBACK
+     * MUST be FAST & NON-BLOCKING
+     */
+    private void handleMessage(MqttMessage message) {
+        try {
+            byte[] payload = message.getPayload();
+
+            log.info("📡 Packet : {}", toHex(payload));
+
+            // 🚀 enqueue only (NO processing here)
+//            boolean accepted = mqttWorker.enqueue(payload);
+
+//            if (!accepted) {
+//                log.error("❌ MQTT queue full – packet dropped");
+//            }
+
+        } catch (Exception e) {
+            log.error("❌ Error in MQTT callback", e);
+        }
+    }
+
+    private void retryReconnect() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                    log.warn("🔁 Retrying AWS IoT connection...");
+                    connectAndSubscribe();
+                    break;
+                } catch (Exception ignored) {}
+            }
+        }).start();
     }
 
     @PreDestroy
-    public void shutdown() throws Exception {
-        if (connection != null) {
-            connection.disconnect().get();
-            System.out.println("🔌 AWS IoT Disconnected");
+    public void shutdown() {
+        try {
+            if (connection != null) {
+                connection.disconnect().get();
+                log.info("🔌 AWS IoT Disconnected");
+            }
+        } catch (Exception e) {
+            log.error("❌ Error during MQTT shutdown", e);
         }
     }
 
-
-    public void subscribe() {
-        try {
-
-            connection.subscribe(
-                    "esp32_pub",
-                    QualityOfService.AT_LEAST_ONCE,
-                    (MqttMessage message) -> {
-
-                        byte[] payload = message.getPayload();
-
-                        StringBuilder hex = new StringBuilder();
-                        for (byte b : payload) {
-                            hex.append(String.format("%02X", b));
-                        }
-
-                        String hexString = hex.toString();
-                        log.info("Packet --> " + hexString);
-                        mqttQueue.offer(hexString); // 🚀 FAST, non-blocking
-                    }
-            );
-
-
-
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    private String toHex(byte[] payload) {
+        StringBuilder sb = new StringBuilder(payload.length * 2);
+        for (byte b : payload) {
+            sb.append(String.format("%02X", b));
         }
-    }
-
-    public void sendMessage(String topic, String messageStr) {
-        try {
-            MqttMessage message = new MqttMessage(topic, messageStr.getBytes(StandardCharsets.UTF_8), QualityOfService.AT_LEAST_ONCE);
-            connection.publish(message);
-            System.out.println("✅ Published message: " + messageStr + " to topic: " + topic);
-        } catch (Exception e) {
-            System.err.println("❌ Publish failed: " + e.getMessage());
-        }
+        return sb.toString();
     }
 }
