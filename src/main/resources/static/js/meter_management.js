@@ -35,6 +35,7 @@ function showView(viewId) {
 
 function filterLiveData(filter) {
   const rows = document.querySelectorAll("#liveDataView table tbody tr");
+  console.log(rows);
   rows.forEach((row) => {
     row.style.display = "none";
 
@@ -64,16 +65,16 @@ function filterRechargeData(filter) {
     if (filter === "all" || row.classList.contains(filter)) {
       row.style.display = "";
     }
-  });
+  }); 
 
   updateActiveTab("#rechargeView", filter);
-}
+} 
 
 function updateActiveTab(viewSelector, filter) {
   const tabs = document.querySelectorAll(`${viewSelector} .filter-tab`);
   tabs.forEach((tab) => {
     tab.classList.remove("active");
-    if (tab.innerText.toLowerCase().includes(filter)) {
+    if (tab.innerText.toLowerCase().replace(" meters","") === filter) {
       tab.classList.add("active");
     }
   });
@@ -629,11 +630,13 @@ function loadMeterReadings() {
   fetch("/api/meter/get_onload_data")
     .then(res => res.json())
     .then(data => {
+      //console.log("Data start:->",data);
       const tbody = document.getElementById("meterTableBody");
       tbody.innerHTML = ""; // clear old rows
 
       data.liveReadings.forEach(reading => {
         const row = document.createElement("tr");
+        //console.log("Reading start:==>",reading);
 
         // Example: decide status badges dynamically
         const status = reading.current > 0 ? "ON" : "OFF";
@@ -657,9 +660,11 @@ function loadMeterReadings() {
                     <td>${reading.pf_2}</td>
                     <td>${reading.freq_2}</td>
                     <td>${reading.alarmCount}</td>
+
           <td><span class="status-badge ${status === "ON" ? "status-on" : "status-off"}">${status}</span></td>
           <td><span class="status-badge status-online">${health}</span></td>
           <td><span class="status-badge ${connection === "ONLINE" ? "status-online" : "status-offline"}">${connection}</span></td>
+        
           <td><button class="view-btn" onclick="viewMeterDetails('${reading.meterId}')">View</button></td>
         `;
 
@@ -715,6 +720,33 @@ function showView(viewId) {
         setTimeout(initializeCharts, 100);
     }
 }
+
+function openSidebar() {
+  document.getElementById("sidebar").classList.add("active");
+  document.querySelector(".main-content").classList.add("shift");
+
+  // Hide hamburger
+  document.querySelector(".hamburger").classList.add("hide");
+}
+
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("active");
+  document.querySelector(".main-content").classList.remove("shift");
+
+  // Show hamburger again
+  document.querySelector(".hamburger").classList.remove("hide");
+}
+
+const sidebar = document.getElementById("sidebar");
+
+sidebar.addEventListener("mouseleave", function () {
+  closeSidebar();
+}); 
+
+document.querySelector(".hamburger").addEventListener("mouseenter", function () {
+  openSidebar();
+})
+
 
 /**
  * Toggles the visibility of a submenu.

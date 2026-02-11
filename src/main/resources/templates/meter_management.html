@@ -111,7 +111,9 @@
     </div>
 
     <div class="container">
-      <div class="sidebar">
+      <div class="sidebar" id="sidebar">
+         <div class="close-btn" onclick="closeSidebar()">✖</div>
+
         <div class="sidebar-header">
           <h3>PAY AS YOU GO</h3>
           <p>AR IOT SOLUTIONS</p>
@@ -188,6 +190,14 @@
 
       <div class="main-content">
         <div class="content-header">
+          <!-- <div class="hamburger" onclick="openSidebar()">
+              ☰
+          </div> -->
+
+          <div class="hamburger">
+              ☰
+          </div>
+
           <h2 id="contentTitle">Dashboard</h2>
         </div>
 
@@ -197,57 +207,61 @@
 
 
                 <div class="stats-grid">
+
                     <div class="stat-card stat-flex">
                         <div class="stat-icon-wrapper">
-                            <i class="fa-solid fa-building stat-icon"></i>
-                        </div>
-
-                        <div class="stat-content">
-                            <div class="stat-number">10</div>
-                            <div class="stat-number" style="font-size: larger;">Total PG</div>
+                            <i class="fa-solid fa-building fa-5x stat-icon"></i>
+                            <div class="stat-content">
+                                <div class="stat-number" style="font-size: larger;">Total PG: 10</div>
+                            </div>
                         </div>
                     </div>
 
-
-                    <div class="stat-card">
-                        <div class="stat-top">
-                            <i class="fa-solid fa-user-tie stat-icon"></i>
-                            <div class="stat-number">7</div>
+                    <div class="stat-card stat-flex">
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-user-tie fa-5x stat-icon"></i>
+                            <div class="stat-content">
+                                <div class="stat-number" style="font-size: larger;">Total Owners: 10</div>
+                            </div>
                         </div>
-                        <div class="stat-label">Total Owners</div>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-top">
-                            <i class="fa-solid fa-users stat-icon"></i>
-                            <div class="stat-number">125</div>
+                    <div class="stat-card stat-flex">
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-users fa-5x stat-icon"></i>
+                            <div class="stat-content">
+                                <div class="stat-number" style="font-size: larger;">Total Tenants: 125</div>
+                            </div>
                         </div>
-                        <div class="stat-label">Total Tenants</div>
+                    </div>  
+                    
+                    <div class="stat-card stat-flex">
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-bolt fa-5x stat-icon"></i>
+                            <div class="stat-content">
+                                <div class="stat-number" style="font-size: larger;">Total Meters: 125</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-top">
-                            <i class="fa-solid fa-bolt stat-icon"></i>
-                            <div class="stat-number">125</div>
+                    <div class="stat-card stat-flex">
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-bed fa-5x stat-icon"></i>
+                            <div class="stat-content">
+                                <div class="stat-number" style="font-size: larger;">Total Rooms: 125</div>
+                            </div>
                         </div>
-                        <div class="stat-label">Total Meters</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-top">
-                            <i class="fa-solid fa-bed stat-icon"></i>
-                            <div class="stat-number">125</div>
-                        </div>
-                        <div class="stat-label">Total Rooms</div>
                     </div>
 
                     <div class="stat-card critical">
                         <div class="stat-top">
-                            <i class="fa-solid fa-triangle-exclamation stat-icon critical-icon"></i>
-                            <div class="stat-number critical-text">20</div>
+                            <i class="fa-solid fa-triangle-exclamation fa-5x critical-icon"></i>
+                            <div class="stat-content">
+                                <div class="stat-number critical-text" style="font-size: larger;">Critical Alerts: 20</div>
+                            </div>
                         </div>
-                        <div class="stat-label">Critical Alerts</div>
                     </div>
+
                 </div>
 
 
@@ -317,137 +331,145 @@
             </div>
 
             <div class="table-container">
-              <div class="table-header">Live Meter Data</div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Meter ID</th>
-                    <th>Alarm Relay</th>
-                    <th>RTC</th>
-                    <th>KWH_1</th>
-                    <th>VOLT_1</th>
-                    <th>AMP_1</th>
-                    <th>WATT_1</th>
-                    <th>PF_1</th>
-                    <th>FREQ_1</th>
-                      <th>KWH_2</th>
-                      <th>VOLT_2</th>
-                      <th>AMP_2</th>
-                      <th>WATT_2</th>
-                      <th>PF_2</th>
-                      <th>FREQ_2</th>
-                      <th>Alarm Count</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="meterTableBody">
-                  <tr class="connected online">
-                    <td>801234</td>
-                    <td>29-06-25</td>
-                    <td>23.45</td>
-                    <td>240.34</td>
-                    <td>10.45</td>
-                    <td>1245</td>
-                    <td><span class="status-badge status-on">ON</span></td>
-                    <td><span class="status-badge status-online">OK</span></td>
-                    <td>
-                      <span class="status-badge status-online">ONLINE</span>
-                    </td>
-                    <td>
-                      <button
-                        class="view-btn"
-                        onclick="viewMeterDetails('801234')"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                  <tr class="disconnected online">
-                    <td>801235</td>
-                    <td>29-06-25</td>
-                    <td>18.92</td>
-                    <td>238.21</td>
-                    <td>8.23</td>
-                    <td>956</td>
-                    <td><span class="status-badge status-off">OFF</span></td>
-                    <td><span class="status-badge status-online">OK</span></td>
-                    <td>
-                      <span class="status-badge status-online">ONLINE</span>
-                    </td>
-                    <td>
-                      <button
-                        class="view-btn"
-                        onclick="viewMeterDetails('801235')"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                  <tr class="connected offline">
-                    <td>801236</td>
-                    <td>28-06-25</td>
-                    <td>31.67</td>
-                    <td>242.15</td>
-                    <td>12.34</td>
-                    <td>1456</td>
-                    <td><span class="status-badge status-on">ON</span></td>
-                    <td><span class="status-badge status-online">OK</span></td>
-                    <td>
-                      <span class="status-badge status-offline">OFFLINE</span>
-                    </td>
-                    <td>
-                      <button
-                        class="view-btn"
-                        onclick="viewMeterDetails('801236')"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                  <tr class="connected online">
-                    <td>801237</td>
-                    <td>29-06-25</td>
-                    <td>15.34</td>
-                    <td>239.87</td>
-                    <td>6.78</td>
-                    <td>824</td>
-                    <td><span class="status-badge status-on">ON</span></td>
-                    <td><span class="status-badge status-online">OK</span></td>
-                    <td>
-                      <span class="status-badge status-online">ONLINE</span>
-                    </td>
-                    <td>
-                      <button
-                        class="view-btn"
-                        onclick="viewMeterDetails('801237')"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                  <tr class="disconnected offline">
-                    <td>801238</td>
-                    <td>27-06-25</td>
-                    <td>27.91</td>
-                    <td>241.56</td>
-                    <td>11.23</td>
-                    <td>1367</td>
-                    <td><span class="status-badge status-off">OFF</span></td>
-                    <td><span class="status-badge status-online">OK</span></td>
-                    <td>
-                      <span class="status-badge status-offline">OFFLINE</span>
-                    </td>
-                    <td>
-                      <button
-                        class="view-btn"
-                        onclick="viewMeterDetails('801238')"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="table-scroll">
+                <div class="scroll-content">
+                  <div class="table-header">Live Meter Data</div>
+                  <table class="my-table">
+                    <thead>
+                      <tr>
+                        <th>Meter ID</th>
+                        <th>Alarm Relay</th>
+                        <th>RTC</th>
+                        <th>KWH_1</th>
+                        <th>VOLT_1</th>
+                        <th>AMP_1</th>
+                        <th>WATT_1</th>
+                        <th>PF_1</th>
+                        <th>FREQ_1</th>
+                          <th>KWH_2</th>
+                          <th>VOLT_2</th>
+                          <th>AMP_2</th>
+                          <th>WATT_2</th>
+                          <th>PF_2</th>
+                          <th>FREQ_2</th>
+                          <th>Alarm Count</th>
+                        <th>Action</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                      </tr>
+                    </thead>
+                    <tbody id="meterTableBody">
+                      <tr class="connected online">
+                        <td>801234</td>
+                        <td>29-06-25</td>
+                        <td>23.45</td>
+                        <td>240.34</td>
+                        <td>10.45</td>
+                        <td>1245</td>
+                        <td><span class="status-badge status-on">ON</span></td>
+                        <td><span class="status-badge status-online">OK</span></td>
+                        <td>
+                          <span class="status-badge status-online">ONLINE</span>
+                        </td>
+                        <td>
+                          <button
+                            class="view-btn"
+                            onclick="viewMeterDetails('801234')"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="disconnected online">
+                        <td>801235</td>
+                        <td>29-06-25</td>
+                        <td>18.92</td>
+                        <td>238.21</td>
+                        <td>8.23</td>
+                        <td>956</td>
+                        <td><span class="status-badge status-off">OFF</span></td>
+                        <td><span class="status-badge status-online">OK</span></td>
+                        <td>
+                          <span class="status-badge status-online">ONLINE</span>
+                        </td>
+                        <td>
+                          <button
+                            class="view-btn"
+                            onclick="viewMeterDetails('801235')"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="connected offline">
+                        <td>801236</td>
+                        <td>28-06-25</td>
+                        <td>31.67</td>
+                        <td>242.15</td>
+                        <td>12.34</td>
+                        <td>1456</td>
+                        <td><span class="status-badge status-on">ON</span></td>
+                        <td><span class="status-badge status-online">OK</span></td>
+                        <td>
+                          <span class="status-badge status-offline">OFFLINE</span>
+                        </td>
+                        <td>
+                          <button
+                            class="view-btn"
+                            onclick="viewMeterDetails('801236')"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                      <!-- <tr class="connected online">
+                        <td>801237</td>
+                        <td>29-06-25</td>
+                        <td>15.34</td>
+                        <td>239.87</td>
+                        <td>6.78</td>
+                        <td>824</td>
+                        <td><span class="status-badge status-on">ON</span></td>
+                        <td><span class="status-badge status-online">OK</span></td>
+                        <td>
+                          <span class="status-badge status-online">ONLINE</span>
+                        </td>
+                        <td>
+                          <button
+                            class="view-btn"
+                            onclick="viewMeterDetails('801237')"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr> -->
+                      <tr class="disconnected offline">
+                        <td>801238</td>
+                        <td>27-06-25</td>
+                        <td>27.91</td>
+                        <td>241.56</td>
+                        <td>11.23</td>
+                        <td>1367</td>
+                        <td><span class="status-badge status-off">OFF</span></td>
+                        <td><span class="status-badge status-online">OK</span></td>
+                        <td>
+                          <span class="status-badge status-offline">OFFLINE</span>
+                        </td>
+                        <td>
+                          <button
+                            class="view-btn"
+                            onclick="viewMeterDetails('801238')"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+  
+              </div>
             </div>
           </div>
 
