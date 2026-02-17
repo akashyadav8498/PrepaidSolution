@@ -11,25 +11,4 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         return;
     }
 
-       var xhr = new XMLHttpRequest();
-       xhr.open("POST", "/login", true);
-       xhr.setRequestHeader("Content-Type", "application/json");
-
-       xhr.onreadystatechange = function () {
-           if (xhr.readyState === 4) {
-               if (xhr.status === 200) {
-                   const successData = JSON.parse(xhr.responseText)
-                   window.location.href = successData.uri
-               } else {
-                   console.error("Error:", xhr.status, xhr.responseText);
-               }
-           }
-       };
-
-       xhr.send(JSON.stringify({
-           username: username,
-           password: password
-       }));
-
-
 });

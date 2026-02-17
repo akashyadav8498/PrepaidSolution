@@ -1,4 +1,4 @@
-package com.example.PrepaidSolution.components;
+package com.example.PrepaidSolution.component;
 
 import com.example.PrepaidSolution.model.LiveMeterReadings;
 import com.example.PrepaidSolution.repository.LiveMeterReadingsRepository;
