@@ -27,16 +27,9 @@ public class Interceptor implements HandlerInterceptor {
             String username = request.getParameter("username");
             String password = request.getParameter("password");
 
-
-            log.info("interceptor---->");
-
             User user = userRepository.findByUsername(username);
-            if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword()))) {
-                log.info("if mein ----> user: {}, username: {}, password: {}", user, username, password);
-                return false;
-            } else {
-
-                log.info("else mein ---->");
+            if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword()))) return false;
+            else {
                 String role = user.getRole().name();
 
                 HttpSession session = request.getSession();

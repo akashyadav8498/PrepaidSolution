@@ -36,8 +36,6 @@ public class MVCController {
         String role = (String) session.getAttribute("role");
         String platform = httpServletRequest.getHeader("user-agent");
 
-        log.info("platform --> {}", platform);
-
         if (!role.equalsIgnoreCase("tenant")) {
 
             List<Owner> owners = ownerRepository.findAll();
