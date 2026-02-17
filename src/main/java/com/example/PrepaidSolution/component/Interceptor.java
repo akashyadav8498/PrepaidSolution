@@ -21,27 +21,30 @@ public class Interceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-
-
-        log.info("interceptor---->");
-
-        User user = userRepository.findByUsername(username);
-        if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword())) ) {
-            log.info("if mein ----> user: {}, username: {}, password: {}" ,user, username, password);
-            return false;
-        }
+        if(request.getRequestURI().equals("/addUsers")) return true;
         else {
 
-            log.info("else mein ---->");
-            String role = user.getRole().name();
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
 
-            HttpSession session = request.getSession();
-            session.setAttribute("userName", user.getUsername());
-            session.setAttribute("role", role);
 
-            return true;
+            log.info("interceptor---->");
+
+            User user = userRepository.findByUsername(username);
+            if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword()))) {
+                log.info("if mein ----> user: {}, username: {}, password: {}", user, username, password);
+                return false;
+            } else {
+
+                log.info("else mein ---->");
+                String role = user.getRole().name();
+
+                HttpSession session = request.getSession();
+                session.setAttribute("userName", user.getUsername());
+                session.setAttribute("role", role);
+
+                return true;
+            }
         }
     }
 }
