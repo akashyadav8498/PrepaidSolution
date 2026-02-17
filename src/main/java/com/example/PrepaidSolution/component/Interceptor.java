@@ -29,7 +29,7 @@ public class Interceptor implements HandlerInterceptor {
 
         User user = userRepository.findByUsername(username);
         if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword())) ) {
-            log.info("if mein ----> user: {}, password: {}" ,user,password);
+            log.info("if mein ----> user: {}, username: {}, password: {}" ,user, username, password);
             return false;
         }
         else {
