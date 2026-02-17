@@ -29,10 +29,12 @@ public class Interceptor implements HandlerInterceptor {
 
         User user = userRepository.findByUsername(username);
         if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword())) ) {
+            log.info("if mein ----> user: {}, password: {}" ,user,password);
             return false;
         }
         else {
 
+            log.info("else mein ---->");
             String role = user.getRole().name();
 
             HttpSession session = request.getSession();
