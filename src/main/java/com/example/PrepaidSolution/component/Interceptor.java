@@ -7,11 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class Interceptor implements HandlerInterceptor {
 
     private final UserRepository userRepository;
@@ -21,6 +23,9 @@ public class Interceptor implements HandlerInterceptor {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+
+
+        log.info("interceptor---->");
 
         User user = userRepository.findByUsername(username);
         if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword())) ) {

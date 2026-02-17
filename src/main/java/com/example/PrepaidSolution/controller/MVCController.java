@@ -9,6 +9,7 @@ import com.example.PrepaidSolution.repository.PGRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/mvc/")
+@Slf4j
 public class MVCController {
 
     private final OwnerRepository ownerRepository;
@@ -34,7 +36,7 @@ public class MVCController {
         String role = (String) session.getAttribute("role");
         String platform = httpServletRequest.getHeader("user-agent");
 
-        System.out.println("platform --> " + platform);
+        log.info("platform --> {}", platform);
 
         if (!role.equalsIgnoreCase("tenant")) {
 
