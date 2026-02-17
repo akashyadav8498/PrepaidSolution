@@ -9,10 +9,9 @@ import com.example.PrepaidSolution.repository.PGRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class MVCController {
 
     private final MeterTypeRepository meterTypeRepository;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public String login(HttpServletRequest httpServletRequest, Model model) {
 
         HttpSession session = httpServletRequest.getSession(false);
@@ -45,7 +44,7 @@ public class MVCController {
             model.addAttribute("pgs", pgs);
             model.addAttribute("metertypes", meterTypes);
 
-            if (platform.contains("windows")) return "meter_management";
+            if (platform.contains("Windows")) return "meter_management";
             else return "meter_management_mobile";
         }
         else

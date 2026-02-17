@@ -22,9 +22,6 @@ public class Interceptor implements HandlerInterceptor {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        response.setHeader("Accept-CH", "Sec-CH-UA-Platform, Sec-CH-UA-Mobile");
-
-
         User user = userRepository.findByUsername(username);
         if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword())) ) {
             return false;
