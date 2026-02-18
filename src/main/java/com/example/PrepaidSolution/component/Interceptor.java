@@ -21,9 +21,6 @@ public class Interceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        if(request.getRequestURI().equals("/addUser")) return true;
-        else {
-
             String username = request.getParameter("username");
             String password = request.getParameter("password");
 
@@ -38,6 +35,6 @@ public class Interceptor implements HandlerInterceptor {
 
                 return true;
             }
-        }
+
     }
 }

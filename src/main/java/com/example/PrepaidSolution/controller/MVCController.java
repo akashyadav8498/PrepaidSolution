@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -19,7 +20,6 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/mvc/")
 @Slf4j
 public class MVCController {
 
@@ -29,8 +29,8 @@ public class MVCController {
 
     private final MeterTypeRepository meterTypeRepository;
 
-    @PostMapping("/login")
-    public String login(HttpServletRequest httpServletRequest, Model model) {
+    @PostMapping("/dashboard")
+    public String dashboard(HttpServletRequest httpServletRequest, Model model) {
 
         HttpSession session = httpServletRequest.getSession(false);
         String role = (String) session.getAttribute("role");
