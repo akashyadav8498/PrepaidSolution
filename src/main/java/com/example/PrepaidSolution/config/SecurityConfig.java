@@ -18,7 +18,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index", "/dashboard", "/addUser").permitAll()
+                        .requestMatchers("/", "/index.html", "/dashboard", "/addUser").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated()
                 );
