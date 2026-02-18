@@ -21,20 +21,22 @@ public class Interceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-
-            User user = userRepository.findByUsername(username);
-            if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword()))) return false;
+            if(request.getRequestURI().equals("/addUser")) return true;
             else {
-                String role = user.getRole().name();
+                String username = request.getParameter("username");
+                String password = request.getParameter("password");
 
-                HttpSession session = request.getSession();
-                session.setAttribute("userName", user.getUsername());
-                session.setAttribute("role", role);
+                User user = userRepository.findByUsername(username);
+                if (user == null || (!Utility.passwordEncoder.matches(password, user.getPassword()))) return false;
+                else {
+                    String role = user.getRole().name();
 
-                return true;
+                    HttpSession session = request.getSession();
+                    session.setAttribute("userName", user.getUsername());
+                    session.setAttribute("role", role);
+
+                    return true;
+                }
             }
-
     }
 }
