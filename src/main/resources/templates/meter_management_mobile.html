@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Pay-as-You-Go AR IoT Solutions - Admin</title>
-    
+
     <!-- PWA Support -->
-    <link rel="manifest" href="/pwa/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
-    <link rel="apple-touch-icon" href="../static/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    
+
     <style>
         * {
             margin: 0;
@@ -47,7 +47,7 @@
 
         .header-content {
             display: flex;
-            justify-content: space-between;
+            justify-content: between;
             align-items: center;
             max-width: 100%;
         }
@@ -155,6 +155,355 @@
             line-height: 1.2;
         }
 
+        /* Mobile Table */
+        .mobile-table {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .table-header-mobile {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .table-row-mobile {
+            padding: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .table-row-mobile:active {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .table-row-mobile:last-child {
+            border-bottom: none;
+        }
+
+        .row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .meter-id {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .meter-status {
+            display: flex;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-online { background: #22c55e; }
+        .status-offline { background: #ef4444; }
+        .status-on { background: #3b82f6; }
+        .status-off { background: #f59e0b; }
+
+        .row-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .detail-label {
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Filter Tabs Mobile */
+        .filter-tabs-mobile {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding: 0 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-tabs-mobile::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-tab-mobile {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #667eea;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-tab-mobile.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .filter-tab-mobile:active {
+            transform: scale(0.95);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 0 20px;
+            z-index: 1000;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content-mobile {
+            background: white;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 24px 24px 0 0;
+            max-height: 90vh;
+            overflow: hidden;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 12px auto 20px;
+        }
+
+        .modal-header-mobile {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .modal-body-mobile {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* Form Styles Mobile */
+        .form-group-mobile {
+            margin-bottom: 20px;
+        }
+
+        .form-label-mobile {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-input-mobile {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-input-mobile:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-mobile {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary-mobile {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary-mobile:active {
+            transform: scale(0.98);
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Pull to refresh */
+        .pull-to-refresh {
+            position: absolute;
+            top: -60px;
+            left: 0;
+            right: 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .pull-to-refresh.show {
+            opacity: 1;
+            top: 100px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 375px) {
+            .stats-grid-mobile {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .stat-card-mobile {
+                padding: 12px;
+            }
+
+            .stat-number-mobile {
+                font-size: 18px;
+            }
+
+            .stat-label-mobile {
+                font-size: 10px;
+            }
+        }
+
         /* Install prompt banner */
         .install-banner {
             position: fixed;
@@ -225,98 +574,60 @@
             background: white;
             color: #667eea;
         }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 0 20px;
-            z-index: 1000;
-            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-items {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #666;
-            font-size: 10px;
-            font-weight: 500;
-            padding: 8px 12px;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .nav-item.active {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .nav-icon {
-            font-size: 18px;
-            margin-bottom: 4px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
         @supports (padding: max(0px)) {
             .app-header {
                 padding-top: max(20px, env(safe-area-inset-top));
             }
-            
+
             .bottom-nav {
                 padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
+
+            .fab {
+                bottom: max(100px, calc(100px + env(safe-area-inset-bottom)));
             }
         }
     </style>
 </head>
 <body>
-    <!-- Install App Banner -->
-    <div class="install-banner" id="installBanner">
-        <div class="install-content">
-            <span class="install-icon">📱</span>
-            <div class="install-text">
-                <div class="install-title">Install App</div>
-                <div class="install-subtitle">Add to your home screen for better experience</div>
-            </div>
-        </div>
-        <div class="install-actions" style="margin-top: 12px;">
-            <button class="install-btn primary" onclick="installApp()">Install</button>
-            <button class="install-btn" onclick="dismissInstallBanner()">Maybe Later</button>
+<!-- Install App Banner -->
+<div class="install-banner" id="installBanner">
+    <div class="install-content">
+        <span class="install-icon">📱</span>
+        <div class="install-text">
+            <div class="install-title">Install App</div>
+            <div class="install-subtitle">Add to your home screen for better experience</div>
         </div>
     </div>
+    <div class="install-actions" style="margin-top: 12px;">
+        <button class="install-btn primary" onclick="installApp()">Install</button>
+        <button class="install-btn" onclick="dismissInstallBanner()">Maybe Later</button>
+    </div>
+</div>
 
-    <!-- App Header -->
-    <div class="app-header">
-        <div class="header-content">
-            <div class="app-title">
-                <h1>PAY AS YOU GO</h1>
-                <p>AR IoT Solutions</p>
-            </div>
-            <div class="header-actions">
-                <button class="profile-btn" onclick="openProfile()">👤</button>
-                <button class="menu-btn" onclick="openMenu()">☰</button>
-            </div>
+<!-- Pull to Refresh -->
+<div class="pull-to-refresh" id="pullToRefresh">
+    <span>↓ Pull to refresh</span>
+</div>
+
+<!-- App Header -->
+<div class="app-header">
+    <div class="header-content">
+        <div class="app-title">
+            <h1>PAY AS YOU GO</h1>
+            <p>AR IoT Solutions</p>
+        </div>
+        <div class="header-actions">
+            <button class="profile-btn" onclick="openProfile()">👤</button>
+            <button class="menu-btn" onclick="openMenu()">☰</button>
         </div>
     </div>
+</div>
 
-    <!-- Main Container -->
-    <div class="main-container">
+<!-- Main Container -->
+<div class="main-container">
+    <!-- Dashboard View -->
+    <div id="dashboardView">
         <div class="content-section">
             <div class="stats-grid-mobile">
                 <div class="stat-card-mobile">
@@ -335,259 +646,1047 @@
                     <div class="stat-number-mobile">125</div>
                     <div class="stat-label-mobile">Total Meters</div>
                 </div>
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">125</div>
+                    <div class="stat-label-mobile">Total Rooms</div>
+                </div>
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">20</div>
+                    <div class="stat-label-mobile">Critical Alerts</div>
+                </div>
             </div>
 
             <div class="mobile-card">
                 <h3 style="margin-bottom: 16px; color: #333; font-size: 16px;">Today's Summary</h3>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px; color: #666;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-weight: 500;">Consumption:</span>
-                        <span style="font-weight: 600; color: #333;">23.45 kWh</span>
+                <div class="row-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Consumption:</span>
+                        <span class="detail-value">23.45 kWh</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-weight: 500;">Recharge:</span>
-                        <span style="font-weight: 600; color: #333;">₹5,456</span>
+                    <div class="detail-item">
+                        <span class="detail-label">Recharge:</span>
+                        <span class="detail-value">₹5,456</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Deduction:</span>
+                        <span class="detail-value">₹1,234</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Balance:</span>
+                        <span class="detail-value">₹4,222</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-items">
-            <div class="nav-item active">
-                <span class="nav-icon">📊</span>
-                <span>Dashboard</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">📡</span>
-                <span>Live Data</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">💳</span>
-                <span>Recharge</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">👤</span>
-                <span>Profile</span>
+    <!-- Live Data View -->
+    <div id="liveDataView" class="hidden">
+        <div class="filter-tabs-mobile">
+            <div class="filter-tab-mobile active" onclick="filterLiveData('all')">All</div>
+            <div class="filter-tab-mobile" onclick="filterLiveData('connected')">Connected</div>
+            <div class="filter-tab-mobile" onclick="filterLiveData('disconnected')">Disconnected</div>
+            <div class="filter-tab-mobile" onclick="filterLiveData('online')">Online</div>
+            <div class="filter-tab-mobile" onclick="filterLiveData('offline')">Offline</div>
+        </div>
+
+        <div class="content-section">
+            <div class="mobile-table">
+                <div class="table-header-mobile">Live Meter Data</div>
+
+                <div class="table-row-mobile connected online" onclick="viewMeterDetails('801234')">
+                    <div class="row-header">
+                        <span class="meter-id">Meter 801234</span>
+                        <div class="meter-status">
+                            <div class="status-dot status-on" title="Relay ON"></div>
+                            <div class="status-dot status-online" title="Online"></div>
+                        </div>
+                    </div>
+                    <div class="row-details">
+                        <div class="detail-item">
+                            <span class="detail-label">kWh:</span>
+                            <span class="detail-value">23.45</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Voltage:</span>
+                            <span class="detail-value">240.3V</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Current:</span>
+                            <span class="detail-value">10.4A</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Power:</span>
+                            <span class="detail-value">1245W</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-row-mobile disconnected online" onclick="viewMeterDetails('801235')">
+                    <div class="row-header">
+                        <span class="meter-id">Meter 801235</span>
+                        <div class="meter-status">
+                            <div class="status-dot status-off" title="Relay OFF"></div>
+                            <div class="status-dot status-online" title="Online"></div>
+                        </div>
+                    </div>
+                    <div class="row-details">
+                        <div class="detail-item">
+                            <span class="detail-label">kWh:</span>
+                            <span class="detail-value">18.92</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Voltage:</span>
+                            <span class="detail-value">238.2V</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Current:</span>
+                            <span class="detail-value">8.2A</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Power:</span>
+                            <span class="detail-value">956W</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-row-mobile connected offline" onclick="viewMeterDetails('801236')">
+                    <div class="row-header">
+                        <span class="meter-id">Meter 801236</span>
+                        <div class="meter-status">
+                            <div class="status-dot status-on" title="Relay ON"></div>
+                            <div class="status-dot status-offline" title="Offline"></div>
+                        </div>
+                    </div>
+                    <div class="row-details">
+                        <div class="detail-item">
+                            <span class="detail-label">kWh:</span>
+                            <span class="detail-value">31.67</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Voltage:</span>
+                            <span class="detail-value">242.1V</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Current:</span>
+                            <span class="detail-value">12.3A</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Power:</span>
+                            <span class="detail-value">1456W</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/pwa/sw.js')
-                    .then(reg => console.log('✅ Service Worker registered:', reg))
-                    .catch(err => console.error('❌ Service Worker registration failed:', err));
-            });
+    <!-- Recharge View -->
+    <div id="rechargeView" class="hidden">
+        <div class="filter-tabs-mobile">
+            <div class="filter-tab-mobile active" onclick="filterRechargeData('all')">All</div>
+            <div class="filter-tab-mobile" onclick="filterRechargeData('success')">Success</div>
+            <div class="filter-tab-mobile" onclick="filterRechargeData('failure')">Failure</div>
+            <div class="filter-tab-mobile" onclick="filterRechargeData('pending')">Pending</div>
+        </div>
+
+        <div class="content-section">
+            <div class="stats-grid-mobile">
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">1,247</div>
+                    <div class="stat-label-mobile">Total</div>
+                </div>
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">1,189</div>
+                    <div class="stat-label-mobile">Success</div>
+                </div>
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">42</div>
+                    <div class="stat-label-mobile">Failed</div>
+                </div>
+                <div class="stat-card-mobile">
+                    <div class="stat-number-mobile">16</div>
+                    <div class="stat-label-mobile">Pending</div>
+                </div>
+            </div>
+
+            <div class="mobile-table">
+                <div class="table-header-mobile">Recent Transactions</div>
+
+                <div class="table-row-mobile success" onclick="viewTransaction('TXN001247')">
+                    <div class="row-header">
+                        <span class="meter-id">TXN001247</span>
+                        <div class="meter-status">
+                            <div class="status-dot status-online" title="Success"></div>
+                        </div>
+                    </div>
+                    <div class="row-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Amount:</span>
+                            <span class="detail-value">₹500.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Meter:</span>
+                            <span class="detail-value">801234</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Owner:</span>
+                            <span class="detail-value">Rajesh Kumar</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Time:</span>
+                            <span class="detail-value">14:32</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-row-mobile pending" onclick="viewTransaction('TXN001246')">
+                    <div class="row-header">
+                        <span class="meter-id">TXN001246</span>
+                        <div class="meter-status">
+                            <div class="status-dot status-off" title="Pending"></div>
+                        </div>
+                    </div>
+                    <div class="row-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Amount:</span>
+                            <span class="detail-value">₹300.00</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Meter:</span>
+                            <span class="detail-value">801235</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Owner:</span>
+                            <span class="detail-value">Priya Sharma</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Time:</span>
+                            <span class="detail-value">13:15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="fab" onclick="openAddMenu()">+</button>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <div class="nav-items">
+        <div class="nav-item active" onclick="showView('dashboard')">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="showView('liveData')">
+            <span class="nav-icon">📡</span>
+            <span>Live Data</span>
+        </div>
+        <div class="nav-item" onclick="showView('recharge')">
+            <span class="nav-icon">💳</span>
+            <span>Recharge</span>
+        </div>
+        <div class="nav-item" onclick="openProfile()">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </div>
+    </div>
+</div>
+
+<!-- Meter Details Modal -->
+<div id="meterModal" class="modal">
+    <div class="modal-content-mobile">
+        <div class="modal-handle"></div>
+        <div class="modal-header-mobile">
+            <div class="modal-title">Meter Details</div>
+            <div class="modal-subtitle" id="modalMeterId">Loading...</div>
+        </div>
+        <div class="modal-body-mobile">
+            <div class="mobile-card">
+                <h4 style="margin-bottom: 16px; color: #333;">Current Status</h4>
+                <div class="row-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Cum kWh:</span>
+                        <span class="detail-value">23.45</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Voltage:</span>
+                        <span class="detail-value">240.34V</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Current:</span>
+                        <span class="detail-value">10.45A</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Power:</span>
+                        <span class="detail-value">1245W</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-card">
+                <h4 style="margin-bottom: 16px; color: #333;">Recent Readings</h4>
+                <div style="font-size: 12px; color: #666; line-height: 1.4;">
+                    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <strong>29-06-25 14:30:</strong> 23.45 kWh, 240.3V, 10.4A
+                    </div>
+                    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <strong>29-06-25 13:30:</strong> 23.12 kWh, 239.8V, 9.8A
+                    </div>
+                    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <strong>29-06-25 12:30:</strong> 22.87 kWh, 241.2V, 11.2A
+                    </div>
+                    <div style="padding: 8px 0;">
+                        <strong>29-06-25 11:30:</strong> 22.54 kWh, 238.9V, 10.1A
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button class="btn-mobile btn-primary-mobile" onclick="showFullHistory()">
+                    View Full History
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Menu Modal -->
+<div id="addMenuModal" class="modal">
+    <div class="modal-content-mobile">
+        <div class="modal-handle"></div>
+        <div class="modal-header-mobile">
+            <div class="modal-title">Add New</div>
+            <div class="modal-subtitle">Select what you want to add</div>
+        </div>
+        <div class="modal-body-mobile">
+            <div class="mobile-card" onclick="openAddForm('owner')" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">👤</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Add Owner</div>
+                        <div style="font-size: 12px; color: #666;">Add a new PG owner</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-card" onclick="openAddForm('pg')" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">🏠</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Add PG</div>
+                        <div style="font-size: 12px; color: #666;">Register a new PG property</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-card" onclick="openAddForm('meter')" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">⚡</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Add Meter</div>
+                        <div style="font-size: 12px; color: #666;">Install a new smart meter</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-card" onclick="openAddForm('tenant')" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">👥</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Add Tenant</div>
+                        <div style="font-size: 12px; color: #666;">Register a new tenant</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-card" onclick="openAddForm('room')" style="cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">🛏️</span>
+                    <div>
+                        <div style="font-weight: 600; color: #333;">Add Room</div>
+                        <div style="font-size: 12px; color: #666;">Add a new room to PG</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Form Modal -->
+<div id="addFormModal" class="modal">
+    <div class="modal-content-mobile">
+        <div class="modal-handle"></div>
+        <div class="modal-header-mobile">
+            <div class="modal-title" id="addFormTitle">Add New Item</div>
+            <div class="modal-subtitle">Fill in the details below</div>
+        </div>
+        <div class="modal-body-mobile">
+            <!-- Owner Form -->
+            <div id="ownerForm" class="hidden">
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Owner Name *</label>
+                    <input type="text" class="form-input-mobile" placeholder="Enter owner name" required>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Mobile Number *</label>
+                    <input type="tel" class="form-input-mobile" placeholder="Enter mobile number" required>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Email</label>
+                    <input type="email" class="form-input-mobile" placeholder="Enter email address">
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Address *</label>
+                    <textarea class="form-input-mobile" placeholder="Enter complete address" rows="3" required></textarea>
+                </div>
+                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('owner')">
+                    Add Owner
+                </button>
+            </div>
+
+            <!-- PG Form -->
+            <div id="pgForm" class="hidden">
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">PG Name *</label>
+                    <input type="text" class="form-input-mobile" placeholder="Enter PG name" required>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Owner *</label>
+                    <select class="form-input-mobile" required>
+                        <option value="">Select Owner</option>
+                        <option value="1">Rajesh Kumar</option>
+                        <option value="2">Priya Sharma</option>
+                        <option value="3">Amit Singh</option>
+                    </select>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Address *</label>
+                    <textarea class="form-input-mobile" placeholder="Enter PG address" rows="3" required></textarea>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Total Rooms</label>
+                    <input type="number" class="form-input-mobile" placeholder="Enter total rooms" min="1">
+                </div>
+                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('pg')">
+                    Add PG
+                </button>
+            </div>
+
+            <!-- Meter Form -->
+            <div id="meterForm" class="hidden">
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Meter ID *</label>
+                    <input type="text" class="form-input-mobile" placeholder="Enter meter ID" required>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">PG *</label>
+                    <select class="form-input-mobile" required>
+                        <option value="">Select PG</option>
+                        <option value="1">Sunrise PG</option>
+                        <option value="2">Green Valley PG</option>
+                        <option value="3">City Centre PG</option>
+                    </select>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Room Number</label>
+                    <input type="text" class="form-input-mobile" placeholder="Enter room number">
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Meter Type *</label>
+                    <select class="form-input-mobile" required>
+                        <option value="">Select Type</option>
+                        <option value="single">Single Phase</option>
+                        <option value="three">Three Phase</option>
+                    </select>
+                </div>
+                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('meter')">
+                    Add Meter
+                </button>
+            </div>
+
+            <!-- Tenant Form -->
+            <div id="tenantForm" class="hidden">
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Tenant Name *</label>
+                    <input type="text" class="form-input-mobile" placeholder="Enter tenant name" required>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Mobile Number *</label>
+                    <input type="tel" class="form-input-mobile" placeholder="Enter mobile number" required>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">PG *</label>
+                    <select class="form-input-mobile" required>
+                        <option value="">Select PG</option>
+                        <option value="1">Sunrise PG</option>
+                        <option value="2">Green Valley PG</option>
+                        <option value="3">City Centre PG</option>
+                    </select>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Room Number</label>
+                    <input type="text" class="form-input-mobile" placeholder="Enter room number">
+                </div>
+                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('tenant')">
+                    Add Tenant
+                </button>
+            </div>
+
+            <!-- Room Form -->
+            <div id="roomForm" class="hidden">
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Room Number *</label>
+                    <input type="text" class="form-input-mobile" placeholder="Enter room number" required>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">PG *</label>
+                    <select class="form-input-mobile" required>
+                        <option value="">Select PG</option>
+                        <option value="1">Sunrise PG</option>
+                        <option value="2">Green Valley PG</option>
+                        <option value="3">City Centre PG</option>
+                    </select>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Room Type</label>
+                    <select class="form-input-mobile">
+                        <option value="">Select Type</option>
+                        <option value="single">Single Occupancy</option>
+                        <option value="double">Double Occupancy</option>
+                        <option value="triple">Triple Occupancy</option>
+                    </select>
+                </div>
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Monthly Rent</label>
+                    <input type="number" class="form-input-mobile" placeholder="Enter monthly rent">
+                </div>
+                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('room')">
+                    Add Room
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal">
+    <div class="modal-content-mobile">
+        <div class="modal-handle"></div>
+        <div class="modal-header-mobile">
+            <div class="modal-title">My Profile</div>
+            <div class="modal-subtitle">Admin Account Settings</div>
+        </div>
+        <div class="modal-body-mobile">
+            <div class="mobile-card">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(45deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 32px; color: white;">
+                        A
+                    </div>
+                    <h3 style="color: #333; margin-bottom: 4px;">Admin User</h3>
+                    <p style="color: #666; font-size: 14px;">admin@ariot.com</p>
+                </div>
+
+                <div class="row-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Role:</span>
+                        <span class="detail-value">Super Admin</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Last Login:</span>
+                        <span class="detail-value">Today, 09:30 AM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Access Level:</span>
+                        <span class="detail-value">Full Access</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button class="btn-mobile" style="background: #ef4444; color: white; margin-bottom: 12px;" onclick="logout()">
+                    Logout
+                </button>
+                <button class="btn-mobile" style="background: #f3f4f6; color: #374151;" onclick="closeModal('profileModal')">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Menu Modal -->
+<div id="menuModal" class="modal">
+    <div class="modal-content-mobile">
+        <div class="modal-handle"></div>
+        <div class="modal-header-mobile">
+            <div class="modal-title">Menu</div>
+            <div class="modal-subtitle">Quick Actions & Settings</div>
+        </div>
+        <div class="modal-body-mobile">
+            <!-- My Profile Option -->
+            <div class="mobile-card" onclick="openProfileFromMenu()" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">👤</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #333;">My Profile</div>
+                        <div style="font-size: 12px; color: #666;">View and edit profile details</div>
+                    </div>
+                    <span style="color: #999;">›</span>
+                </div>
+            </div>
+
+            <!-- Customer Care Option -->
+            <div class="mobile-card" onclick="openCustomerCare()" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">📞</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #333;">Customer Care</div>
+                        <div style="font-size: 12px; color: #666;">Get help and support</div>
+                    </div>
+                    <span style="color: #999;">›</span>
+                </div>
+            </div>
+
+            <!-- Settings Option -->
+            <div class="mobile-card" onclick="openSettings()" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">⚙️</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #333;">Settings</div>
+                        <div style="font-size: 12px; color: #666;">App preferences and configuration</div>
+                    </div>
+                    <span style="color: #999;">›</span>
+                </div>
+            </div>
+
+            <!-- Notifications Option -->
+            <div class="mobile-card" onclick="openNotifications()" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">🔔</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #333;">Notifications</div>
+                        <div style="font-size: 12px; color: #666;">Manage notification preferences</div>
+                    </div>
+                    <span style="color: #999;">›</span>
+                </div>
+            </div>
+
+            <!-- Reports Option -->
+            <div class="mobile-card" onclick="openReports()" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">📊</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #333;">Reports</div>
+                        <div style="font-size: 12px; color: #666;">View analytics and reports</div>
+                    </div>
+                    <span style="color: #999;">›</span>
+                </div>
+            </div>
+
+            <!-- About Option -->
+            <div class="mobile-card" onclick="openAbout()" style="margin-bottom: 12px; cursor: pointer;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">ℹ️</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #333;">About</div>
+                        <div style="font-size: 12px; color: #666;">App version and information</div>
+                    </div>
+                    <span style="color: #999;">›</span>
+                </div>
+            </div>
+
+            <!-- Logout Option -->
+            <div class="mobile-card" onclick="logoutFromMenu()" style="cursor: pointer; border: 2px solid #fee2e2; background: #fef2f2;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">🚪</span>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; color: #ef4444;">Logout</div>
+                        <div style="font-size: 12px; color: #f87171;">Sign out of your account</div>
+                    </div>
+                    <span style="color: #ef4444;">›</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('✅ Service Worker registered:', reg))
+                .catch(err => console.error('❌ Service Worker registration failed:', err));
+        });
+    }
+
+    // PWA Install Functionality
+    let deferredPrompt;
+    let installBannerDismissed = false;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('💡 beforeinstallprompt event fired');
+        console.log('User agent:', navigator.userAgent);
+        console.log('Platform:', navigator.platform);
+
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+
+        // Show custom install banner after a delay
+        if (!installBannerDismissed) {
+            setTimeout(() => {
+                showInstallBanner();
+            }, 3000); // Show after 3 seconds
         }
+    });
 
-        // PWA Install Functionality
-        let deferredPrompt;
-        let installBannerDismissed = false;
+    // Additional detection for different mobile browsers
+    window.addEventListener('load', () => {
+        // Check if we're on mobile and show banner even without beforeinstallprompt
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        const isInstallable = window.navigator.standalone !== undefined || deferredPrompt;
 
-        // Check if banner was previously dismissed
-        function checkBannerDismissed() {
-            const dismissed = localStorage.getItem('installBannerDismissed');
-            const dismissedTime = localStorage.getItem('installBannerDismissedTime');
-            
-            if (dismissed && dismissedTime) {
-                // Show banner again after 7 days
-                const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-                if (parseInt(dismissedTime) < sevenDaysAgo) {
-                    localStorage.removeItem('installBannerDismissed');
-                    localStorage.removeItem('installBannerDismissedTime');
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        // Check if app is already installed
-        function isAppInstalled() {
-            // Check if running in standalone mode
-            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-                return true;
-            }
-            
-            // Check if PWA was previously installed (additional check)
-            if (localStorage.getItem('pwaInstalled') === 'true') {
-                return true;
-            }
-            
-            return false;
-        }
-
-        // Detect mobile device and browser
-        function getMobileInfo() {
-            const userAgent = navigator.userAgent;
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-            const isIOS = /iPad|iPhone|iPod/.test(userAgent);
-            const isAndroid = /Android/.test(userAgent);
-            const isChrome = /Chrome/.test(userAgent) && !/Edge/.test(userAgent);
-            const isSamsung = /SamsungBrowser/.test(userAgent);
-            const isFirefox = /Firefox/.test(userAgent);
-            const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
-            
-            return {
-                isMobile,
-                isIOS,
-                isAndroid,
-                isChrome,
-                isSamsung,
-                isFirefox,
-                isSafari,
-                userAgent
-            };
-        }
-
-        // Show install banner with mobile detection
-        function showInstallBanner() {
-            const mobileInfo = getMobileInfo();
-            console.log('Mobile Info:', mobileInfo);
-            
-            // Don't show if app is already installed or banner was dismissed recently
-            if (isAppInstalled() || checkBannerDismissed()) {
-                console.log('App already installed or banner dismissed');
-                return;
-            }
-            
-            // Show banner for mobile devices
-            if (mobileInfo.isMobile) {
-                const installBanner = document.getElementById('installBanner');
-                if (installBanner) {
-                    // Update banner text based on device
-                    const subtitle = installBanner.querySelector('.install-subtitle');
-                    if (mobileInfo.isIOS) {
-                        subtitle.textContent = 'Tap Share → Add to Home Screen';
-                    } else if (mobileInfo.isAndroid && mobileInfo.isChrome) {
-                        subtitle.textContent = 'Tap menu → Add to Home screen';
-                    } else {
-                        subtitle.textContent = 'Add to your home screen for better experience';
-                    }
-                    
-                    installBanner.classList.add('show');
-                    console.log('Install banner shown for mobile device');
-                }
-            }
-        }
-
-        // Handle beforeinstallprompt event (for supported browsers)
-        window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('beforeinstallprompt event fired');
-            e.preventDefault();
-            deferredPrompt = e;
-            showInstallBanner();
+        console.log('Mobile check:', {
+            isMobile,
+            isStandalone,
+            isInstallable,
+            userAgent: navigator.userAgent,
+            installBannerDismissed
         });
 
-        // Install app function
-        function installApp() {
-            const mobileInfo = getMobileInfo();
-            
-            // If we have the native install prompt (Chrome, Edge, etc.)
-            if (deferredPrompt) {
-                hideInstallBanner();
-                deferredPrompt.prompt();
-                
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                        localStorage.setItem('pwaInstalled', 'true');
-                        showToast('App installed successfully!');
-                    } else {
-                        console.log('User dismissed the install prompt');
-                        showToast('Installation cancelled');
-                    }
-                    deferredPrompt = null;
-                });
+        // For mobile browsers that don't fire beforeinstallprompt
+        if (isMobile && !isStandalone && !installBannerDismissed && !deferredPrompt) {
+            setTimeout(() => {
+                console.log('Showing fallback install banner for mobile');
+                showInstallBanner(true); // true = fallback mode
+            }, 5000);
+        }
+    });
+
+    // Handle successful app installation
+    window.addEventListener('appinstalled', (evt) => {
+        console.log('✅ App was installed successfully');
+        hideInstallBanner();
+        showToast('App installed successfully!');
+    });
+
+    function showInstallBanner(fallbackMode = false) {
+        const installBanner = document.getElementById('installBanner');
+        if (installBanner && !installBannerDismissed) {
+            if (fallbackMode) {
+                // For browsers that don't support native install, hide the banner
+                // since we want native app installation only
                 return;
             }
-            
-            // For other browsers, show instructions
+            installBanner.classList.add('show');
+        }
+    }
+
+    function hideInstallBanner() {
+        const installBanner = document.getElementById('installBanner');
+        if (installBanner) {
+            installBanner.classList.remove('show');
+        }
+    }
+
+    function installApp() {
+        // Only proceed if we have the native install prompt
+        if (!deferredPrompt) {
+            console.log('Native install not available');
             hideInstallBanner();
-            showInstallInstructions(mobileInfo);
+            showToast('App installation not supported in this browser. Please use Chrome or Edge.', 4000);
+            return;
         }
 
-        // Show install instructions for different browsers
-        function showInstallInstructions(mobileInfo) {
-            let title = 'Install This App';
-            let instructions = '';
-            
-            if (mobileInfo.isIOS) {
-                if (mobileInfo.isSafari) {
-                    title = 'Add to Home Screen';
-                    instructions = `
-                        <div style="text-align: left; line-height: 1.6;">
-                            <p><strong>To install this app on your iPhone/iPad:</strong></p>
-                            <ol style="margin: 12px 0; padding-left: 20px;">
-                                <li>Tap the <strong>Share button</strong> <span style="background: #007AFF; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px;">⬆️</span> at the bottom of Safari</li>
-                                <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-                                <li>Tap <strong>"Add"</strong> in the top right corner</li>
-                            </ol>
-                            <p style="font-size: 13px; color: #666;">The app will appear on your home screen like a native app!</p>
-                        </div>
-                    `;
-                } else {
-                    instructions = 'Please open this page in Safari browser to install the app.';
-                }
-            } else if (mobileInfo.isAndroid) {
-                if (mobileInfo.isChrome) {
-                    instructions = `
-                        <div style="text-align: left; line-height: 1.6;">
-                            <p><strong>To install this app on Android Chrome:</strong></p>
-                            <ol style="margin: 12px 0; padding-left: 20px;">
-                                <li>Tap the <strong>menu (⋮)</strong> at the top right</li>
-                                <li>Look for <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
-                                <li>Tap <strong>"Install"</strong> or <strong>"Add"</strong></li>
-                            </ol>
-                            <p style="font-size: 13px; color: #666;">The app will be installed like a native app!</p>
-                        </div>
-                    `;
-                } else if (mobileInfo.isSamsung) {
-                    instructions = `
-                        <div style="text-align: left; line-height: 1.6;">
-                            <p><strong>To install this app on Samsung Browser:</strong></p>
-                            <ol style="margin: 12px 0; padding-left: 20px;">
-                                <li>Tap the <strong>menu (☰)</strong></li>
-                                <li>Tap <strong>"Add page to"</strong></li>
-                                <li>Select <strong>"Home screen"</strong></li>
-                            </ol>
-                        </div>
-                    `;
-                } else if (mobileInfo.isFirefox) {
-                    instructions = `
-                        <div style="text-align: left; line-height: 1.6;">
-                            <p><strong>To install this app on Firefox:</strong></p>
-                            <ol style="margin: 12px 0; padding-left: 20px;">
-                                <li>Tap the <strong>menu (⋮)</strong></li>
-                                <li>Look for <strong>"Add to Home Screen"</strong></li>
-                                <li>Tap <strong>"Add"</strong></li>
-                            </ol>
-                        </div>
-                    `;
-                } else {
-                    instructions = `
-                        <div style="text-align: left; line-height: 1.6;">
-                            <p>To install this app, look for <strong>"Add to Home Screen"</strong> option in your browser menu.</p>
-                            <p style="font-size: 13px; color: #666; margin-top: 12px;">For best experience, try using Chrome or Samsung Browser.</p>
-                        </div>
-                    `;
-                }
+        hideInstallBanner();
+
+        // Show the browser's native install prompt
+        deferredPrompt.prompt();
+
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt - app will install as native PWA');
+                showToast('App installing... Check your home screen!');
             } else {
-                instructions = 'This feature is optimized for mobile devices. Please visit on your phone or tablet.';
+                console.log('User dismissed the install prompt');
+                showToast('Installation cancelled');
             }
-            
-            showInstallModal(title, instructions);
+            deferredPrompt = null;
+        }).catch((error) => {
+            console.log('Error with install prompt:', error);
+            showToast('Installation failed. Please try again.');
+        });
+    }
+
+    function showInstallInstructions() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/.test(navigator.userAgent);
+        const isSamsungBrowser = /SamsungBrowser/.test(navigator.userAgent);
+        const isChrome = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
+
+        let instructions = '';
+        let duration = 6000;
+
+        if (isIOS) {
+            instructions = 'iPhone/iPad: Tap the Share button (□↗) at the bottom, then scroll down and tap "Add to Home Screen"';
+            duration = 8000;
+        } else if (isSamsungBrowser) {
+            instructions = 'Samsung Browser: Tap the menu (☰), then tap "Add page to" → "Home screen"';
+        } else if (isAndroid && isChrome) {
+            instructions = 'Android Chrome: Tap the menu (⋮) at the top right, then tap "Add to Home screen" or "Install app"';
+        } else if (isAndroid) {
+            instructions = 'Android: Look for "Add to Home screen" or "Install" in your browser menu (usually ⋮ or ☰)';
+        } else {
+            instructions = 'Desktop: Look for the install icon (⬇) in your address bar, or check browser menu for "Install" option';
         }
 
-        // Show install modal
-        function showInstallModal(title, instructions) {
-            const modal = document.createElement('div');
-            modal.style.cssText = `
+        showToast(instructions, duration);
+
+        // Also show a more persistent modal for mobile users
+        if (isIOS || isAndroid) {
+            setTimeout(() => showInstallModal(instructions), 1000);
+        }
+    }
+
+    function showInstallModal(instructions) {
+        // Create a more detailed install modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        `;
+
+        const content = document.createElement('div');
+        content.style.cssText = `
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        `;
+
+        content.innerHTML = `
+            <div style="font-size: 48px; margin-bottom: 16px;">📱</div>
+            <h3 style="color: #333; margin-bottom: 12px; font-size: 18px;">Install This App</h3>
+            <p style="color: #666; line-height: 1.4; margin-bottom: 20px; font-size: 14px;">${instructions}</p>
+            <button onclick="this.parentElement.parentElement.remove()"
+                    style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                Got It
+            </button>
+        `;
+
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+
+        // Remove modal when clicking outside
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        };
+    }
+
+    function showToast(message, duration = 3000) {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            z-index: 10000;
+            max-width: 90%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: slideInUp 0.3s ease-out;
+        `;
+
+        // Add animation keyframes
+        if (!document.querySelector('#toast-styles')) {
+            const style = document.createElement('style');
+            style.id = 'toast-styles';
+            style.textContent = `
+                @keyframes slideInUp {
+                    from { transform: translate(-50%, 100px); opacity: 0; }
+                    to { transform: translate(-50%, 0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        // Remove toast after duration
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, 20px)';
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, duration);
+    }
+
+    // Check if install banner was previously dismissed
+    window.addEventListener('load', () => {
+        installBannerDismissed = localStorage.getItem('installBannerDismissed') === 'true';
+
+        // Check if app is already installed
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        if (isStandalone || window.navigator.standalone) {
+            console.log('App is running in standalone mode (installed)');
+            hideInstallBanner();
+            return;
+        }
+
+        // Debug info
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        console.log('PWA Install Debug Info:', {
+            isMobile,
+            isStandalone,
+            installBannerDismissed,
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            hasServiceWorker: 'serviceWorker' in navigator,
+            hasManifest: document.querySelector('link[rel="manifest"]') !== null,
+            protocol: location.protocol,
+            origin: location.origin,
+            deferredPromptAvailable: !!deferredPrompt
+        });
+
+        // Only show banner if we have native install capability
+        // The banner will only appear when beforeinstallprompt fires
+        console.log('Waiting for beforeinstallprompt event for native PWA installation');
+
+        // Add a manual test button for debugging (remove in production)
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+            const debugBtn = document.createElement('button');
+<!--            debugBtn.textContent = 'Reset Install';-->
+<!--            debugBtn.style.cssText = `-->
+<!--                position: fixed;-->
+<!--                top: 200px;-->
+<!--                right: 20px;-->
+<!--                z-index: 9999;-->
+<!--                background: red;-->
+<!--                color: white;-->
+<!--                border: none;-->
+<!--                padding: 10px;-->
+<!--                border-radius: 5px;-->
+<!--                font-size: 12px;-->
+<!--            `;-->
+            debugBtn.onclick = () => {
+                localStorage.removeItem('installBannerDismissed');
+                installBannerDismissed = false;
+                if (deferredPrompt) {
+                    showInstallBanner();
+                } else {
+                    showToast('No native install prompt available. Try refreshing or using Chrome.');
+                }
+            };
+            document.body.appendChild(debugBtn);
+        }
+    });
+
+    // View Management
+    function showView(viewId) {
+        // Hide all views
+        const views = document.querySelectorAll('[id$="View"]');
+        views.forEach(view => view.classList.add('hidden'));
+
+        // Show selected view
+        document.getElementById(viewId + 'View').classList.remove('hidden');
+
+        // Update navigation
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        event.target.closest('.nav-item').classList.add('active');
+
+        // Close any open modals
+        closeAllModals();
+    }
+
+    // Modal Management
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function closeAllModals() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.style.display = 'none';
+        });
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeAllModals();
+        }
+    }
+
+    // Meter Details
+    function viewMeterDetails(meterId) {
+        document.getElementById('modalMeterId').textContent = `Meter ID: ${meterId}`;
+        openModal('meterModal');
+    }
+
+    // Profile
+    function openProfile() {
+        openModal('profileModal');
+    }
+
+    // Menu
+    function openMenu() {
+        openModal('menuModal');
+    }
+
+    function openProfileFromMenu() {
+        closeModal('menuModal');
+        setTimeout(() => openModal('profileModal'), 300);
+    }
+
+    function openCustomerCare() {
+        closeModal('menuModal');
+        showToast('Customer Care: +91-1234567890');
+        setTimeout(() => {
+            const callModal = document.createElement('div');
+            callModal.style.cssText = `
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -600,154 +1699,293 @@
                 align-items: center;
                 justify-content: center;
                 padding: 20px;
-                animation: fadeIn 0.3s ease-out;
             `;
-            
+
             const content = document.createElement('div');
             content.style.cssText = `
                 background: white;
                 border-radius: 16px;
                 padding: 24px;
                 max-width: 90%;
-                width: 400px;
-                max-height: 80vh;
-                overflow-y: auto;
+                width: 350px;
                 text-align: center;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                animation: slideUp 0.3s ease-out;
             `;
-            
+
             content.innerHTML = `
-                <div style="font-size: 48px; margin-bottom: 16px;">📱</div>
-                <h3 style="color: #333; margin-bottom: 16px; font-size: 18px;">${title}</h3>
-                ${instructions}
-                <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" 
-                        style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 20px; width: 100%;">
-                    Got It
+                <div style="font-size: 48px; margin-bottom: 16px;">📞</div>
+                <h3 style="color: #333; margin-bottom: 12px; font-size: 18px;">Customer Care</h3>
+                <p style="color: #666; line-height: 1.4; margin-bottom: 20px; font-size: 14px;">
+                    Need help? Contact our support team:
+                </p>
+                <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="font-weight: 600; color: #333; margin-bottom: 8px;">Phone</div>
+                    <a href="tel:+911234567890" style="color: #667eea; font-size: 18px; text-decoration: none; font-weight: 600;">+91-1234567890</a>
+                    <div style="font-weight: 600; color: #333; margin: 16px 0 8px;">Email</div>
+                    <a href="mailto:support@ariot.com" style="color: #667eea; text-decoration: none;">support@ariot.com</a>
+                    <div style="font-weight: 600; color: #333; margin: 16px 0 8px;">Hours</div>
+                    <div style="color: #666; font-size: 14px;">Mon-Sat: 9:00 AM - 6:00 PM</div>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()"
+                        style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%;">
+                    Close
                 </button>
             `;
-            
-            modal.appendChild(content);
-            document.body.appendChild(modal);
-            
-            // Remove modal when clicking outside
-            modal.onclick = (e) => {
-                if (e.target === modal) {
-                    modal.remove();
+
+            callModal.appendChild(content);
+            document.body.appendChild(callModal);
+
+            callModal.onclick = (e) => {
+                if (e.target === callModal) {
+                    callModal.remove();
                 }
             };
-            
-            // Add animations
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes slideUp {
-                    from { transform: translateY(20px); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
-                }
+        }, 100);
+    }
+
+    function openSettings() {
+        closeModal('menuModal');
+        showToast('Settings feature coming soon!');
+    }
+
+    function openNotifications() {
+        closeModal('menuModal');
+        showToast('Notifications settings coming soon!');
+    }
+
+    function openReports() {
+        closeModal('menuModal');
+        showToast('Reports feature coming soon!');
+    }
+
+    function openAbout() {
+        closeModal('menuModal');
+        setTimeout(() => {
+            const aboutModal = document.createElement('div');
+            aboutModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 10001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
             `;
-            document.head.appendChild(style);
-        }
 
-        // Dismiss install banner
-        function dismissInstallBanner() {
-            hideInstallBanner();
-            localStorage.setItem('installBannerDismissed', 'true');
-            localStorage.setItem('installBannerDismissedTime', Date.now().toString());
-            showToast('You can install the app anytime from your browser menu');
-        }
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white;
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 90%;
+                width: 350px;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            `;
 
-        // Hide install banner
-        function hideInstallBanner() {
-            const installBanner = document.getElementById('installBanner');
-            if (installBanner) {
-                installBanner.classList.remove('show');
+            content.innerHTML = `
+                <div style="font-size: 48px; margin-bottom: 16px;">⚡</div>
+                <h3 style="color: #333; margin-bottom: 12px; font-size: 18px;">PAY AS YOU GO</h3>
+                <p style="color: #667eea; margin-bottom: 20px; font-weight: 600;">AR IoT Solutions</p>
+                <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: left;">
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 12px; color: #666;">Version</div>
+                        <div style="font-weight: 600; color: #333;">1.0.0</div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 12px; color: #666;">Last Updated</div>
+                        <div style="font-weight: 600; color: #333;">February 2026</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #666;">Type</div>
+                        <div style="font-weight: 600; color: #333;">Progressive Web App</div>
+                    </div>
+                </div>
+                <p style="color: #666; font-size: 13px; line-height: 1.5; margin-bottom: 20px;">
+                    Smart energy management system for PG accommodations with real-time monitoring and prepaid billing.
+                </p>
+                <button onclick="this.parentElement.parentElement.remove()"
+                        style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%;">
+                    Close
+                </button>
+            `;
+
+            aboutModal.appendChild(content);
+            document.body.appendChild(aboutModal);
+
+            aboutModal.onclick = (e) => {
+                if (e.target === aboutModal) {
+                    aboutModal.remove();
+                }
+            };
+        }, 100);
+    }
+
+    function logoutFromMenu() {
+        closeModal('menuModal');
+        logout();
+    }
+
+    // Add Menu
+    function openAddMenu() {
+        openModal('addMenuModal');
+    }
+
+    function openAddForm(type) {
+        // Hide add menu
+        closeModal('addMenuModal');
+
+        // Show form modal
+        document.getElementById('addFormTitle').textContent = `Add New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
+        // Hide all forms
+        document.querySelectorAll('[id$="Form"]').forEach(form => form.classList.add('hidden'));
+
+        // Show specific form
+        document.getElementById(type + 'Form').classList.remove('hidden');
+
+        openModal('addFormModal');
+    }
+
+    function submitForm(type) {
+        alert(`${type.charAt(0).toUpperCase() + type.slice(1)} added successfully!`);
+        closeModal('addFormModal');
+    }
+
+    // Transaction Details
+    function viewTransaction(txnId) {
+        alert(`Viewing transaction: ${txnId}`);
+    }
+
+    // Filtering
+    function filterLiveData(filter) {
+        const rows = document.querySelectorAll('#liveDataView .table-row-mobile');
+        rows.forEach(row => {
+            row.style.display = 'none';
+
+            if (filter === 'all' ||
+                (filter === 'connected' && row.classList.contains('connected')) ||
+                (filter === 'disconnected' && row.classList.contains('disconnected')) ||
+                (filter === 'online' && row.classList.contains('online')) ||
+                (filter === 'offline' && row.classList.contains('offline'))) {
+                row.style.display = 'block';
+            }
+        });
+
+        // Update active tab
+        updateActiveFilterTab('#liveDataView', filter);
+    }
+
+    function filterRechargeData(filter) {
+        const rows = document.querySelectorAll('#rechargeView .table-row-mobile');
+        rows.forEach(row => {
+            row.style.display = 'none';
+            if (filter === 'all' || row.classList.contains(filter)) {
+                row.style.display = 'block';
+            }
+        });
+
+        // Update active tab
+        updateActiveFilterTab('#rechargeView', filter);
+    }
+
+    function updateActiveFilterTab(viewSelector, filter) {
+        const tabs = document.querySelectorAll(`${viewSelector} .filter-tab-mobile`);
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.textContent.toLowerCase().includes(filter) ||
+                (filter === 'all' && tab.textContent.toLowerCase() === 'all')) {
+                tab.classList.add('active');
+            }
+        });
+    }
+
+    // Additional Functions
+    function showFullHistory() {
+        alert('Opening full meter history...');
+        closeModal('meterModal');
+    }
+
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            alert('Logging out...');
+            closeAllModals();
+        }
+    }
+
+    // Pull to Refresh
+    let startY = 0;
+    let currentY = 0;
+    let isRefreshing = false;
+
+    document.addEventListener('touchstart', function(e) {
+        if (window.scrollY === 0 && !isRefreshing) {
+            startY = e.touches[0].pageY;
+        }
+    });
+
+    document.addEventListener('touchmove', function(e) {
+        if (window.scrollY === 0 && !isRefreshing) {
+            currentY = e.touches[0].pageY;
+            const diff = currentY - startY;
+
+            if (diff > 0 && diff < 100) {
+                const pullToRefresh = document.getElementById('pullToRefresh');
+                pullToRefresh.style.transform = `translateY(${diff}px)`;
+                pullToRefresh.style.opacity = diff / 60;
+
+                if (diff > 60) {
+                    pullToRefresh.textContent = '↑ Release to refresh';
+                } else {
+                    pullToRefresh.textContent = '↓ Pull to refresh';
+                }
             }
         }
+    });
 
-        // Show toast message
-        function showToast(message, duration = 3000) {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 120px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                padding: 12px 20px;
-                border-radius: 25px;
-                font-size: 14px;
-                z-index: 10000;
-                max-width: 90%;
-                text-align: center;
-                backdrop-filter: blur(10px);
-                animation: slideInUp 0.3s ease-out;
-            `;
-            
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideInUp {
-                    from { transform: translate(-50%, 100px); opacity: 0; }
-                    to { transform: translate(-50%, 0); opacity: 1; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translate(-50%, 20px)';
+    document.addEventListener('touchend', function(e) {
+        if (window.scrollY === 0 && !isRefreshing) {
+            const diff = currentY - startY;
+            const pullToRefresh = document.getElementById('pullToRefresh');
+
+            if (diff > 60) {
+                isRefreshing = true;
+                pullToRefresh.textContent = '🔄 Refreshing...';
+                pullToRefresh.classList.add('show');
+
                 setTimeout(() => {
-                    if (document.body.contains(toast)) {
-                        document.body.removeChild(toast);
-                    }
-                }, 300);
-            }, duration);
+                    pullToRefresh.classList.remove('show');
+                    pullToRefresh.style.transform = 'translateY(0)';
+                    pullToRefresh.style.opacity = '0';
+                    isRefreshing = false;
+                    alert('Data refreshed!');
+                }, 2000);
+            } else {
+                pullToRefresh.style.transform = 'translateY(0)';
+                pullToRefresh.style.opacity = '0';
+            }
         }
+    });
 
-        // Handle app installation
-        window.addEventListener('appinstalled', (evt) => {
-            console.log('App was installed successfully');
-            localStorage.setItem('pwaInstalled', 'true');
-            hideInstallBanner();
-            showToast('App installed successfully!');
-        });
-
-        // Initialize app
-        window.addEventListener('load', () => {
-            console.log('App loaded');
-            
-            // Show install banner after a short delay if conditions are met
-            setTimeout(() => {
-                showInstallBanner();
-            }, 2000);
-            
-            // Log debug info
-            const mobileInfo = getMobileInfo();
-            console.log('PWA Debug Info:', {
-                ...mobileInfo,
-                isInstalled: isAppInstalled(),
-                bannerDismissed: checkBannerDismissed(),
-                hasDeferredPrompt: !!deferredPrompt,
-                isStandalone: window.matchMedia('(display-mode: standalone)').matches,
-                hasServiceWorker: 'serviceWorker' in navigator
-            });
-        });
-
-        // Placeholder functions
-        function openProfile() {
-            showToast('Profile opened');
+    // Prevent zoom on double tap
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
         }
+        lastTouchEnd = now;
+    }, false);
 
-        function openMenu() {
-            showToast('Menu opened');
-        }
-    </script>
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Mobile Admin PWA initialized');
+    });
+</script>
 </body>
 </html>
