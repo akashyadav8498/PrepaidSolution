@@ -1,11 +1,16 @@
 package com.example.PrepaidSolution.controller;
 
+import com.example.PrepaidSolution.dto.pg.PGDropdownDTO;
+import com.example.PrepaidSolution.model.PG;
+import com.example.PrepaidSolution.model.User;
+import com.example.PrepaidSolution.repository.PGRepository;
 import com.example.PrepaidSolution.service.MeterManagementService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @org.springframework.web.bind.annotation.RestController
@@ -14,6 +19,35 @@ public class MeterManagementController {
 
     @Autowired
     private MeterManagementService meterManagementService;
+    private PGRepository pgRepository;
+
+    @GetMapping("/pg/by-owner/{ownerId}")
+    public ResponseEntity<List<PGDropdownDTO>> getPgsByOwner(
+            @PathVariable Long ownerId) {
+
+        return ResponseEntity.ok(
+                meterManagementService.getPgsByOwner(ownerId)
+        );
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Long>> getDashboardCounts() {
+
+        Map<String, Long> counts = meterManagementService.getDashboardCounts();
+
+        return ResponseEntity.ok(counts);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getAllUsers() {
+        return ResponseEntity.ok(meterManagementService.getAllUsers
+                ());
+    }
+
+    @GetMapping("/{meterId}")
+    public ResponseEntity<?> getMeterReadings(@PathVariable String meterId) {
+        return meterManagementService.getMeterReadings(meterId);
+    }
 
     @GetMapping("/get_onload_data")
     public ResponseEntity<?> getOnloadData(HttpServletRequest httpServletRequest) {

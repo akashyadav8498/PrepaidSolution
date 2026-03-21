@@ -17,6 +17,8 @@
             });
         });
 
+        console.log("control is here");
+
         // PWA functionality
         let deferredPrompt;
 

@@ -15,7 +15,7 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
 
-@Component
+//@Component
 @Getter
 @RequiredArgsConstructor
 @Slf4j

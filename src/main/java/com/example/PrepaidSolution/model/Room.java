@@ -1,5 +1,6 @@
 package com.example.PrepaidSolution.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class Room {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "pg_id", nullable = false)
     private PG pg;
 

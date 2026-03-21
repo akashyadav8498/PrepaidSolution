@@ -1,5 +1,6 @@
 package com.example.PrepaidSolution.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,10 +17,12 @@ public class Tenant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String phoneNumber;
     private String name;
     private String email;
     private String address;

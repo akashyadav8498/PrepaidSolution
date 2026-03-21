@@ -1,5 +1,6 @@
 package com.example.PrepaidSolution.service;
 
+import com.example.PrepaidSolution.dto.pg.PGDropdownDTO;
 import com.example.PrepaidSolution.model.*;
 import com.example.PrepaidSolution.repository.*;
 import com.example.PrepaidSolution.util.Utility;
@@ -41,55 +42,132 @@ public class MeterManagementService {
     @Autowired
     private EmailService emailService;
 
+    public List<PGDropdownDTO> getPgsByOwner(Long ownerId) {
+
+        return pgRepository.findAllByOwner_Id(ownerId)
+                .stream()
+                .map(pg -> new PGDropdownDTO(
+                        pg.getId(),
+                        pg.getName()
+                ))
+                .toList();
+    }
+
+    public Map<String,Object> getAllUsers() {
+        Map<String,Object> result = new HashMap<>();
+        List<User> users = userRepository.findAll();
+
+        result.put("users", users);
+        return result;
+    }
+
+    public Map<String, Long> getDashboardCounts() {
+
+        long totalPG = pgRepository.count();
+        long totalOwners = userRepository.countByRole(User.Role.OWNER);
+        long totalTenants = userRepository.countByRole(User.Role.TENANT);
+        long totalMeters = liveMeterReadingsRepository.countDistinctMeterId();
+        long totalRooms = roomRepository.count();
+
+        Map<String, Long> result = new HashMap<>();
+
+        result.put("totalPG", totalPG);
+        result.put("totalOwners", totalOwners);
+        result.put("totalTenants", totalTenants);
+        result.put("totalMeters", totalMeters);
+        result.put("totalRooms", totalRooms);
+
+        return result;
+    }
+
+
+    public ResponseEntity<?> getMeterReadings(String meterId){
+        try{
+            List<LiveMeterReadings> data =
+                    liveMeterReadingsRepository.findAllByMeterId(meterId, Sort.by(Sort.Direction.DESC, "id"));
+
+            if (data.isEmpty()){
+                return ResponseEntity.status(404).body("No readings found for meterId: " + meterId);
+            }else{
+                return ResponseEntity.ok(data);
+            }
+        }catch(Exception e){
+            return ResponseEntity.status(500).body("Error fetching meter readings: " + e.getMessage());
+        }
+    }
+
     public ResponseEntity<?> getOnloadData(HttpServletRequest httpServletRequest) {
         try {
             HttpSession session = httpServletRequest.getSession(false);
-            String userName = (String) session.getAttribute("userName");
-            String userRole = (String) session.getAttribute("userRole");
+            //String userName = (String) session.getAttribute("userName");
+            //String userRole = (String) session.getAttribute("userRole");
             List<LiveMeterReadings> liveReadings =
                     liveMeterReadingsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 
 
-            List<Map<String, Number>> resultList =
-                    liveReadings.stream()
-                            .map(reading -> {
 
-                                String meterReading = reading.getReading();
-                                JsonObject jsonObject = JsonParser
-                                        .parseString(meterReading)
-                                        .getAsJsonObject();
-                                JsonObject liveData = jsonObject.get("live_data").getAsJsonObject();
+//            List<Map<String, Object>> parsedList = liveReadings.stream()
+//                    .map(reading -> {
+//
+//                        Map<String, Object> map = new LinkedHashMap<>();
+//
+//                        // Copy original fields
+//                        map.put("id", reading.getId());
+//                        map.put("createdAt", reading.getCreatedAt());
+//
+//                        // Parse reading JSON string into real JSON object
+//                        JsonObject jsonObject = JsonParser
+//                                .parseString(reading.getReading())
+//                                .getAsJsonObject();
+//
+//                        map.put("reading", jsonObject);
+//
+//                        return map;
+//                    })
+//                    .toList();
+//
+//            return ResponseEntity.ok(parsedList);
 
-                                Map<String, Number> map = new LinkedHashMap<>();
-
-                                map.put("meterId",    liveData.get("sn").getAsBigDecimal());
-                                map.put("alarmRelay", liveData.get("al_rl").getAsBigDecimal());
-                                map.put("rtc",        liveData.get("rtc").getAsBigDecimal());
-                                map.put("kwh_1",      liveData.get("kwh1").getAsBigDecimal());
-                                map.put("voltage_1",  liveData.get("v1").getAsBigDecimal());
-                                map.put("current_1",  liveData.get("a1").getAsBigDecimal());
-                                map.put("power_1",    liveData.get("p1").getAsBigDecimal());
-                                map.put("pf_1",       liveData.get("pf1").getAsBigDecimal());
-                                map.put("freq_1",     liveData.get("f1").getAsBigDecimal());
-                                map.put("kwh_2",      liveData.get("kwh2").getAsBigDecimal());
-                                map.put("voltage_2",  liveData.get("v2").getAsBigDecimal());
-                                map.put("current_2",  liveData.get("a2").getAsBigDecimal());
-                                map.put("power_2",    liveData.get("p2").getAsBigDecimal());
-                                map.put("pf_2",       liveData.get("pf2").getAsBigDecimal());
-                                map.put("freq_2",     liveData.get("f2").getAsBigDecimal());
-                                map.put("alarmCount", liveData.get("al").getAsBigDecimal());
-
-                                return map;
-                            })
-                            .toList();
-
-
-
-            return new ResponseEntity<>(Map.of("liveReadings", resultList), HttpStatusCode.valueOf(HttpStatus.OK.value()));
+            return ResponseEntity.ok(liveReadings);
         } catch (Exception e) {
             return new ResponseEntity<>(Map.of("message", "Error while fetching live readings"), HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
+
+//    public ResponseEntity<?> getOnloadData(HttpServletRequest httpServletRequest) {
+//        try {
+//            HttpSession session = httpServletRequest.getSession(false);
+//            //String userName = (String) session.getAttribute("userName");
+//            //String userRole = (String) session.getAttribute("userRole");
+//            List<LiveMeterReadings> liveReadings =
+//                    liveMeterReadingsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+//
+//
+//            List<Map<String, Object>> parsedList = liveReadings.stream()
+//                .map(reading -> {
+//
+//                    Map<String, Object> map = new LinkedHashMap<>();
+//
+//                    // Copy original fields
+//                    map.put("id", reading.getId());
+//                    map.put("createdAt", reading.getCreatedAt());
+//
+//                    // Parse reading JSON string into real JSON object
+//                    JsonObject jsonObject = JsonParser
+//                            .parseString(reading.getReading())
+//                            .getAsJsonObject();
+//
+//                    map.put("reading", jsonObject);
+//
+//                    return map;
+//                })
+//                .toList();
+//
+//        return ResponseEntity.ok(parsedList);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(Map.of("message", "Error while fetching live readings"), HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+//        }
+//    }
 
     public ResponseEntity<?> addOwner(Map<String, String> requestMap) {
         try {
