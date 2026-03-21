@@ -18,7 +18,8 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/dashboard", "/addUser").permitAll()
+                        .requestMatchers("/", "/index.html", "/dashboard", "/addUser","/api/meter/dashboard",
+                                "/api/meter/get_onload_data", "/api/meter/{meterId}", "/api/meter/pg/by-owner/{ownerId}").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated()
                 );

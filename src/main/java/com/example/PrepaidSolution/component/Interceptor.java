@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.time.LocalDateTime;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -22,6 +24,7 @@ public class Interceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
             if(request.getRequestURI().equals("/addUser")) return true;
+            else if(request.getRequestURI().startsWith("/api/meter/")) return true;
             else {
                 String username = request.getParameter("username");
                 String password = request.getParameter("password");
@@ -34,6 +37,7 @@ public class Interceptor implements HandlerInterceptor {
                     HttpSession session = request.getSession();
                     session.setAttribute("userName", user.getUsername());
                     session.setAttribute("role", role);
+                    session.setAttribute("loginTime", LocalDateTime.now());
 
                     return true;
                 }

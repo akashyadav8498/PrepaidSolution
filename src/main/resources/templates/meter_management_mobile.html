@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Pay-as-You-Go AR IoT Solutions - Admin</title>
 
+    <script th:src="@{/js/meter_management_mobile.js}" defer></script>
+
     <!-- PWA Support -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
@@ -21,12 +23,17 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden;
             -webkit-font-smoothing: antialiased;
             touch-action: manipulation;
         }
@@ -43,6 +50,12 @@
             z-index: 1000;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #meter-table-mobile{
+            height: calc(100vh - 140px);
+            overflow-y: auto; 
+            overflow-x: hidden;
         }
 
         .header-content {
@@ -155,6 +168,10 @@
             line-height: 1.2;
         }
 
+        #login-status{
+            margin-right: 32px;
+        }
+
         /* Mobile Table */
         .mobile-table {
             background: rgba(255, 255, 255, 0.95);
@@ -163,6 +180,7 @@
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            height: 63vh;
         }
 
         .table-header-mobile {
@@ -227,7 +245,6 @@
 
         .detail-item {
             display: flex;
-            justify-content: space-between;
         }
 
         .detail-label {
@@ -397,6 +414,10 @@
             margin-bottom: 8px;
         }
 
+        #my-profile{
+            margin-left: 120px;
+        }
+
         .modal-subtitle {
             font-size: 14px;
             color: #666;
@@ -530,6 +551,28 @@
             gap: 12px;
         }
 
+        .mg-lf{
+            margin-left: 30px;
+        }
+
+        .dot-loading {
+        font-weight: bold;
+        font-size: 14px;
+        color: #555;
+        }
+
+        .dots::after {
+        content: "";
+        animation: dots 1s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+        0%, 20% { content: ""; }
+        40% { content: "."; }
+        60% { content: ".."; }
+        80%, 100% { content: "..."; }
+        }
+
         .install-icon {
             font-size: 24px;
         }
@@ -631,27 +674,27 @@
         <div class="content-section">
             <div class="stats-grid-mobile">
                 <div class="stat-card-mobile">
-                    <div class="stat-number-mobile">10</div>
+                    <div id="totalPg" class="stat-number-mobile"></div>
                     <div class="stat-label-mobile">Total PG</div>
                 </div>
                 <div class="stat-card-mobile">
-                    <div class="stat-number-mobile">7</div>
+                    <div id="totalOwners" class="stat-number-mobile"></div>
                     <div class="stat-label-mobile">Total Owners</div>
                 </div>
                 <div class="stat-card-mobile">
-                    <div class="stat-number-mobile">125</div>
+                    <div id="totalTenants" class="stat-number-mobile"></div>
                     <div class="stat-label-mobile">Total Tenants</div>
                 </div>
                 <div class="stat-card-mobile">
-                    <div class="stat-number-mobile">125</div>
+                    <div id="totalMeters" class="stat-number-mobile"></div>
                     <div class="stat-label-mobile">Total Meters</div>
                 </div>
                 <div class="stat-card-mobile">
-                    <div class="stat-number-mobile">125</div>
+                    <div id="totalRooms" class="stat-number-mobile"></div>
                     <div class="stat-label-mobile">Total Rooms</div>
                 </div>
                 <div class="stat-card-mobile">
-                    <div class="stat-number-mobile">20</div>
+                    <div id="totalAlerts" class="stat-number-mobile">20</div>
                     <div class="stat-label-mobile">Critical Alerts</div>
                 </div>
             </div>
@@ -694,7 +737,8 @@
             <div class="mobile-table">
                 <div class="table-header-mobile">Live Meter Data</div>
 
-                <div class="table-row-mobile connected online" onclick="viewMeterDetails('801234')">
+                <div id="meter-table-mobile">
+                    <div class="table-row-mobile connected online" onclick="viewMeterDetails('801234')">
                     <div class="row-header">
                         <span class="meter-id">Meter 801234</span>
                         <div class="meter-status">
@@ -720,60 +764,61 @@
                             <span class="detail-value">1245W</span>
                         </div>
                     </div>
-                </div>
+                    </div>
 
-                <div class="table-row-mobile disconnected online" onclick="viewMeterDetails('801235')">
-                    <div class="row-header">
-                        <span class="meter-id">Meter 801235</span>
-                        <div class="meter-status">
-                            <div class="status-dot status-off" title="Relay OFF"></div>
-                            <div class="status-dot status-online" title="Online"></div>
+                    <div class="table-row-mobile disconnected online" onclick="viewMeterDetails('801235')">
+                        <div class="row-header">
+                            <span class="meter-id">Meter 801235</span>
+                            <div class="meter-status">
+                                <div class="status-dot status-off" title="Relay OFF"></div>
+                                <div class="status-dot status-online" title="Online"></div>
+                            </div>
+                        </div>
+                        <div class="row-details">
+                            <div class="detail-item">
+                                <span class="detail-label">kWh:</span>
+                                <span class="detail-value">18.92</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Voltage:</span>
+                                <span class="detail-value">238.2V</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Current:</span>
+                                <span class="detail-value">8.2A</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Power:</span>
+                                <span class="detail-value">956W</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="row-details">
-                        <div class="detail-item">
-                            <span class="detail-label">kWh:</span>
-                            <span class="detail-value">18.92</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Voltage:</span>
-                            <span class="detail-value">238.2V</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Current:</span>
-                            <span class="detail-value">8.2A</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Power:</span>
-                            <span class="detail-value">956W</span>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="table-row-mobile connected offline" onclick="viewMeterDetails('801236')">
-                    <div class="row-header">
-                        <span class="meter-id">Meter 801236</span>
-                        <div class="meter-status">
-                            <div class="status-dot status-on" title="Relay ON"></div>
-                            <div class="status-dot status-offline" title="Offline"></div>
+                    <div class="table-row-mobile connected offline" onclick="viewMeterDetails('801236')">
+                        <div class="row-header">
+                            <span class="meter-id">Meter 801236</span>
+                            <div class="meter-status">
+                                <div class="status-dot status-on" title="Relay ON"></div>
+                                <div class="status-dot status-offline" title="Offline"></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row-details">
-                        <div class="detail-item">
-                            <span class="detail-label">kWh:</span>
-                            <span class="detail-value">31.67</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Voltage:</span>
-                            <span class="detail-value">242.1V</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Current:</span>
-                            <span class="detail-value">12.3A</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Power:</span>
-                            <span class="detail-value">1456W</span>
+                        <div class="row-details">
+                            <div class="detail-item">
+                                <span class="detail-label">kWh:</span>
+                                <span class="detail-value">31.67</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Voltage:</span>
+                                <span class="detail-value">242.1V</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Current:</span>
+                                <span class="detail-value">12.3A</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Power:</span>
+                                <span class="detail-value">1456W</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -904,7 +949,7 @@
             <div class="modal-title">Meter Details</div>
             <div class="modal-subtitle" id="modalMeterId">Loading...</div>
         </div>
-        <div class="modal-body-mobile">
+        <div class="modal-body-mobile" id="modalBodyMobile">
             <div class="mobile-card">
                 <h4 style="margin-bottom: 16px; color: #333;">Current Status</h4>
                 <div class="row-details">
@@ -945,7 +990,7 @@
                 </div>
             </div>
 
-            <div style="margin-top: 20px;">
+            <div>
                 <button class="btn-mobile btn-primary-mobile" onclick="showFullHistory()">
                     View Full History
                 </button>
@@ -983,12 +1028,12 @@
                 </div>
             </div>
 
-            <div class="mobile-card" onclick="openAddForm('meter')" style="margin-bottom: 12px; cursor: pointer;">
+            <div class="mobile-card" onclick="openAddForm('room')" style="cursor: pointer;">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 24px;">⚡</span>
+                    <span style="font-size: 24px;">🛏️</span>
                     <div>
-                        <div style="font-weight: 600; color: #333;">Add Meter</div>
-                        <div style="font-size: 12px; color: #666;">Install a new smart meter</div>
+                        <div style="font-weight: 600; color: #333;">Add Room</div>
+                        <div style="font-size: 12px; color: #666;">Add a new room to PG</div>
                     </div>
                 </div>
             </div>
@@ -1001,14 +1046,14 @@
                         <div style="font-size: 12px; color: #666;">Register a new tenant</div>
                     </div>
                 </div>
-            </div>
+            </div> 
 
-            <div class="mobile-card" onclick="openAddForm('room')" style="cursor: pointer;">
+           <div class="mobile-card" onclick="openAddForm('meter')" style="margin-bottom: 12px; cursor: pointer;">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 24px;">🛏️</span>
+                    <span style="font-size: 24px;">⚡</span>
                     <div>
-                        <div style="font-weight: 600; color: #333;">Add Room</div>
-                        <div style="font-size: 12px; color: #666;">Add a new room to PG</div>
+                        <div style="font-weight: 600; color: #333;">Add Meter</div>
+                        <div style="font-size: 12px; color: #666;">Install a new smart meter</div>
                     </div>
                 </div>
             </div>
@@ -1026,55 +1071,114 @@
         </div>
         <div class="modal-body-mobile">
             <!-- Owner Form -->
-            <div id="ownerForm" class="hidden">
+            <form id="ownerForm" class="hidden">
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">Owner Name *</label>
-                    <input type="text" class="form-input-mobile" placeholder="Enter owner name" required>
+                    <input id="ownerName" type="text" class="form-input-mobile" placeholder="Enter owner name" required>
                 </div>
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">Mobile Number *</label>
-                    <input type="tel" class="form-input-mobile" placeholder="Enter mobile number" required>
+                    <input id="ownerMobile" type="tel" class="form-input-mobile" placeholder="Enter mobile number" required>
                 </div>
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">Email</label>
-                    <input type="email" class="form-input-mobile" placeholder="Enter email address">
+                    <input id="ownerEmail" type="email" class="form-input-mobile" placeholder="Enter email address">
                 </div>
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">Address *</label>
-                    <textarea class="form-input-mobile" placeholder="Enter complete address" rows="3" required></textarea>
+                    <textarea id="ownerAddress" class="form-input-mobile" placeholder="Enter complete address" rows="3" required></textarea>
                 </div>
-                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('owner')">
+                <button id="addOwnerBtn" class="btn-mobile btn-primary-mobile" type="submit">
                     Add Owner
                 </button>
-            </div>
+                <div id="ownerLoading" class="dot-loading hidden">
+                    Please wait<span class="dots"></span>
+                  </div>
+            </form>
 
             <!-- PG Form -->
-            <div id="pgForm" class="hidden">
+            <form id="pgForm" class="hidden">
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">PG Name *</label>
-                    <input type="text" class="form-input-mobile" placeholder="Enter PG name" required>
+                    <input id="pgName" type="text" class="form-input-mobile" placeholder="Enter PG name" required>
                 </div>
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">Owner *</label>
-                    <select class="form-input-mobile" required>
+                    <select id="pgOwnerId" class="form-input-mobile" required>
                         <option value="">Select Owner</option>
-                        <option value="1">Rajesh Kumar</option>
-                        <option value="2">Priya Sharma</option>
-                        <option value="3">Amit Singh</option>
+                        <th:block th:each="owner : ${owners}">
+                        <option
+                            th:value="${owner.id}"
+                            th:text="${owner.name}"
+                        ></option>
+                        </th:block>
                     </select>
                 </div>
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">Address *</label>
-                    <textarea class="form-input-mobile" placeholder="Enter PG address" rows="3" required></textarea>
+                    <textarea id="pgAddress" class="form-input-mobile" placeholder="Enter PG address" rows="3" required></textarea>
                 </div>
-                <div class="form-group-mobile">
+                <!-- <div class="form-group-mobile">
                     <label class="form-label-mobile">Total Rooms</label>
                     <input type="number" class="form-input-mobile" placeholder="Enter total rooms" min="1">
-                </div>
-                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('pg')">
+                </div> -->
+                <button id="addPGBtn" class="btn-mobile btn-primary-mobile" type="submit">
                     Add PG
                 </button>
-            </div>
+                <div id="pgLoading" class="dot-loading hidden">
+                    Please wait<span class="dots"></span>
+                </div>
+            </form>
+
+            <!-- Room Form -->
+            <form id="roomForm" class="hidden">
+
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Owner *</label>
+                    <select id="ownerId" class="form-input-mobile" required>
+                        <option value="">Select Owner</option>
+                        <th:block th:each="owner : ${owners}">
+                        <option
+                            th:value="${owner.id}"
+                            th:text="${owner.name}"
+                        ></option>
+                        </th:block>
+                    </select>
+                </div>
+            
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">PG *</label>
+                    <select id="roomPG" class="form-input-mobile" required disabled>
+                    <option value="">Select PG</option>
+                    </select>
+                </div>
+
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Room Number *</label>
+                    <input id="roomNumber" type="text" class="form-input-mobile" placeholder="Enter room number" required>
+                </div>
+
+                <!-- <div class="form-group-mobile">
+                    <label class="form-label-mobile">Room Type</label>
+                    <select class="form-input-mobile">
+                        <option value="">Select Type</option>
+                        <option value="single">Single Occupancy</option>
+                        <option value="double">Double Occupancy</option>
+                        <option value="triple">Triple Occupancy</option>
+                    </select>
+                </div> -->
+                <!-- <div class="form-group-mobile">
+                    <label class="form-label-mobile">Monthly Rent</label>
+                    <input type="number" class="form-input-mobile" placeholder="Enter monthly rent">
+                </div> -->
+                <button class="btn-mobile btn-primary-mobile" type="submit" id="addRoomBtn">
+                    Add Room
+                </button>
+                <div id="roomLoading" class="dot-loading hidden">
+                    Please wait<span class="dots"></span>
+                </div>
+                <div id="afterMessage"></div>
+            </form>
 
             <!-- Meter Form -->
             <div id="meterForm" class="hidden">
@@ -1135,39 +1239,6 @@
                     Add Tenant
                 </button>
             </div>
-
-            <!-- Room Form -->
-            <div id="roomForm" class="hidden">
-                <div class="form-group-mobile">
-                    <label class="form-label-mobile">Room Number *</label>
-                    <input type="text" class="form-input-mobile" placeholder="Enter room number" required>
-                </div>
-                <div class="form-group-mobile">
-                    <label class="form-label-mobile">PG *</label>
-                    <select class="form-input-mobile" required>
-                        <option value="">Select PG</option>
-                        <option value="1">Sunrise PG</option>
-                        <option value="2">Green Valley PG</option>
-                        <option value="3">City Centre PG</option>
-                    </select>
-                </div>
-                <div class="form-group-mobile">
-                    <label class="form-label-mobile">Room Type</label>
-                    <select class="form-input-mobile">
-                        <option value="">Select Type</option>
-                        <option value="single">Single Occupancy</option>
-                        <option value="double">Double Occupancy</option>
-                        <option value="triple">Triple Occupancy</option>
-                    </select>
-                </div>
-                <div class="form-group-mobile">
-                    <label class="form-label-mobile">Monthly Rent</label>
-                    <input type="number" class="form-input-mobile" placeholder="Enter monthly rent">
-                </div>
-                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('room')">
-                    Add Room
-                </button>
-            </div>
         </div>
     </div>
 </div>
@@ -1177,8 +1248,11 @@
     <div class="modal-content-mobile">
         <div class="modal-handle"></div>
         <div class="modal-header-mobile">
-            <div class="modal-title">My Profile</div>
-            <div class="modal-subtitle">Admin Account Settings</div>
+            <div id="my-profile" class="modal-title">My Profile</div>
+            <!-- <div class="modal-subtitle">Admin Account Settings</div> -->
+             <!-- <div class="modal-subtitle"
+                 th:text="${role} + ' Account Settings'">
+            </div> -->
         </div>
         <div class="modal-body-mobile">
             <div class="mobile-card">
@@ -1186,26 +1260,26 @@
                     <div style="width: 80px; height: 80px; background: linear-gradient(45deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 32px; color: white;">
                         A
                     </div>
-                    <h3 style="color: #333; margin-bottom: 4px;">Admin User</h3>
+                    <h3 style="color: #333; margin-bottom: 4px;" th:text="${userName}"></h3>
                     <p style="color: #666; font-size: 14px;">admin@ariot.com</p>
                 </div>
 
                 <div class="row-details">
                     <div class="detail-item">
                         <span class="detail-label">Role:</span>
-                        <span class="detail-value">Super Admin</span>
+                        <span class="detail-value mg-lf" th:text="${role}"></span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Last Login:</span>
-                        <span class="detail-value">Today, 09:30 AM</span>
+                        <span class="detail-value mg-lf" th:text="${#temporals.format(loginTime, 'dd MMM yyyy, hh:mm a')}"></span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Access Level:</span>
-                        <span class="detail-value">Full Access</span>
+                        <span id="access-level" class="detail-value" th:text="${role == 'ADMIN'} ? 'Full Access' : 'Restricted Access'"></span>
                     </div>
-                    <div class="detail-item">
+                    <div class="detail-item" id="login-status">
                         <span class="detail-label">Status:</span>
-                        <span class="detail-value">Active</span>
+                        <span class="detail-value mg-lf" id="login-status">Active</span>
                     </div>
                 </div>
             </div>
@@ -1317,675 +1391,5 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Service Worker Registration
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('✅ Service Worker registered:', reg))
-                .catch(err => console.error('❌ Service Worker registration failed:', err));
-        });
-    }
-
-    // PWA Install Functionality
-    let deferredPrompt;
-    let installBannerDismissed = false;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('💡 beforeinstallprompt event fired');
-        console.log('User agent:', navigator.userAgent);
-        console.log('Platform:', navigator.platform);
-
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
-        e.preventDefault();
-
-        // Stash the event so it can be triggered later
-        deferredPrompt = e;
-
-        // Show custom install banner after a delay
-        if (!installBannerDismissed) {
-            setTimeout(() => {
-                showInstallBanner();
-            }, 3000); // Show after 3 seconds
-        }
-    });
-
-    // Additional detection for different mobile browsers
-    window.addEventListener('load', () => {
-        // Check if we're on mobile and show banner even without beforeinstallprompt
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        const isInstallable = window.navigator.standalone !== undefined || deferredPrompt;
-
-        console.log('Mobile check:', {
-            isMobile,
-            isStandalone,
-            isInstallable,
-            userAgent: navigator.userAgent,
-            installBannerDismissed
-        });
-
-        // For mobile browsers that don't fire beforeinstallprompt
-        if (isMobile && !isStandalone && !installBannerDismissed && !deferredPrompt) {
-            setTimeout(() => {
-                console.log('Showing fallback install banner for mobile');
-                showInstallBanner(true); // true = fallback mode
-            }, 5000);
-        }
-    });
-
-    // Handle successful app installation
-    window.addEventListener('appinstalled', (evt) => {
-        console.log('✅ App was installed successfully');
-        hideInstallBanner();
-        showToast('App installed successfully!');
-    });
-
-    function showInstallBanner(fallbackMode = false) {
-        const installBanner = document.getElementById('installBanner');
-        if (installBanner && !installBannerDismissed) {
-            if (fallbackMode) {
-                // For browsers that don't support native install, hide the banner
-                // since we want native app installation only
-                return;
-            }
-            installBanner.classList.add('show');
-        }
-    }
-
-    function hideInstallBanner() {
-        const installBanner = document.getElementById('installBanner');
-        if (installBanner) {
-            installBanner.classList.remove('show');
-        }
-    }
-
-    function installApp() {
-        // Only proceed if we have the native install prompt
-        if (!deferredPrompt) {
-            console.log('Native install not available');
-            hideInstallBanner();
-            showToast('App installation not supported in this browser. Please use Chrome or Edge.', 4000);
-            return;
-        }
-
-        hideInstallBanner();
-
-        // Show the browser's native install prompt
-        deferredPrompt.prompt();
-
-        // Wait for the user to respond to the prompt
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the install prompt - app will install as native PWA');
-                showToast('App installing... Check your home screen!');
-            } else {
-                console.log('User dismissed the install prompt');
-                showToast('Installation cancelled');
-            }
-            deferredPrompt = null;
-        }).catch((error) => {
-            console.log('Error with install prompt:', error);
-            showToast('Installation failed. Please try again.');
-        });
-    }
-
-    function showInstallInstructions() {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isAndroid = /Android/.test(navigator.userAgent);
-        const isSamsungBrowser = /SamsungBrowser/.test(navigator.userAgent);
-        const isChrome = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
-
-        let instructions = '';
-        let duration = 6000;
-
-        if (isIOS) {
-            instructions = 'iPhone/iPad: Tap the Share button (□↗) at the bottom, then scroll down and tap "Add to Home Screen"';
-            duration = 8000;
-        } else if (isSamsungBrowser) {
-            instructions = 'Samsung Browser: Tap the menu (☰), then tap "Add page to" → "Home screen"';
-        } else if (isAndroid && isChrome) {
-            instructions = 'Android Chrome: Tap the menu (⋮) at the top right, then tap "Add to Home screen" or "Install app"';
-        } else if (isAndroid) {
-            instructions = 'Android: Look for "Add to Home screen" or "Install" in your browser menu (usually ⋮ or ☰)';
-        } else {
-            instructions = 'Desktop: Look for the install icon (⬇) in your address bar, or check browser menu for "Install" option';
-        }
-
-        showToast(instructions, duration);
-
-        // Also show a more persistent modal for mobile users
-        if (isIOS || isAndroid) {
-            setTimeout(() => showInstallModal(instructions), 1000);
-        }
-    }
-
-    function showInstallModal(instructions) {
-        // Create a more detailed install modal
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 10001;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        `;
-
-        const content = document.createElement('div');
-        content.style.cssText = `
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 90%;
-            width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        `;
-
-        content.innerHTML = `
-            <div style="font-size: 48px; margin-bottom: 16px;">📱</div>
-            <h3 style="color: #333; margin-bottom: 12px; font-size: 18px;">Install This App</h3>
-            <p style="color: #666; line-height: 1.4; margin-bottom: 20px; font-size: 14px;">${instructions}</p>
-            <button onclick="this.parentElement.parentElement.remove()"
-                    style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                Got It
-            </button>
-        `;
-
-        modal.appendChild(content);
-        document.body.appendChild(modal);
-
-        // Remove modal when clicking outside
-        modal.onclick = (e) => {
-            if (e.target === modal) {
-                modal.remove();
-            }
-        };
-    }
-
-    function showToast(message, duration = 3000) {
-        // Create toast element
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            z-index: 10000;
-            max-width: 90%;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            animation: slideInUp 0.3s ease-out;
-        `;
-
-        // Add animation keyframes
-        if (!document.querySelector('#toast-styles')) {
-            const style = document.createElement('style');
-            style.id = 'toast-styles';
-            style.textContent = `
-                @keyframes slideInUp {
-                    from { transform: translate(-50%, 100px); opacity: 0; }
-                    to { transform: translate(-50%, 0); opacity: 1; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        toast.textContent = message;
-        document.body.appendChild(toast);
-
-        // Remove toast after duration
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translate(-50%, 20px)';
-            setTimeout(() => {
-                document.body.removeChild(toast);
-            }, 300);
-        }, duration);
-    }
-
-    // Check if install banner was previously dismissed
-    window.addEventListener('load', () => {
-        installBannerDismissed = localStorage.getItem('installBannerDismissed') === 'true';
-
-        // Check if app is already installed
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        if (isStandalone || window.navigator.standalone) {
-            console.log('App is running in standalone mode (installed)');
-            hideInstallBanner();
-            return;
-        }
-
-        // Debug info
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        console.log('PWA Install Debug Info:', {
-            isMobile,
-            isStandalone,
-            installBannerDismissed,
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-            hasServiceWorker: 'serviceWorker' in navigator,
-            hasManifest: document.querySelector('link[rel="manifest"]') !== null,
-            protocol: location.protocol,
-            origin: location.origin,
-            deferredPromptAvailable: !!deferredPrompt
-        });
-
-        // Only show banner if we have native install capability
-        // The banner will only appear when beforeinstallprompt fires
-        console.log('Waiting for beforeinstallprompt event for native PWA installation');
-
-        // Add a manual test button for debugging (remove in production)
-        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-            const debugBtn = document.createElement('button');
-<!--            debugBtn.textContent = 'Reset Install';-->
-<!--            debugBtn.style.cssText = `-->
-<!--                position: fixed;-->
-<!--                top: 200px;-->
-<!--                right: 20px;-->
-<!--                z-index: 9999;-->
-<!--                background: red;-->
-<!--                color: white;-->
-<!--                border: none;-->
-<!--                padding: 10px;-->
-<!--                border-radius: 5px;-->
-<!--                font-size: 12px;-->
-<!--            `;-->
-            debugBtn.onclick = () => {
-                localStorage.removeItem('installBannerDismissed');
-                installBannerDismissed = false;
-                if (deferredPrompt) {
-                    showInstallBanner();
-                } else {
-                    showToast('No native install prompt available. Try refreshing or using Chrome.');
-                }
-            };
-            document.body.appendChild(debugBtn);
-        }
-    });
-
-    // View Management
-    function showView(viewId) {
-        // Hide all views
-        const views = document.querySelectorAll('[id$="View"]');
-        views.forEach(view => view.classList.add('hidden'));
-
-        // Show selected view
-        document.getElementById(viewId + 'View').classList.remove('hidden');
-
-        // Update navigation
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        event.target.closest('.nav-item').classList.add('active');
-
-        // Close any open modals
-        closeAllModals();
-    }
-
-    // Modal Management
-    function openModal(modalId) {
-        document.getElementById(modalId).style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    function closeAllModals() {
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.style.display = 'none';
-        });
-        document.body.style.overflow = 'auto';
-    }
-
-    // Close modals when clicking outside
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
-            closeAllModals();
-        }
-    }
-
-    // Meter Details
-    function viewMeterDetails(meterId) {
-        document.getElementById('modalMeterId').textContent = `Meter ID: ${meterId}`;
-        openModal('meterModal');
-    }
-
-    // Profile
-    function openProfile() {
-        openModal('profileModal');
-    }
-
-    // Menu
-    function openMenu() {
-        openModal('menuModal');
-    }
-
-    function openProfileFromMenu() {
-        closeModal('menuModal');
-        setTimeout(() => openModal('profileModal'), 300);
-    }
-
-    function openCustomerCare() {
-        closeModal('menuModal');
-        showToast('Customer Care: +91-1234567890');
-        setTimeout(() => {
-            const callModal = document.createElement('div');
-            callModal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-                z-index: 10001;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-            `;
-
-            const content = document.createElement('div');
-            content.style.cssText = `
-                background: white;
-                border-radius: 16px;
-                padding: 24px;
-                max-width: 90%;
-                width: 350px;
-                text-align: center;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            `;
-
-            content.innerHTML = `
-                <div style="font-size: 48px; margin-bottom: 16px;">📞</div>
-                <h3 style="color: #333; margin-bottom: 12px; font-size: 18px;">Customer Care</h3>
-                <p style="color: #666; line-height: 1.4; margin-bottom: 20px; font-size: 14px;">
-                    Need help? Contact our support team:
-                </p>
-                <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                    <div style="font-weight: 600; color: #333; margin-bottom: 8px;">Phone</div>
-                    <a href="tel:+911234567890" style="color: #667eea; font-size: 18px; text-decoration: none; font-weight: 600;">+91-1234567890</a>
-                    <div style="font-weight: 600; color: #333; margin: 16px 0 8px;">Email</div>
-                    <a href="mailto:support@ariot.com" style="color: #667eea; text-decoration: none;">support@ariot.com</a>
-                    <div style="font-weight: 600; color: #333; margin: 16px 0 8px;">Hours</div>
-                    <div style="color: #666; font-size: 14px;">Mon-Sat: 9:00 AM - 6:00 PM</div>
-                </div>
-                <button onclick="this.parentElement.parentElement.remove()"
-                        style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%;">
-                    Close
-                </button>
-            `;
-
-            callModal.appendChild(content);
-            document.body.appendChild(callModal);
-
-            callModal.onclick = (e) => {
-                if (e.target === callModal) {
-                    callModal.remove();
-                }
-            };
-        }, 100);
-    }
-
-    function openSettings() {
-        closeModal('menuModal');
-        showToast('Settings feature coming soon!');
-    }
-
-    function openNotifications() {
-        closeModal('menuModal');
-        showToast('Notifications settings coming soon!');
-    }
-
-    function openReports() {
-        closeModal('menuModal');
-        showToast('Reports feature coming soon!');
-    }
-
-    function openAbout() {
-        closeModal('menuModal');
-        setTimeout(() => {
-            const aboutModal = document.createElement('div');
-            aboutModal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-                z-index: 10001;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 20px;
-            `;
-
-            const content = document.createElement('div');
-            content.style.cssText = `
-                background: white;
-                border-radius: 16px;
-                padding: 24px;
-                max-width: 90%;
-                width: 350px;
-                text-align: center;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            `;
-
-            content.innerHTML = `
-                <div style="font-size: 48px; margin-bottom: 16px;">⚡</div>
-                <h3 style="color: #333; margin-bottom: 12px; font-size: 18px;">PAY AS YOU GO</h3>
-                <p style="color: #667eea; margin-bottom: 20px; font-weight: 600;">AR IoT Solutions</p>
-                <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: left;">
-                    <div style="margin-bottom: 12px;">
-                        <div style="font-size: 12px; color: #666;">Version</div>
-                        <div style="font-weight: 600; color: #333;">1.0.0</div>
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <div style="font-size: 12px; color: #666;">Last Updated</div>
-                        <div style="font-weight: 600; color: #333;">February 2026</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 12px; color: #666;">Type</div>
-                        <div style="font-weight: 600; color: #333;">Progressive Web App</div>
-                    </div>
-                </div>
-                <p style="color: #666; font-size: 13px; line-height: 1.5; margin-bottom: 20px;">
-                    Smart energy management system for PG accommodations with real-time monitoring and prepaid billing.
-                </p>
-                <button onclick="this.parentElement.parentElement.remove()"
-                        style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%;">
-                    Close
-                </button>
-            `;
-
-            aboutModal.appendChild(content);
-            document.body.appendChild(aboutModal);
-
-            aboutModal.onclick = (e) => {
-                if (e.target === aboutModal) {
-                    aboutModal.remove();
-                }
-            };
-        }, 100);
-    }
-
-    function logoutFromMenu() {
-        closeModal('menuModal');
-        logout();
-    }
-
-    // Add Menu
-    function openAddMenu() {
-        openModal('addMenuModal');
-    }
-
-    function openAddForm(type) {
-        // Hide add menu
-        closeModal('addMenuModal');
-
-        // Show form modal
-        document.getElementById('addFormTitle').textContent = `Add New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
-
-        // Hide all forms
-        document.querySelectorAll('[id$="Form"]').forEach(form => form.classList.add('hidden'));
-
-        // Show specific form
-        document.getElementById(type + 'Form').classList.remove('hidden');
-
-        openModal('addFormModal');
-    }
-
-    function submitForm(type) {
-        alert(`${type.charAt(0).toUpperCase() + type.slice(1)} added successfully!`);
-        closeModal('addFormModal');
-    }
-
-    // Transaction Details
-    function viewTransaction(txnId) {
-        alert(`Viewing transaction: ${txnId}`);
-    }
-
-    // Filtering
-    function filterLiveData(filter) {
-        const rows = document.querySelectorAll('#liveDataView .table-row-mobile');
-        rows.forEach(row => {
-            row.style.display = 'none';
-
-            if (filter === 'all' ||
-                (filter === 'connected' && row.classList.contains('connected')) ||
-                (filter === 'disconnected' && row.classList.contains('disconnected')) ||
-                (filter === 'online' && row.classList.contains('online')) ||
-                (filter === 'offline' && row.classList.contains('offline'))) {
-                row.style.display = 'block';
-            }
-        });
-
-        // Update active tab
-        updateActiveFilterTab('#liveDataView', filter);
-    }
-
-    function filterRechargeData(filter) {
-        const rows = document.querySelectorAll('#rechargeView .table-row-mobile');
-        rows.forEach(row => {
-            row.style.display = 'none';
-            if (filter === 'all' || row.classList.contains(filter)) {
-                row.style.display = 'block';
-            }
-        });
-
-        // Update active tab
-        updateActiveFilterTab('#rechargeView', filter);
-    }
-
-    function updateActiveFilterTab(viewSelector, filter) {
-        const tabs = document.querySelectorAll(`${viewSelector} .filter-tab-mobile`);
-        tabs.forEach(tab => {
-            tab.classList.remove('active');
-            if (tab.textContent.toLowerCase().includes(filter) ||
-                (filter === 'all' && tab.textContent.toLowerCase() === 'all')) {
-                tab.classList.add('active');
-            }
-        });
-    }
-
-    // Additional Functions
-    function showFullHistory() {
-        alert('Opening full meter history...');
-        closeModal('meterModal');
-    }
-
-    function logout() {
-        if (confirm('Are you sure you want to logout?')) {
-            alert('Logging out...');
-            closeAllModals();
-        }
-    }
-
-    // Pull to Refresh
-    let startY = 0;
-    let currentY = 0;
-    let isRefreshing = false;
-
-    document.addEventListener('touchstart', function(e) {
-        if (window.scrollY === 0 && !isRefreshing) {
-            startY = e.touches[0].pageY;
-        }
-    });
-
-    document.addEventListener('touchmove', function(e) {
-        if (window.scrollY === 0 && !isRefreshing) {
-            currentY = e.touches[0].pageY;
-            const diff = currentY - startY;
-
-            if (diff > 0 && diff < 100) {
-                const pullToRefresh = document.getElementById('pullToRefresh');
-                pullToRefresh.style.transform = `translateY(${diff}px)`;
-                pullToRefresh.style.opacity = diff / 60;
-
-                if (diff > 60) {
-                    pullToRefresh.textContent = '↑ Release to refresh';
-                } else {
-                    pullToRefresh.textContent = '↓ Pull to refresh';
-                }
-            }
-        }
-    });
-
-    document.addEventListener('touchend', function(e) {
-        if (window.scrollY === 0 && !isRefreshing) {
-            const diff = currentY - startY;
-            const pullToRefresh = document.getElementById('pullToRefresh');
-
-            if (diff > 60) {
-                isRefreshing = true;
-                pullToRefresh.textContent = '🔄 Refreshing...';
-                pullToRefresh.classList.add('show');
-
-                setTimeout(() => {
-                    pullToRefresh.classList.remove('show');
-                    pullToRefresh.style.transform = 'translateY(0)';
-                    pullToRefresh.style.opacity = '0';
-                    isRefreshing = false;
-                    alert('Data refreshed!');
-                }, 2000);
-            } else {
-                pullToRefresh.style.transform = 'translateY(0)';
-                pullToRefresh.style.opacity = '0';
-            }
-        }
-    });
-
-    // Prevent zoom on double tap
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function(event) {
-        const now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-            event.preventDefault();
-        }
-        lastTouchEnd = now;
-    }, false);
-
-    // Initialize app
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Mobile Admin PWA initialized');
-    });
-</script>
 </body>
 </html>

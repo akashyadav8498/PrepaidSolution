@@ -1,4 +1,21 @@
-document.addEventListener("DOMContentLoaded", loadMeterReadings);
+document.addEventListener("DOMContentLoaded", function () {
+   loadMeterReadings();  
+   setInterval(loadMeterReadings, 15000);
+});
+
+function loadDashboardData(){
+  fetch("/api/meter/dashboard")
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("totalPg").innerHTML = `Total PGs: ${data.totalPG}`;
+      document.getElementById("totalOwners").innerHTML = `Total Owners: ${data.totalOwners}`;
+      document.getElementById("totalTenants").innerHTML = `Total Tenants: ${data.totalTenants}`;
+      document.getElementById("totalMeters").innerHTML = `Total Meters: ${data.totalMeters}`;
+      document.getElementById("totalRooms").innerHTML = `Total Rooms: ${data.totalRooms}`;
+    })
+    .catch(error => console.error("Error:", error));
+}
+loadDashboardData();
 
 function showView(viewId) {
   // Hide all views
@@ -119,7 +136,8 @@ let displayedDataCount = 0;
 let isLoading = false;
 
 // Update the existing viewMeterDetails function
-function viewMeterDetails(meterId) {
+async function viewMeterDetails(meterId) {
+  await loadOneMeterData(meterId);
   currentMeterId = meterId;
   document.getElementById("modalMeterId").textContent = meterId;
   document.getElementById("meterDetailsModal").style.display = "block";
@@ -127,16 +145,27 @@ function viewMeterDetails(meterId) {
   // Reset view state
   currentPage = 1;
   displayedDataCount = 0;
-  document.getElementById("meterDataBody").innerHTML = "";
+  //document.getElementById("meterDataBody").innerHTML = "";
 
   // Load initial data
   loadMeterData();
+}
+
+function makeFirstFilterBtnActive(){
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+  const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+  allBtn.classList.add("active");
 }
 
 // Close modal
 function closeMeterModal() {
   document.getElementById("meterDetailsModal").style.display = "none";
   currentMeterId = null;
+
+    makeFirstFilterBtnActive();
 }
 
 // Close modal when clicking outside
@@ -148,21 +177,22 @@ window.onclick = function (event) {
 };
 
 // Change time range
-function changeTimeRange(range) {
-  currentTimeRange = range;
+// function changeTimeRange(range) {
+//   currentTimeRange = range;
 
-  // Update active button
-  document
-    .querySelectorAll(".filter-btn")
-    .forEach((btn) => btn.classList.remove("active"));
-  event.target.classList.add("active");
+//   // Update active button
+//   document
+//     .querySelectorAll(".filter-btn")
+//     .forEach((btn) => btn.classList.remove("active"));
+//   event.target.classList.add("active");
 
-  // Reset and reload data
-  currentPage = 1;
-  displayedDataCount = 0;
-  document.getElementById("meterDataBody").innerHTML = "";
-  loadMeterData();
-}
+//   // Reset and reload data
+//   currentPage = 1;
+//   displayedDataCount = 0;
+//   //document.getElementById("meterDataBody").innerHTML = "";
+//   loadMeterData();
+// }
+
 
 // Toggle view mode
 function toggleView(view) {
@@ -269,24 +299,187 @@ function loadMoreData() {
     const row = allMeterData[i];
     const tr = document.createElement("tr");
 
-    tr.innerHTML = `
-            <td>${row.datetime}</td>
-            <td>${row.cumKwh}</td>
-            <td>${row.voltage}</td>
-            <td>${row.current}</td>
-            <td>${row.power}</td>
-            <td><span class="status-badge ${
-              row.relay === "ON" ? "status-on" : "status-off"
-            }">${row.relay}</span></td>
-            <td><span class="status-badge ${
-              row.connection === "ONLINE" ? "status-online" : "status-offline"
-            }">${row.connection}</span></td>
-        `;
+    // tr.innerHTML = `
+    //         <td>${row.datetime}</td>
+    //         <td>${row.cumKwh}</td>
+    //         <td>${row.voltage}</td>
+    //         <td>${row.current}</td>
+    //         <td>${row.power}</td>
+    //         <td><span class="status-badge ${
+    //           row.relay === "ON" ? "status-on" : "status-off"
+    //         }">${row.relay}</span></td>
+    //         <td><span class="status-badge ${
+    //           row.connection === "ONLINE" ? "status-online" : "status-offline"
+    //         }">${row.connection}</span></td>
+    //     `;
 
     tbody.appendChild(tr);
   }
 
   displayedDataCount = endIndex;
+}
+
+function sortByDateDesc(data) {
+    return data.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+}
+
+
+function getLast3MonthsData(data) {
+
+    const now = new Date();
+
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(now.getMonth() - 3);
+
+    const filteredData = data.filter(item => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= threeMonthsAgo && itemDate <= now;
+    });
+
+    return sortByDateDesc(filteredData);
+}
+
+
+function getLast6MonthsData(data) {
+    const now = new Date();
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(now.getMonth() - 6);
+
+    const filteredData = data.filter(item => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= sixMonthsAgo && itemDate <= now;
+    });
+
+    return sortByDateDesc(filteredData);
+}
+
+async function fetchOneMeterData(meterId){
+    const response = await fetch(`/api/meter/${meterId}`);
+    const oneMeterData = await response.json();
+
+    return oneMeterData;
+}
+
+function formatDateTime(isoString) {
+    const date = new Date(isoString);
+
+    const day = String(date.getDate()).padStart(2, "0");
+
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    const ampm = hours >= 12 ? "pm" : "am";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 becomes 12
+    hours = String(hours).padStart(2, "0");
+
+    return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+}
+
+
+document.querySelectorAll(".filter-btn").forEach(button => {
+
+    button.addEventListener("click",async function() {
+      console.log("clicked");
+       //  Remove active class from all buttons
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    //  Add active class to clicked button
+    this.classList.add("active");
+
+      const filter = this.dataset.filter;
+      let data = updatedOneMeterData;
+      if(filter === "3months"){
+        data = getLast3MonthsData(data);
+        console.log("Now Can you see it : ->",data);
+      }else if(filter === "6months"){
+        data = getLast6MonthsData(data);
+        console.log("Now Can you see it : ->",data);
+      }
+
+    const meterDataBody = document.getElementById("meterDataBody");
+
+    meterDataBody.innerHTML = data.map((row) => {
+          return `
+            <tr>
+                  <td>${formatDateTime(row.createdAt)}</td>
+                  <td>${row.reading.kwh1}</td>
+                  <td>${row.reading.v1}</td>
+                  <td>${row.reading.a1}</td>
+                  <td>${row.reading.p1}</td>
+                  <td>${row.reading.al_rl === 0 ? "OFF": "ON"}</td>
+                  <td>${row.reading.al ===  0 ? "OFFLINE": "ONLINE"}</td>
+            </tr>
+          `
+    }).join("")
+
+        
+    });
+
+});
+
+
+
+let meter_Id = null;
+let updatedOneMeterData = null;
+async function loadOneMeterData(meterId, filter){
+    meter_Id = meterId;
+    const oneMeterData = await fetchOneMeterData(meterId);
+
+     updatedOneMeterData = oneMeterData.map(row => {
+      try{
+        const parsedReading = JSON.parse(row.reading);
+        const liveData = parsedReading.live_data;
+
+        return {
+          ...row,
+          reading: liveData
+        }
+      }catch(error){
+        console.error("Parsing error:", error)
+        return row;
+      }
+    })
+
+    if(filter === "3months"){
+      updatedOneMeterData = getLast3MonthsData(updatedOneMeterData);
+    }else if(filter === "6months"){
+      updatedOneMeterData = getLast6MonthsData(updatedOneMeterData);
+    }else{
+     sortByDateDesc(updatedOneMeterData);
+    }
+
+    console.log("This Data: => ",updatedOneMeterData);
+
+    const meterDataBody = document.getElementById("meterDataBody");
+
+    meterDataBody.innerHTML = updatedOneMeterData.map((row) => {
+          return `
+            <tr>
+                  <td>${formatDateTime(row.createdAt)}</td>
+                  <td>${row.reading.kwh1}</td>
+                  <td>${row.reading.v1}</td>
+                  <td>${row.reading.a1}</td>
+                  <td>${row.reading.p1}</td>
+                  <td>${row.reading.al_rl === 0 ? "OFF": "ON"}</td>
+                  <td>${row.reading.al ===  0 ? "OFFLINE": "ONLINE"}</td>
+            </tr>
+          `
+    }).join("");
+
+    
 }
 
 // Handle infinite scroll
@@ -379,12 +572,12 @@ function updatePaginationButtons() {
 }
 
 // Initialize infinite scroll listener
-document.addEventListener("DOMContentLoaded", function () {
-  const tableContainer = document.querySelector(".modal-table-container");
-  if (tableContainer) {
-    tableContainer.addEventListener("scroll", handleInfiniteScroll);
-  }
-});
+// document.addEventListener("DOMContentLoaded", function () {
+//   const tableContainer = document.querySelector(".modal-table-container");
+//   if (tableContainer) {
+//     tableContainer.addEventListener("scroll", handleInfiniteScroll);
+//   }
+// });
 
 // Toggle submenu visibility
 function toggleSubmenu(id) {
@@ -626,46 +819,62 @@ tenantPG.addEventListener("change", () => {
     .catch((error) => console.error("Error:", error));
 });
 
+let updatedData = null; // gloabal so that other function can also use this data 
+
 function loadMeterReadings() {
   fetch("/api/meter/get_onload_data")
     .then(res => res.json())
     .then(data => {
-      //console.log("Data start:->",data);
+     updatedData = data.map(row => {
+        try {
+          const parsed = JSON.parse(row.reading);
+          return {
+            ...row,
+            reading: parsed.live_data,
+          };
+        } catch {
+          return {
+            ...row,
+            reading: null
+          };
+        }
+    });
+      //console.log("Data start:->",updatedData);
       const tbody = document.getElementById("meterTableBody");
       tbody.innerHTML = ""; // clear old rows
 
-      data.liveReadings.forEach(reading => {
+      updatedData.forEach(readingData => {
         const row = document.createElement("tr");
         //console.log("Reading start:==>",reading);
 
         // Example: decide status badges dynamically
-        const status = reading.current > 0 ? "ON" : "OFF";
+        const status = readingData.reading.a1 > 0 ? "ON" : "OFF";
         const connection = Math.random() > 0.5 ? "ONLINE" : "OFFLINE"; // replace with real field
         const health = "OK"; // placeholder (can be derived)
 
         row.innerHTML = `
-          <td>${reading.meterId}</td>
-          <td>${reading.alarmRelay}</td>
-          <td>${new Date(reading.rtc).toLocaleDateString()}</td>
-          <td>${reading.kwh_1}</td>
-          <td>${reading.voltage_1}</td>
-          <td>${reading.current_1}</td>
-          <td>${reading.power_1}</td>
-          <td>${reading.pf_1}</td>
-          <td>${reading.freq_1}</td>
-          <td>${reading.kwh_2}</td>
-                    <td>${reading.voltage_2}</td>
-                    <td>${reading.current_2}</td>
-                    <td>${reading.power_2}</td>
-                    <td>${reading.pf_2}</td>
-                    <td>${reading.freq_2}</td>
-                    <td>${reading.alarmCount}</td>
+          <td>${readingData.reading.sn}</td>
+          <td>${readingData.reading.al_rl}</td>
+          <td>${formatDateTime(readingData.createdAt)}</td>
+          <td>${readingData.reading.kwh1}</td>
+          <td>${readingData.reading.v1}</td>
+          <td>${readingData.reading.a1}</td>
+          <td>${readingData.reading.p1}</td>
+          <td>${readingData.reading.pf1}</td>
+          <td>${readingData.reading.f1}</td>
+          <td>${readingData.reading.kwh2}</td>
+          <td>${readingData.reading.v2}</td>
+          <td>${readingData.reading.a2}</td>
+          <td>${readingData.reading.p2}</td>
+          <td>${readingData.reading.pf2}</td>
+          <td>${readingData.reading.f2}</td>
+          <td>${readingData.reading.al}</td>           
 
           <td><span class="status-badge ${status === "ON" ? "status-on" : "status-off"}">${status}</span></td>
           <td><span class="status-badge status-online">${health}</span></td>
           <td><span class="status-badge ${connection === "ONLINE" ? "status-online" : "status-offline"}">${connection}</span></td>
         
-          <td><button class="view-btn" onclick="viewMeterDetails('${reading.meterId}')">View</button></td>
+          <td><button class="view-btn" onclick="viewMeterDetails('${readingData.reading.sn}')">View</button></td>
         `;
 
         tbody.appendChild(row);
@@ -739,14 +948,13 @@ function closeSidebar() {
 
 const sidebar = document.getElementById("sidebar");
 
-sidebar.addEventListener("mouseleave", function () {
-  closeSidebar();
-}); 
+// sidebar.addEventListener("mouseleave", function () {
+//   closeSidebar();
+// }); 
 
-document.querySelector(".hamburger").addEventListener("mouseenter", function () {
-  openSidebar();
-})
-
+// document.querySelector(".hamburger").addEventListener("mouseenter", function () {
+//   openSidebar();
+// })
 
 /**
  * Toggles the visibility of a submenu.
@@ -907,5 +1115,3 @@ function initializeCharts() {
         });
     }
 }
-
-setInterval(loadMeterReadings, 15000);

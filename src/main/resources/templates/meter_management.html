@@ -24,15 +24,34 @@
         <div class="modal-body">
           <!-- Time Range Filter -->
           <div class="time-filter">
+            <!-- <button
+              class="filter-btn active"
+            >
+              All Data
+            </button>
+
             <button
               class="filter-btn active"
-              onclick="changeTimeRange('3months')"
+              onclick="loadOneMeterData('3months')"
             >
               Last 3 Months
             </button>
-            <button class="filter-btn" onclick="changeTimeRange('6months')">
+            <button class="filter-btn" onclick="loadOneMeterData('6months')">
               Last 6 Months
-            </button>
+            </button> -->
+
+
+            
+            <div>
+              <button id="all" class="filter-btn active" data-filter="all">All Data</button>
+            </div>
+            <div>
+              <button class="filter-btn" data-filter="3months">Last 3 Months</button>
+            </div>
+            <div>
+              <button class="filter-btn" data-filter="6months">Last 6 Months</button>
+            </div>
+            
           </div>
 
           <!-- View Toggle -->
@@ -47,7 +66,9 @@
 
           <!-- Data Table -->
           <div class="modal-table-container">
-            <table id="meterDataTable">
+           <div class="tableDataContainer">
+
+             <table id="meterDataTable">
               <thead>
                 <tr>
                   <th>Date & Time</th>
@@ -63,6 +84,7 @@
                 <!-- Data will be populated here -->
               </tbody>
             </table>
+           </div>
 
             <!-- Loading indicator for infinite scroll -->
             <div id="loadingIndicator" class="loading-indicator hidden">
@@ -190,13 +212,13 @@
 
       <div class="main-content">
         <div class="content-header">
-          <!-- <div class="hamburger" onclick="openSidebar()">
-              ☰
-          </div> -->
-
-          <div class="hamburger">
+          <div class="hamburger" onclick="openSidebar()">
               ☰
           </div>
+
+          <!-- <div class="hamburger">
+              ☰
+          </div> -->
 
           <h2 id="contentTitle">Dashboard</h2>
         </div>
@@ -212,7 +234,7 @@
                         <div class="stat-icon-wrapper">
                             <i class="fa-solid fa-building fa-5x stat-icon"></i>
                             <div class="stat-content">
-                                <div class="stat-number" style="font-size: larger;">Total PG: 10</div>
+                                <div id="totalPg" class="stat-number" style="font-size: larger;"></div>
                             </div>
                         </div>
                     </div>
@@ -221,7 +243,7 @@
                         <div class="stat-icon-wrapper">
                             <i class="fa-solid fa-user-tie fa-5x stat-icon"></i>
                             <div class="stat-content">
-                                <div class="stat-number" style="font-size: larger;">Total Owners: 10</div>
+                                <div id="totalOwners" class="stat-number" style="font-size: larger;"></div>
                             </div>
                         </div>
                     </div>
@@ -230,7 +252,7 @@
                         <div class="stat-icon-wrapper">
                             <i class="fa-solid fa-users fa-5x stat-icon"></i>
                             <div class="stat-content">
-                                <div class="stat-number" style="font-size: larger;">Total Tenants: 125</div>
+                                <div id="totalTenants" class="stat-number" style="font-size: larger;"></div>
                             </div>
                         </div>
                     </div>  
@@ -239,7 +261,7 @@
                         <div class="stat-icon-wrapper">
                             <i class="fa-solid fa-bolt fa-5x stat-icon"></i>
                             <div class="stat-content">
-                                <div class="stat-number" style="font-size: larger;">Total Meters: 125</div>
+                                <div id="totalMeters" class="stat-number" style="font-size: larger;"></div>
                             </div>
                         </div>
                     </div>
@@ -248,7 +270,7 @@
                         <div class="stat-icon-wrapper">
                             <i class="fa-solid fa-bed fa-5x stat-icon"></i>
                             <div class="stat-content">
-                                <div class="stat-number" style="font-size: larger;">Total Rooms: 125</div>
+                                <div id="totalRooms" class="stat-number" style="font-size: larger;"></div>
                             </div>
                         </div>
                     </div>
@@ -353,7 +375,7 @@
                           <th>PF_2</th>
                           <th>FREQ_2</th>
                           <th>Alarm Count</th>
-                        <th>Action</th>
+                        <th>on</th>
                         <th>1</th>
                         <th>2</th>
                         <th>3</th>
@@ -361,7 +383,7 @@
                     </thead>
                     <tbody id="meterTableBody">
                       <tr class="connected online">
-                        <td>801234</td>
+                        <td>801234 static data</td>
                         <td>29-06-25</td>
                         <td>23.45</td>
                         <td>240.34</td>
@@ -382,7 +404,7 @@
                         </td>
                       </tr>
                       <tr class="disconnected online">
-                        <td>801235</td>
+                        <td>801235 static data</td>
                         <td>29-06-25</td>
                         <td>18.92</td>
                         <td>238.21</td>
@@ -403,7 +425,7 @@
                         </td>
                       </tr>
                       <tr class="connected offline">
-                        <td>801236</td>
+                        <td>801236 static data</td>
                         <td>28-06-25</td>
                         <td>31.67</td>
                         <td>242.15</td>
@@ -445,7 +467,7 @@
                         </td>
                       </tr> -->
                       <tr class="disconnected offline">
-                        <td>801238</td>
+                        <td>801238 static data</td>
                         <td>27-06-25</td>
                         <td>27.91</td>
                         <td>241.56</td>

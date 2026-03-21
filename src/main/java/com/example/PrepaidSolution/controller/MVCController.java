@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -34,6 +35,8 @@ public class MVCController {
 
         HttpSession session = httpServletRequest.getSession(false);
         String role = (String) session.getAttribute("role");
+        String userName = (String) session.getAttribute("userName");
+        LocalDateTime loginTime = (LocalDateTime) session.getAttribute("loginTime");
         String platform = httpServletRequest.getHeader("user-agent");
 
         if (!role.equalsIgnoreCase("tenant")) {
@@ -45,6 +48,9 @@ public class MVCController {
             model.addAttribute("owners", owners);
             model.addAttribute("pgs", pgs);
             model.addAttribute("metertypes", meterTypes);
+            model.addAttribute("userName", userName);
+            model.addAttribute("role", role);
+            model.addAttribute("loginTime", loginTime);
 
             if (platform.contains("Windows")) return "meter_management";
             else return "meter_management_mobile";
