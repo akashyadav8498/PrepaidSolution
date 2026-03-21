@@ -30,7 +30,7 @@ public class MVCController {
 
     private final MeterTypeRepository meterTypeRepository;
 
-    @PostMapping("/dashboard")
+    @GetMapping("/fdgfdhg")
     public String dashboard(HttpServletRequest httpServletRequest, Model model) {
 
         HttpSession session = httpServletRequest.getSession(false);
@@ -39,7 +39,7 @@ public class MVCController {
         LocalDateTime loginTime = (LocalDateTime) session.getAttribute("loginTime");
         String platform = httpServletRequest.getHeader("user-agent");
 
-        if (!role.equalsIgnoreCase("tenant")) {
+//        if (!role.equalsIgnoreCase("tenant")) {
 
             List<Owner> owners = ownerRepository.findAll();
             List<PG> pgs = pgRepository.findAll();
@@ -52,11 +52,12 @@ public class MVCController {
             model.addAttribute("role", role);
             model.addAttribute("loginTime", loginTime);
 
-            if (platform.contains("Windows")) return "meter_management";
-            else return "meter_management_mobile";
-        }
-        else
-            return "tenant";
+//            if (platform.contains("Windows")) return "meter_management";
+//            else
+//                return "meter_management_mobile";
+//        }
+//        else
+            return "tenant_v2";
     }
 
 }

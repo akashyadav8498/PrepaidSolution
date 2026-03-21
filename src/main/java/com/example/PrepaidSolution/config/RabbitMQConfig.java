@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class RabbitMQConfig {
 
-    public static final String QUEUE = "prepaid.queue";
-    public static final String EXCHANGE = "prepaid.exchange";
-    public static final String ROUTING = "prepaid.routing.key";
+    public static final String QUEUE = "bridge.main.queue";
+    public static final String EXCHANGE = "bridge.main.exchange";
+    public static final String ROUTING = "bridge.main.routing.key";
 
     @Bean
     public Queue meterQueue() {

@@ -22,3 +22,55 @@ aws:
   iot:
     certPath: ${AWS_IOT_CERT_PATH}
     keyPath: ${AWS_IOT_KEY_PATH}
+
+bridge:
+  enabled: false
+  mqtt:
+    broker-uris:
+      - ${BRIDGE_MQTT_URI:tcp://localhost:1883}
+    client-id: ${BRIDGE_MQTT_CLIENT_ID:}
+    username: ${BRIDGE_MQTT_USERNAME:}
+    password: ${BRIDGE_MQTT_PASSWORD:}
+    automatic-reconnect: true
+    clean-session: false
+    completion-timeout: 5s
+    keep-alive-seconds: 30
+    connection-timeout-seconds: 10
+    max-inflight: 1000
+    tls:
+      enabled: ${BRIDGE_MQTT_TLS_ENABLED:false}
+      protocol: ${BRIDGE_MQTT_TLS_PROTOCOL:TLSv1.2}
+      key-store: ${BRIDGE_MQTT_KEY_STORE:}
+      key-store-password: ${BRIDGE_MQTT_KEY_STORE_PASSWORD:}
+      key-store-type: ${BRIDGE_MQTT_KEY_STORE_TYPE:PKCS12}
+      trust-store: ${BRIDGE_MQTT_TRUST_STORE:}
+      trust-store-password: ${BRIDGE_MQTT_TRUST_STORE_PASSWORD:}
+      trust-store-type: ${BRIDGE_MQTT_TRUST_STORE_TYPE:JKS}
+    subscriptions:
+      - topic: ${BRIDGE_MQTT_TOPIC:meters/#}
+        qos: 1
+  rabbit:
+    audit-required: true
+    mandatory-publishing: true
+    declare-topology: true
+    main:
+      exchange: ${BRIDGE_RABBIT_MAIN_EXCHANGE:bridge.main.exchange}
+      exchange-type: ${BRIDGE_RABBIT_MAIN_EXCHANGE_TYPE:topic}
+      queue: ${BRIDGE_RABBIT_MAIN_QUEUE:bridge.main.queue}
+      routing-key: ${BRIDGE_RABBIT_MAIN_ROUTING_KEY:bridge.main}
+      durable: true
+      auto-declare: true
+      queue-type: ${BRIDGE_RABBIT_MAIN_QUEUE_TYPE:classic}
+    audit:
+      exchange: ${BRIDGE_RABBIT_AUDIT_EXCHANGE:bridge.audit.exchange}
+      exchange-type: ${BRIDGE_RABBIT_AUDIT_EXCHANGE_TYPE:topic}
+      queue: ${BRIDGE_RABBIT_AUDIT_QUEUE:bridge.audit.queue}
+      routing-key: ${BRIDGE_RABBIT_AUDIT_ROUTING_KEY:bridge.audit}
+      durable: true
+      auto-declare: true
+      queue-type: ${BRIDGE_RABBIT_AUDIT_QUEUE_TYPE:classic}
+  executor:
+    core-pool-size: 4
+    max-pool-size: 16
+    queue-capacity: 5000
+    thread-name-prefix: mqtt-bridge-

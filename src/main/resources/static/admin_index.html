@@ -1,18 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#2e3192" />
-    <meta name="description" content="Tenant login for prepaid PG energy management." />
+    <meta name="description" content="Admin login for prepaid PG energy management." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="AR IoT" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/images/icon-192.png" />
-    <title>AR IoT Solutions - Tenant Login</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <title>Pay-as-You-Go AR IoT Solutions - Login</title>
+    <link rel="stylesheet" href="css/index.css">
     <style>
       .install-banner {
         position: fixed;
@@ -63,46 +63,53 @@
       }
     </style>
   </head>
-  <body>
-    <div class="app-shell">
-      <div id="login-screen">
-        <!-- <img
-          src="C:\Users\sw\Downloads\ariot_logo.jpeg"
-          alt="Logo"
-          class="login-logo" /> -->
-        <div class="login-card">
-          <!-- <h3 style="margin-bottom: 20px; color: var(--secondary)">
-            Welcome to Pay As You Go
-          </h3> -->
-          <img src="/images/ariot_logo.jpeg" alt="Logo" class="login-logo" />
-          <div class="input-group">
-            <label>Email</label>
-            <input type="email" placeholder="Enter your email" />
-          </div>
-          <div class="input-group">
-            <label>Verify OTP</label>
-            <div class="otp-row">
-              <input
-                type="number"
-                placeholder="XXXX"
-                style="width: 80px; text-align: center" />
-              <button class="btn-send">Send OTP</button>
-            </div>
-          </div>
-          <p style="font-size: 0.7rem; color: var(--muted); margin: 15px 0">
-            Resend in 00:30
-          </p>
-          <button
-            class="btn-primary"
-            onclick="doLogin()"
-            style="background: var(--primary)">
-            VERIFY & LOGIN
-          </button>
+<body>
+<!-- Login Page -->
+<div id="loginPage" class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>PAY AS YOU GO</h1>
+            <p>AR IoT Solutions Dashboard</p>
         </div>
-      </div>
+
+        <form id="loginForm" action="/dashboard" method="post">
+<!--            <div class="role-selector">-->
+<!--                <div class="role-option active" data-role="admin">-->
+<!--                    <div>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¹Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¨ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¼ Admin</div>-->
+<!--                </div>-->
+<!--                <div class="role-option" data-role="owner">-->
+<!--                    <div>ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â  Owner</div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+
+            <div id="loginMessage"></div>
+        </form>
+
+<!--        <div class="demo-credentials">-->
+<!--            <h4>Demo Credentials</h4>-->
+<!--            <strong>Admin Login:</strong><br>-->
+<!--            Username: admin<br>-->
+<!--            Password: admin123<br><br>-->
+<!--            <strong>Owner Login:</strong><br>-->
+<!--            Username: owner<br>-->
+<!--            Password: owner123-->
+<!--        </div>-->
     </div>
+</div>
     <div id="installBanner" class="install-banner" aria-live="polite">
-      <div class="install-banner-title">Install Tenant App</div>
+      <div class="install-banner-title">Install Admin App</div>
       <div class="install-banner-text">Add this app to your home screen for a faster, full-screen experience.</div>
       <div class="install-banner-actions">
         <button type="button" class="install-banner-btn primary" onclick="installApp()">Install</button>

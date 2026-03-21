@@ -1,0 +1,99 @@
+:root {
+        --primary: #f37021;
+        --secondary: #2e3192;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #1e293b;
+        --muted: #64748b;
+        --success: #10b981;
+        --danger: #ef4444;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+      body {
+        background: #e2e8f0;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .app-shell {
+        width: 100%;
+        max-width: 420px;
+        background: var(--bg);
+        min-height: 100vh;
+        position: relative;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        overflow-x: hidden;
+      }
+
+      /* --- LOGIN SCREEN --- */
+      #login-screen {
+        padding: 40px 25px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        justify-content: center;
+      }
+      .login-logo {
+        width: 180px;
+        margin-bottom: 30px;
+      }
+      .login-card {
+        background: white;
+        padding: 30px 20px;
+        border-radius: 20px;
+        width: 100%;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+      .input-group {
+        text-align: left;
+        margin-bottom: 20px;
+      }
+      .input-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--secondary);
+      }
+      .input-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        outline: none;
+      }
+      .otp-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn-send {
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 0.8rem;
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: var(--success);
+        color: white;
+        border: none;
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 10px;
+      }
