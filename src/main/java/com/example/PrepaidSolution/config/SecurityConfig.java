@@ -18,7 +18,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/owner.html","tenant.html", "/", "/service-worker.js", "/manifest.json","/index.html", "/dashboard", "/addUser","/api/meter/dashboard",
+                        .requestMatchers("/owner.html","/tenant.html",""/", "/service-worker.js", "/manifest.json","/index.html", "/dashboard", "/addUser","/api/meter/dashboard",
                                 "/api/meter/get_onload_data", "/api/meter/{meterId}", "/api/meter/pg/by-owner/{ownerId}").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated()
