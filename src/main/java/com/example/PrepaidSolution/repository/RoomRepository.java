@@ -10,4 +10,5 @@ import java.util.Set;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findAllByPgIdEqualsAndStatus(Long pgId, Room.Status status);
+    List<Room> findByPgId(Long pgId);
 }

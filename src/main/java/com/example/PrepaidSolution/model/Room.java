@@ -24,6 +24,7 @@ public class Room {
     private PG pg;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Tenant> tenants;
 
     @Column(nullable = false)

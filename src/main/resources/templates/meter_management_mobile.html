@@ -661,7 +661,7 @@
             <p>AR IoT Solutions</p>
         </div>
         <div class="header-actions">
-            <button class="profile-btn" onclick="openProfile()">👤</button>
+            <!-- <button class="profile-btn" onclick="openProfile()">👤</button> -->
             <button class="menu-btn" onclick="openMenu()">☰</button>
         </div>
     </div>
@@ -1180,65 +1180,152 @@
                 <div id="afterMessage"></div>
             </form>
 
-            <!-- Meter Form -->
-            <div id="meterForm" class="hidden">
+        <!-- Tenant Form -->
+        <form id="tenantForm" class="hidden">
+
+                <!-- Owner -->
                 <div class="form-group-mobile">
-                    <label class="form-label-mobile">Meter ID *</label>
-                    <input type="text" class="form-input-mobile" placeholder="Enter meter ID" required>
+                    <label class="form-label-mobile">Owner *</label>
+                    <select id="tenantOwnerId" class="form-input-mobile" required>
+                        <option value="">Select Owner</option>
+                        <th:block th:each="owner : ${owners}">
+                            <option 
+                                th:value="${owner.id}" 
+                                th:text="${owner.name}">
+                            </option>
+                        </th:block>
+                    </select>
                 </div>
+
+                <!-- PG -->
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">PG *</label>
-                    <select class="form-input-mobile" required>
+                    <select id="tenantPG" class="form-input-mobile" required disabled>
                         <option value="">Select PG</option>
-                        <option value="1">Sunrise PG</option>
-                        <option value="2">Green Valley PG</option>
-                        <option value="3">City Centre PG</option>
                     </select>
-                </div>
-                <div class="form-group-mobile">
-                    <label class="form-label-mobile">Room Number</label>
-                    <input type="text" class="form-input-mobile" placeholder="Enter room number">
-                </div>
-                <div class="form-group-mobile">
-                    <label class="form-label-mobile">Meter Type *</label>
-                    <select class="form-input-mobile" required>
-                        <option value="">Select Type</option>
-                        <option value="single">Single Phase</option>
-                        <option value="three">Three Phase</option>
-                    </select>
-                </div>
-                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('meter')">
-                    Add Meter
-                </button>
-            </div>
+                </div>          
 
-            <!-- Tenant Form -->
-            <div id="tenantForm" class="hidden">
+                <!-- Room -->
+                <div class="form-group-mobile">
+                    <label class="form-label-mobile">Room *</label>
+                    <select id="tenantRoom" class="form-input-mobile" required disabled>
+                        <option value="">Select Room</option>
+                    </select>
+                </div>
+
+                <!-- Tenant Name -->
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">Tenant Name *</label>
-                    <input type="text" class="form-input-mobile" placeholder="Enter tenant name" required>
+                    <input id="tenantName" type="text" class="form-input-mobile" placeholder="Enter tenant name" required>
                 </div>
+
+                <!-- Phone -->
                 <div class="form-group-mobile">
                     <label class="form-label-mobile">Mobile Number *</label>
-                    <input type="tel" class="form-input-mobile" placeholder="Enter mobile number" required>
+                    <input id="tenantPhone" type="tel" class="form-input-mobile" placeholder="Enter mobile number" required>
                 </div>
+
+                <!-- Email -->
                 <div class="form-group-mobile">
-                    <label class="form-label-mobile">PG *</label>
-                    <select class="form-input-mobile" required>
-                        <option value="">Select PG</option>
-                        <option value="1">Sunrise PG</option>
-                        <option value="2">Green Valley PG</option>
-                        <option value="3">City Centre PG</option>
-                    </select>
+                    <label class="form-label-mobile">Email</label>
+                    <input id="tenantEmail" type="email" class="form-input-mobile" placeholder="Enter email">
                 </div>
+
+                <!-- Address -->
                 <div class="form-group-mobile">
-                    <label class="form-label-mobile">Room Number</label>
-                    <input type="text" class="form-input-mobile" placeholder="Enter room number">
+                    <label class="form-label-mobile">Address</label>
+                    <textarea id="tenantAddress" class="form-input-mobile" placeholder="Enter address"></textarea>
                 </div>
-                <button class="btn-mobile btn-primary-mobile" onclick="submitForm('tenant')">
+
+                <!-- Submit -->
+                <button class="btn-mobile btn-primary-mobile" type="submit" id="addTenantBtn">
                     Add Tenant
                 </button>
-            </div>
+
+                <!-- Loader -->
+                <div id="tenantLoading" class="dot-loading hidden">
+                    Please wait<span class="dots"></span>
+                </div>
+
+                <div id="tenantMessage"></div>
+
+        </form>
+
+            
+           <!-- Meter Form -->
+                <form id="meterForm" class="hidden">
+
+                    <!-- Owner -->
+                    <div class="form-group-mobile">
+                        <label class="form-label-mobile">Owner *</label>
+                        <select id="meterOwnerId" class="form-input-mobile" required>
+                            <option value="">Select Owner</option>
+                            <th:block th:each="owner : ${owners}">
+                                <option 
+                                    th:value="${owner.id}" 
+                                    th:text="${owner.name}">
+                                </option>
+                            </th:block>
+                        </select>
+                    </div>
+
+                    <!-- PG -->
+                    <div class="form-group-mobile">
+                        <label class="form-label-mobile">PG *</label>
+                        <select id="meterPG" class="form-input-mobile" required disabled>
+                            <option value="">Select PG</option>
+                        </select>
+                    </div>
+
+                    <!-- Room -->
+                    <div class="form-group-mobile">
+                        <label class="form-label-mobile">Room *</label>
+                        <select id="meterRoom" class="form-input-mobile" required disabled>
+                            <option value="">Select Room</option>
+                        </select>
+                    </div>
+
+                    <!-- Meter Serial No -->
+                    <div class="form-group-mobile">
+                        <label class="form-label-mobile">Meter Serial No *</label>
+                        <input id="meterSerialNo" type="text" class="form-input-mobile" placeholder="Enter meter serial number" required>
+                    </div>
+
+                    <div class="form-group-mobile">
+                        <label class="form-label-mobile">Installation Date *</label>
+                        <input 
+                            id="installationDate" 
+                            type="date" 
+                            class="form-input-mobile" 
+                            required>
+                    </div>
+
+                    <!-- Meter Type -->
+                    <div class="form-group-mobile">
+                        <label class="form-label-mobile">Meter Type *</label>
+                        <select id="meterType" class="form-input-mobile" required>
+                            <option value="">Select Type</option>
+                            <option value="1">Single Phase</option>
+                            <option value="2">Two Phase</option>
+                            <option value="3">Three Phase</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit -->
+                    <button class="btn-mobile btn-primary-mobile" type="submit" id="addMeterBtn">
+                        Add Meter
+                    </button>
+
+                    <!-- Loader -->
+                    <div id="meterLoading" class="dot-loading hidden">
+                        Please wait<span class="dots"></span>
+                    </div>
+
+                    <div id="meterMessage"></div>
+
+            </form>
+
+
         </div>
     </div>
 </div>

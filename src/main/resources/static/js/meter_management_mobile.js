@@ -850,8 +850,7 @@ document
     }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-
+function addEventListenerToADDROOMDropDown(){
     const ownerDropdown = document.getElementById("ownerId");
     const pgDropdown = document.getElementById("roomPG");
 
@@ -904,6 +903,128 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+}
+
+function showPGsAsPerOwner(Id1, Id2){
+    const ownerDropdown = document.getElementById(Id1);
+    const pgDropdown = document.getElementById(Id2);
+
+    ownerDropdown.addEventListener("change", function () {
+        console.log("ownerDropdown", ownerDropdown);
+        console.log("Changed");
+        const ownerId = this.value;
+        console.log("Owner Id: => ",ownerId);
+        // Reset PG dropdown
+        pgDropdown.innerHTML = '<option value="">Select PG</option>';
+
+        if (!ownerId) return;
+
+        // Show loading
+        pgDropdown.innerHTML = '<option value="">Loading...</option>';
+
+        fetch(`/api/meter/pg/by-owner/${ownerId}`)
+            .then(response => {
+                if (!response.ok) {
+                    console.log(response)
+                    throw new Error("Failed to fetch PGs");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data =>",data)
+                pgDropdown.innerHTML = '<option value="">Select PG</option>';
+
+                if (data.length === 0) {
+                    pgDropdown.disabled = true;
+                    pgDropdown.innerHTML = 
+                        '<option>No PG found</option>';
+                    return;
+                }
+
+                data.forEach(pg => {
+                    const option = document.createElement("option");
+                    option.value = pg.id;
+                    option.textContent = pg.name;
+                    pgDropdown.appendChild(option);
+                });
+
+                pgDropdown.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                pgDropdown.innerHTML =
+                    '<option disabled>Error loading PGs</option>';
+            });
+
+    });
+
+}
+
+// this function is fetching rooms using api by using PG Id and showing options while adding tenant.
+function showRoomsAsPerPG(id1, id2){
+    const pgDropdown = document.getElementById(id1);
+    const roomDropdown = document.getElementById(id2);
+
+    pgDropdown.addEventListener("change", function () {
+        console.log("pgDropdown->", pgDropdown);
+        console.log("Changed");
+        const pgId = this.value;
+        console.log("PG Id: => ",pgId);
+        // Reset PG dropdown
+        roomDropdown.innerHTML = '<option value="">Select PG</option>';
+
+        if (!pgId){
+            console.log("PG Id not found!");
+            return;
+        }
+
+        // Show loading
+        roomDropdown.innerHTML = '<option value="">Loading... is</option>';
+
+        fetch(`/api/meter/rooms/by-pg/${pgId}`)
+            .then(response => {
+                if (!response.ok) {
+                    console.log(response)
+                    throw new Error("Failed to fetch Rooms");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Data =>",data);
+                roomDropdown.innerHTML = '<option value="">Select Room</option>';
+
+                if (data.length === 0) {
+                    roomDropdown.disabled = true;
+                    roomDropdown.innerHTML = 
+                        '<option>No Room found</option>';
+                    return;
+                }
+
+                data.forEach(room => {
+                    const option = document.createElement("option");
+                    option.value = room.id;
+                    option.textContent = room.roomNo + "  (" + room.status.toLowerCase() + ")";
+                    console.log(option, option.textContent)
+                    roomDropdown.appendChild(option);
+                });
+
+                roomDropdown.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                roomDropdown.innerHTML =
+                    '<option disabled>Error loading Rooms</option>';
+            });
+
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    addEventListenerToADDROOMDropDown();
+    showPGsAsPerOwner("tenantOwnerId", "tenantPG");
+    showPGsAsPerOwner("meterOwnerId", "meterPG");
+    showRoomsAsPerPG("tenantPG", "tenantRoom");
+    showRoomsAsPerPG("meterPG", "meterRoom");
 });
 
 document
@@ -948,6 +1069,101 @@ document
       loader.classList.add("hidden");
     }
 });
+
+document
+  .getElementById("tenantForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const loader = document.getElementById("tenantLoading");
+
+    // show loading
+    loader.classList.remove("hidden");
+
+    const data = {
+      tenantName: document.getElementById("tenantName").value,
+      tenantMobile: document.getElementById("tenantPhone").value,
+      tenantEmail: document.getElementById("tenantEmail").value,
+      tenantAddress: document.getElementById("tenantAddress").value,
+      tenantRoom: document.getElementById("tenantRoom").value,
+    };
+    console.log("This is tenant Data: =>",data);
+    try {
+      const response = await fetch("/api/meter/add_tenant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const respObj = await response.json();
+      const afterMsg = document.getElementById("tenantMessage");
+      if (response.ok) {
+
+        document.getElementById("tenantForm").reset();
+        afterMsg.textContent = respObj.message;
+
+        setTimeout(() => {
+            afterMsg.innerText = "";
+        }, 3000);
+
+      } else {
+        console.log(respObj.message);
+        afterMsg.textContent = respObj.message;
+        setTimeout(() => {
+            afterMsg.innerText = "";
+        }, 3000);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      loader.classList.add("hidden");
+    }
+});
+
+document
+  .getElementById("meterForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const loader = document.getElementById("meterLoading");
+    const  roomId = document.getElementById("meterRoom").value;
+    // show loading
+    loader.classList.remove("hidden");
+
+    const data = {
+      serialNo: document.getElementById("meterSerialNo").value,
+      installationDate: document.getElementById("installationDate").value,
+      type: parseInt(document.getElementById("meterType").value)
+    };
+    console.log("This is meterForm Data: =>",data);
+    try {
+      const response = await fetch(`api/meter/add_meter/${roomId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const respObj = await response.json();
+      if (response.ok) {
+
+        document.getElementById("meterForm").reset();
+        const afterMsg = document.getElementById("meterMessage");
+        afterMsg.textContent = respObj.message;
+
+        setTimeout(() => {
+            afterMsg.innerText = "";
+        }, 3000);
+
+      } else {
+        console.log(respObj.message);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      loader.classList.add("hidden");
+    }
+});
+
 
     
     // Transaction Details
