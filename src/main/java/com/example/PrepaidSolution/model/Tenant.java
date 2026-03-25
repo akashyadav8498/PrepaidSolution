@@ -25,6 +25,7 @@ public class Tenant {
     private String name;
     private String email;
     private String address;
+    private String mobile;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 

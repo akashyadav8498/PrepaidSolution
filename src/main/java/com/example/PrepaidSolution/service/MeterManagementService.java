@@ -313,7 +313,7 @@ public class MeterManagementService {
         Users savedUser = usersRepository.save(user);
 
         Tenant tenant = new Tenant();
-        tenant.setPhoneNumber(tenantMobile);
+        tenant.setMobile(tenantMobile);
         tenant.setUser(savedUser);
         tenant.setName(tenantName);
         tenant.setEmail(tenantEmail);
