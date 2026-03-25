@@ -635,20 +635,6 @@
     </style>
 </head>
 <body>
-<!-- Install App Banner -->
-<div class="install-banner" id="installBanner">
-    <div class="install-content">
-        <span class="install-icon">📱</span>
-        <div class="install-text">
-            <div class="install-title">Install App</div>
-            <div class="install-subtitle">Add to your home screen for better experience</div>
-        </div>
-    </div>
-    <div class="install-actions" style="margin-top: 12px;">
-        <button class="install-btn primary" onclick="installApp()">Install</button>
-        <button class="install-btn" onclick="dismissInstallBanner()">Maybe Later</button>
-    </div>
-</div>
 
 <!-- Pull to Refresh -->
 <div class="pull-to-refresh" id="pullToRefresh">
@@ -1442,8 +1428,11 @@
         if (!installBanner || installBannerDismissed || isAppInstalled()) {
             return;
         }
-        if (fallbackMode) {
-            return;
+        const subtitle = installBanner.querySelector('.install-subtitle');
+        if (subtitle) {
+            subtitle.textContent = fallbackMode
+                ? 'Open browser menu and choose "Add to Home screen"'
+                : 'Add to your home screen for better experience';
         }
         installBanner.classList.add('show');
     }
@@ -1452,6 +1441,11 @@
         if (installBanner) {
             installBanner.classList.remove('show');
         }
+    }
+    function dismissInstallBanner() {
+        installBannerDismissed = true;
+        localStorage.setItem('installBannerDismissed', 'true');
+        hideInstallBanner();
     }
     function installApp() {
         if (!deferredPrompt) {

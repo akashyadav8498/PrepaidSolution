@@ -13,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,34 +28,29 @@ public class MVCController {
 
     private final MeterTypeRepository meterTypeRepository;
 
-    @GetMapping("/fdgfdhg")
-    public String dashboard(HttpServletRequest httpServletRequest, Model model) {
+    @GetMapping("/admin")
+    public String admin(HttpServletRequest httpServletRequest, Model model) {
 
         HttpSession session = httpServletRequest.getSession(false);
+        String userName = (String) session.getAttribute("username");
         String role = (String) session.getAttribute("role");
-        String userName = (String) session.getAttribute("userName");
-        LocalDateTime loginTime = (LocalDateTime) session.getAttribute("loginTime");
         String platform = httpServletRequest.getHeader("user-agent");
 
-//        if (!role.equalsIgnoreCase("tenant")) {
+        List<Owner> owners = ownerRepository.findAll();
+        List<PG> pgs = pgRepository.findAll();
+        List<MeterType> meterTypes = meterTypeRepository.findAll();
 
-            List<Owner> owners = ownerRepository.findAll();
-            List<PG> pgs = pgRepository.findAll();
-            List<MeterType> meterTypes = meterTypeRepository.findAll();
+        model.addAttribute("owners", owners);
+        model.addAttribute("pgs", pgs);
+        model.addAttribute("metertypes", meterTypes);
+        model.addAttribute("userName", userName);
+        model.addAttribute("role", role);
+        model.addAttribute("loginTime", LocalDateTime.now());
 
-            model.addAttribute("owners", owners);
-            model.addAttribute("pgs", pgs);
-            model.addAttribute("metertypes", meterTypes);
-            model.addAttribute("userName", userName);
-            model.addAttribute("role", role);
-            model.addAttribute("loginTime", loginTime);
+        if (platform.contains("Windows")) return "admin";
+        else
+            return "admin_mobile";
 
-//            if (platform.contains("Windows")) return "meter_management";
-//            else
-//                return "meter_management_mobile";
-//        }
-//        else
-            return "tenant_v2";
     }
 
 }

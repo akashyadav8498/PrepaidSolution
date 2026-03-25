@@ -1,4 +1,4 @@
-package com.example.PrepaidSolution.dto.pg;
+package com.example.PrepaidSolution.dto;
 
 public class PGDropdownDTO {
 

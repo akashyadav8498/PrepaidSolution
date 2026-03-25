@@ -21,7 +21,7 @@ public class Owner {
     @OneToOne
     @JsonIgnore
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     private String name;
     private String email;

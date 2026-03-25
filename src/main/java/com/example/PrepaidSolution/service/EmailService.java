@@ -2,6 +2,7 @@ package com.example.PrepaidSolution.service;
 
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -117,6 +118,15 @@ public class EmailService {
                 "    </div>" +
                 "</body>" +
                 "</html>";
+    }
+
+    public void sendOTP(String email, String otp) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(email);
+        msg.setSubject("Your Login OTP");
+        msg.setText("Your OTP is: " + otp + "\nValid for 5 minutes.");
+
+        mailSender.send(msg);
     }
 }
 

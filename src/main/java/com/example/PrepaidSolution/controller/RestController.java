@@ -1,23 +1,56 @@
 package com.example.PrepaidSolution.controller;
 
-import com.example.PrepaidSolution.model.User;
-import com.example.PrepaidSolution.repository.UserRepository;
+import com.example.PrepaidSolution.model.Users;
+import com.example.PrepaidSolution.repository.UsersRepository;
+import com.example.PrepaidSolution.service.EmailService;
+import com.example.PrepaidSolution.service.OTPService;
 import com.example.PrepaidSolution.util.Utility;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Map;
 
 @org.springframework.web.bind.annotation.RestController
-@RequestMapping("/addUser")
+@RequiredArgsConstructor
 public class RestController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UsersRepository usersRepository;
 
-    @PostMapping
-    public User createUser(@RequestBody User user) {
+    private final OTPService otpService;
+
+    private EmailService emailService;
+
+    @PostMapping("/addUser")
+    public Users createUser(@RequestBody Users user) {
         user.setPassword(Utility.passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        return usersRepository.save(user);
+    }
+
+
+    @PostMapping("/sendOTP")
+    public ResponseEntity<?> sendOTP(@RequestBody Map<String, String> req) {
+
+        String email = req.get("email");
+
+        String otp = otpService.generateOtp(email);
+        emailService.sendOTP(email, otp);
+
+        return ResponseEntity.ok("OTP sent");
+    }
+
+    @PostMapping("/verifyOTP")
+    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> req) {
+
+        String email = req.get("email");
+        String otp = req.get("otp");
+
+        if (otpService.validateOtp(email, otp)) {
+            return ResponseEntity.ok("Login Success");
+        }
+
+        return ResponseEntity.status(401).body("Invalid OTP");
     }
 }

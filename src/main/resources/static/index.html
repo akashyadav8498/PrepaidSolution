@@ -70,6 +70,7 @@
           src="C:\Users\sw\Downloads\ariot_logo.jpeg"
           alt="Logo"
           class="login-logo" /> -->
+          <form id="loginForm" action="/perform_login" method="post">
         <div class="login-card">
           <!-- <h3 style="margin-bottom: 20px; color: var(--secondary)">
             Welcome to Pay As You Go
@@ -77,28 +78,36 @@
           <img src="/images/ariot_logo.jpeg" alt="Logo" class="login-logo" />
           <div class="input-group">
             <label>Email</label>
-            <input type="email" placeholder="Enter your email" />
+            <input type="email" id="email" placeholder="Enter your email" />
           </div>
           <div class="input-group">
-            <label>Verify OTP</label>
-            <div class="otp-row">
-              <input
-                type="number"
-                placeholder="XXXX"
-                style="width: 80px; text-align: center" />
-              <button class="btn-send">Send OTP</button>
-            </div>
+            <label>Verify OTP</label><div class="otp-row">
+              <input id="otp" type="number" placeholder="XXXX" style="width: 80px; text-align: center" />
+
+              <button id="sendOtpBtn" type="button" class="btn-send" onclick="handleSendOtp()">
+                  Send OTP
+              </button>
           </div>
-          <p style="font-size: 0.7rem; color: var(--muted); margin: 15px 0">
-            Resend in 00:30
-          </p>
+          </div>
+            <p id="resendText" style="font-size: 0.7rem; color: var(--muted); margin: 15px 0; display:none;">
+                Resend in <span id="timer">30</span>s
+            </p>
           <button
             class="btn-primary"
-            onclick="doLogin()"
+            onclick="verifyOTP()"
             style="background: var(--primary)">
             VERIFY & LOGIN
           </button>
         </div>
+              <div style="margin-top: 20px; text-align: center; pt: 15px;">
+                  <p style="font-size: 0.85rem; color: var(--muted);">
+                      Are you an administrator?
+                      <a href="/admin_index.html" style="color: #2e3192; font-weight: 700; text-decoration: none; margin-left: 5px;">
+                          Login to Admin Panel
+                      </a>
+                  </p>
+              </div>
+          </form>
       </div>
     </div>
     <div id="installBanner" class="install-banner" aria-live="polite">
@@ -189,6 +198,77 @@
         }, 1500);
       });
     }
-  </script>
+
+let countdownInterval = null;
+let timeLeft = 30;
+
+async function handleSendOtp() {
+    const email = document.getElementById("email").value;
+
+    if (!email) {
+        alert("Enter email first");
+        return;
+    }
+
+    // Call backend
+    await fetch("/sendOTP", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+    });
+
+    startOtpTimer();
+}
+
+function startOtpTimer() {
+    const btn = document.getElementById("sendOtpBtn");
+    const resendText = document.getElementById("resendText");
+    const timer = document.getElementById("timer");
+
+    // Hide button, show timer
+    btn.style.display = "none";
+    resendText.style.display = "block";
+
+    timeLeft = 30;
+    timer.innerText = timeLeft;
+
+    countdownInterval = setInterval(() => {
+        timeLeft--;
+        timer.innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+
+            // Show button again
+            btn.style.display = "inline-block";
+            resendText.style.display = "none";
+        }
+    }, 1000);
+}
+
+async function verifyOtp() {
+    const email = document.getElementById("email").value;
+    const otp = document.getElementById("otp").value;
+
+    const res = await fetch("/verifyOTP", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, otp })
+    });
+
+    if (res.ok) {
+        clearInterval(countdownInterval); // ✅ stop timer on success
+        alert("Login successful");
+        window.location.href = "/dashboard";
+    } else {
+        alert("Invalid OTP");
+    }
+}
+
+    </script>
 </body>
 </html>

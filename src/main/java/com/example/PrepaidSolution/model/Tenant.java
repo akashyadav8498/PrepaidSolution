@@ -20,9 +20,8 @@ public class Tenant {
     @OneToOne
     @JsonIgnore
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
-    private String phoneNumber;
     private String name;
     private String email;
     private String address;

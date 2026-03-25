@@ -1,11 +1,9 @@
 package com.example.PrepaidSolution.service;
 
-import com.example.PrepaidSolution.dto.pg.PGDropdownDTO;
+import com.example.PrepaidSolution.dto.PGDropdownDTO;
 import com.example.PrepaidSolution.model.*;
 import com.example.PrepaidSolution.repository.*;
 import com.example.PrepaidSolution.util.Utility;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,7 @@ public class MeterManagementService {
     private LiveMeterReadingsRepository liveMeterReadingsRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
 
     @Autowired
     private OwnerRepository ownerRepository;
@@ -55,7 +53,7 @@ public class MeterManagementService {
 
     public Map<String,Object> getAllUsers() {
         Map<String,Object> result = new HashMap<>();
-        List<User> users = userRepository.findAll();
+        List<Users> users = usersRepository.findAll();
 
         result.put("users", users);
         return result;
@@ -64,8 +62,8 @@ public class MeterManagementService {
     public Map<String, Long> getDashboardCounts() {
 
         long totalPG = pgRepository.count();
-        long totalOwners = userRepository.countByRole(User.Role.OWNER);
-        long totalTenants = userRepository.countByRole(User.Role.TENANT);
+        long totalOwners = usersRepository.countByRole(Users.Role.OWNER);
+        long totalTenants = usersRepository.countByRole(Users.Role.TENANT);
         long totalMeters = liveMeterReadingsRepository.countDistinctMeterId();
         long totalRooms = roomRepository.count();
 
@@ -189,11 +187,11 @@ public class MeterManagementService {
         String username = Utility.generateUsername(ownerName, ownerMobile, 7);
         String password = Utility.generatePassword(7);
 
-        User user = new User();
+        Users user = new Users();
         user.setUsername(username);
         user.setPassword(Utility.passwordEncoder.encode(password));
-        user.setRole(User.Role.OWNER);
-        User savedUser = userRepository.save(user);
+        user.setRole(Users.Role.OWNER);
+        Users savedUser = usersRepository.save(user);
 
         Owner owner = new Owner();
         owner.setUser(savedUser);
@@ -276,11 +274,11 @@ public class MeterManagementService {
 
         Room room = roomRepository.findById(tenantRoom).orElse(null);
 
-        User user = new User();
+        Users user = new Users();
         user.setUsername(username);
         user.setPassword(Utility.passwordEncoder.encode(password));
-        user.setRole(User.Role.TENANT);
-        User savedUser = userRepository.save(user);
+        user.setRole(Users.Role.TENANT);
+        Users savedUser = usersRepository.save(user);
 
         Tenant tenant = new Tenant();
         tenant.setUser(savedUser);

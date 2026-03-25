@@ -1,8 +1,6 @@
 package com.example.PrepaidSolution.controller;
 
-import com.example.PrepaidSolution.dto.pg.PGDropdownDTO;
-import com.example.PrepaidSolution.model.PG;
-import com.example.PrepaidSolution.model.User;
+import com.example.PrepaidSolution.dto.PGDropdownDTO;
 import com.example.PrepaidSolution.repository.PGRepository;
 import com.example.PrepaidSolution.service.MeterManagementService;
 import jakarta.servlet.http.HttpServletRequest;
