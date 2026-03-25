@@ -38,7 +38,33 @@ public class MeterManagementService {
     private TenantRepository tenantRepository;
 
     @Autowired
+    private MeterRepository meterRepository;
+
+    @Autowired
     private EmailService emailService;
+
+    public Meter saveMeter(Meter meter, Long roomId) {
+
+        //  Get Room from DB
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+
+        //  Set relation
+        meter.setRoom(room);
+
+        //  Default value (optional)
+        if (meter.getIsActive() == null) {
+            meter.setIsActive(true);
+        }
+
+        // Save meter
+        return meterRepository.save(meter);
+    }
+
+
+    public List<Room> getRoomsByPg(Long pgId) {
+        return roomRepository.findByPgId(pgId);
+    }
 
     public List<PGDropdownDTO> getPgsByOwner(Long ownerId) {
 
@@ -257,7 +283,8 @@ public class MeterManagementService {
             emailService.sendCredentialsEmail(tenantDetails);
             return new ResponseEntity<>(Map.of("message", "Tenant added successfully"), HttpStatusCode.valueOf(HttpStatus.OK.value()));
         } catch (Exception e) {
-            return new ResponseEntity<>(Map.of("message", "Tenant could not be added"), HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+            e.printStackTrace();
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
         }
     }
 
@@ -272,7 +299,12 @@ public class MeterManagementService {
         String username = Utility.generateUsername(tenantName, tenantMobile, 7);
         String password = Utility.generatePassword(7);
 
-        Room room = roomRepository.findById(tenantRoom).orElse(null);
+        Room room = roomRepository.findById(tenantRoom)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+
+        if (room.getStatus() == Room.Status.OCCUPIED) {
+            throw new RuntimeException("Room already occupied");
+        }
 
         Users user = new Users();
         user.setUsername(username);
@@ -281,12 +313,16 @@ public class MeterManagementService {
         Users savedUser = usersRepository.save(user);
 
         Tenant tenant = new Tenant();
+        tenant.setPhoneNumber(tenantMobile);
         tenant.setUser(savedUser);
         tenant.setName(tenantName);
         tenant.setEmail(tenantEmail);
         tenant.setAddress(tenantAddress);
         tenant.setRoom(room);
         tenantRepository.save(tenant);
+
+        room.setStatus(Room.Status.OCCUPIED);
+        roomRepository.save(room);
 
         return Map.of("username", username, "password", password, "name", tenantName, "email", tenantEmail);
     }

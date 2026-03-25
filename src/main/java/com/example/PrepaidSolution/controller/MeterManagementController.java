@@ -1,6 +1,11 @@
 package com.example.PrepaidSolution.controller;
 
 import com.example.PrepaidSolution.dto.PGDropdownDTO;
+import com.example.PrepaidSolution.dto.pg.PGDropdownDTO;
+import com.example.PrepaidSolution.model.Meter;
+import com.example.PrepaidSolution.model.PG;
+import com.example.PrepaidSolution.model.Room;
+import com.example.PrepaidSolution.model.User;
 import com.example.PrepaidSolution.repository.PGRepository;
 import com.example.PrepaidSolution.service.MeterManagementService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +23,27 @@ public class MeterManagementController {
     @Autowired
     private MeterManagementService meterManagementService;
     private PGRepository pgRepository;
+
+//    @PostMapping("/add_meter")
+//    public Meter createMeter(@RequestBody Meter meter,
+//                             @RequestParam Long roomId) {
+//
+//        return meterManagementService.saveMeter(meter, roomId);
+//    }
+
+    @PostMapping("/add_meter/{roomId}")
+    public Meter createMeter(@RequestBody Meter meter,
+                             @PathVariable Long roomId) {
+
+        return meterManagementService.saveMeter(meter, roomId);
+    }
+
+    @GetMapping("/rooms/by-pg/{pgId}")
+    public ResponseEntity<List<Room>> getRoomsByPg(@PathVariable Long pgId){
+        return ResponseEntity.ok(
+                meterManagementService.getRoomsByPg(pgId)
+        );
+    }
 
     @GetMapping("/pg/by-owner/{ownerId}")
     public ResponseEntity<List<PGDropdownDTO>> getPgsByOwner(
