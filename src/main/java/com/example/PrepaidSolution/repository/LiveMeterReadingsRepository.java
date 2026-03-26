@@ -12,8 +12,5 @@ import org.springframework.stereotype.Repository;
 public interface LiveMeterReadingsRepository
         extends JpaRepository<LiveMeterReadings, Long> {
 
-    @Query("SELECT COUNT(DISTINCT r.meterId) FROM LiveMeterReadings r")
-    long countDistinctMeterId();
-
     List<LiveMeterReadings> findAllByMeterId(String meterId, Sort id);
 }

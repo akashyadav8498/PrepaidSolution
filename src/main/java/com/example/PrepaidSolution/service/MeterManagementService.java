@@ -90,7 +90,7 @@ public class MeterManagementService {
         long totalPG = pgRepository.count();
         long totalOwners = usersRepository.countByRole(Users.Role.OWNER);
         long totalTenants = usersRepository.countByRole(Users.Role.TENANT);
-        long totalMeters = liveMeterReadingsRepository.countDistinctMeterId();
+        long totalMeters = meterRepository.count();
         long totalRooms = roomRepository.count();
 
         Map<String, Long> result = new HashMap<>();
