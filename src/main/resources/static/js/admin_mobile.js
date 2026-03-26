@@ -147,10 +147,11 @@ function loadMeterReadings() {
     });
 
     function loadDashboardData(){
-    fetch("/api/meter/dashboard")
+    fetch("/api/meter/dashboard",{
+        cache: "no-store"
+    })
         .then(response => response.json())
         .then(data => {
-            console.log("Data is here ->", data)
         document.getElementById("totalPg").innerHTML = `${data.totalPG}`;
         document.getElementById("totalOwners").innerHTML = `${data.totalOwners}`;
         document.getElementById("totalTenants").innerHTML = `${data.totalTenants}`;
@@ -158,6 +159,10 @@ function loadMeterReadings() {
         document.getElementById("totalRooms").innerHTML = `${data.totalRooms}`;
         })
         .catch(error => console.error("Error:", error));
+    }
+
+    function refreshDashboard() {
+    loadDashboardData();
     }
     
 
@@ -803,6 +808,7 @@ document
       const respObj = await response.json();
       if (response.ok) {
         document.getElementById("ownerForm").reset();
+        refreshDashboard();
       } else {
         console.log(respObj.message)
       }
@@ -841,6 +847,7 @@ document
       if (response.ok) {
         // Clear form
         document.getElementById("pgForm").reset();
+        refreshDashboard();
       } else {
         console.log(respObj.message);
       }
@@ -1052,6 +1059,7 @@ document
       if (response.ok) {
 
         document.getElementById("roomForm").reset();
+        refreshDashboard();
         const afterMsg = document.getElementById("afterMessage");
         afterMsg.textContent = respObj.message;
 
@@ -1099,6 +1107,7 @@ document
       if (response.ok) {
 
         document.getElementById("tenantForm").reset();
+        refreshDashboard();
         afterMsg.textContent = respObj.message;
 
         setTimeout(() => {
@@ -1146,6 +1155,7 @@ document
       if (response.ok) {
 
         document.getElementById("meterForm").reset();
+        refreshDashboard();
         const afterMsg = document.getElementById("meterMessage");
         afterMsg.textContent = respObj.message;
 
@@ -1285,7 +1295,7 @@ function logout() {
                     pullToRefresh.style.transform = 'translateY(0)';
                     pullToRefresh.style.opacity = '0';
                     isRefreshing = false;
-                    alert('Data refreshed!');
+                    // alert('Data refreshed!');
                 }, 2000);
             } else {
                 pullToRefresh.style.transform = 'translateY(0)';
@@ -1908,29 +1918,29 @@ function logout() {
         }
     });
 
-    document.addEventListener('touchend', function(e) {
-        if (window.scrollY === 0 && !isRefreshing) {
-            const diff = currentY - startY;
-            const pullToRefresh = document.getElementById('pullToRefresh');
+    // document.addEventListener('touchend', function(e) {
+    //     if (window.scrollY === 0 && !isRefreshing) {
+    //         const diff = currentY - startY;
+    //         const pullToRefresh = document.getElementById('pullToRefresh');
 
-            if (diff > 60) {
-                isRefreshing = true;
-                pullToRefresh.textContent = 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Refreshing...';
-                pullToRefresh.classList.add('show');
+    //         if (diff > 60) {
+    //             isRefreshing = true;
+    //             pullToRefresh.textContent = 'ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ¢â‚¬Å¾ Refreshing...';
+    //             pullToRefresh.classList.add('show');
 
-                setTimeout(() => {
-                    pullToRefresh.classList.remove('show');
-                    pullToRefresh.style.transform = 'translateY(0)';
-                    pullToRefresh.style.opacity = '0';
-                    isRefreshing = false;
-                    alert('Data refreshed!');
-                }, 2000);
-            } else {
-                pullToRefresh.style.transform = 'translateY(0)';
-                pullToRefresh.style.opacity = '0';
-            }
-        }
-    });
+    //             setTimeout(() => {
+    //                 pullToRefresh.classList.remove('show');
+    //                 pullToRefresh.style.transform = 'translateY(0)';
+    //                 pullToRefresh.style.opacity = '0';
+    //                 isRefreshing = false;
+    //                 //alert('Data refreshed!');
+    //             }, 2000);
+    //         } else {
+    //             pullToRefresh.style.transform = 'translateY(0)';
+    //             pullToRefresh.style.opacity = '0';
+    //         }
+    //     }
+    // });
 
     // Prevent zoom on double tap
     let lastTouchEnd = 0;
