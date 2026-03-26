@@ -89,17 +89,19 @@ async function handleNavigation(request) {
 async function handleAsset(request) {
   const cache = await caches.open(ASSET_CACHE);
 
-  const cachedResponse = await cache.match(request);
-  if (cachedResponse) {
+  try {
+    // 🔥 Always try network first
+    const freshResponse = await fetch(request);
+
+    // Update cache with latest version
+    if (freshResponse.ok && !request.url.includes("/api/")) {
+      cache.put(request, freshResponse.clone());
+    }
+
+    return freshResponse; // ✅ always latest
+  } catch (error) {
+    // fallback to cache if offline
+    const cachedResponse = await cache.match(request);
     return cachedResponse;
   }
-
-  const response = await fetch(request);
-
-  // DO NOT CACHE API 
-  if (response.ok && !request.url.includes("/api/")) {
-    cache.put(request, response.clone());
-  }
-
-  return response;
 }
