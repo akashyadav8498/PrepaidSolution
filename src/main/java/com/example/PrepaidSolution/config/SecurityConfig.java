@@ -21,8 +21,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/sendOTP","/verifyOTP", "/index.html","/admin_index.html","admin_dashboard.html","/", "/service-worker.js", "/manifest.json", "/addUser","/api/meter/dashboard",
-                                "/api/meter/get_onload_data", "/api/meter/{meterId}", "/api/meter/pg/by-owner/{ownerId}").permitAll()
+                        .requestMatchers("/admin","/owner","/tenant","/sendOTP","/verifyOTP", "/index.html","/admin_index.html","/dashboard","/api/meter/rooms/by-pg/{pgId}",
+                                "/api/meter/add_tenant","/admin_dashboard.html","/", "/service-worker.js", "/manifest.json", "/addUser","/api/meter/dashboard",
+                                "/api/meter/get_onload_data", "/api/meter/{meterId}", "/api/meter/pg/by-owner/{ownerId}","/api/meter/add_meter/{roomId}").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form

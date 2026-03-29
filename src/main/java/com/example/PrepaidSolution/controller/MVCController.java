@@ -63,4 +63,15 @@ public class MVCController {
 
     }
 
+    @GetMapping("/owner")
+    public String owner(HttpServletRequest httpServletRequest, Model model){
+        return "owner";
+    }
+
+    @GetMapping("/tenant")
+    public String tenant(HttpServletRequest httpServletRequest, Model model){
+        return "tenant";
+    }
+
+
 }
