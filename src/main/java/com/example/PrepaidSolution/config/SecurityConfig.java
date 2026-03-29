@@ -20,17 +20,16 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/sendOTP","/verifyOTP", "/index.html","/admin_index.html","admin_dashboard.html","/", "/service-worker.js", "/manifest.json", "/addUser","/api/meter/dashboard",
                                 "/api/meter/get_onload_data", "/api/meter/{meterId}", "/api/meter/pg/by-owner/{ownerId}").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage("/index.html")
                         .loginProcessingUrl("/perform_login")
                         .successHandler(customSuccessHandler())
-                        .failureUrl("/login?error=true")
+                        .failureUrl("/admin_index.html?error=true")
                         .permitAll()
                 );
 

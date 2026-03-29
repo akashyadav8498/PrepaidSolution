@@ -1,7 +1,9 @@
 package com.example.PrepaidSolution.service;
 
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,11 +15,16 @@ import java.util.Map;
 @Service
 public class EmailService {
 
+    private static final String OTP_LOGO_CONTENT_ID = "ariotLogo";
+
     @Autowired
     private JavaMailSender mailSender;
 
     @Autowired
     private TemplateEngine templateEngine;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
     private static final String COMPANY_NAME = "YourCompany"; // Replace with your company name
     private static final String SOFTWARE_NAME = "YourSoftware"; // Replace with your software name
@@ -31,7 +38,7 @@ public class EmailService {
 
             helper.setTo(ownerDetails.get("email"));
             helper.setSubject("Welcome to " + SOFTWARE_NAME + " - Your Account Credentials");
-            helper.setFrom("noreply@yourcompany.com"); // Replace with your sender email
+            helper.setFrom(fromEmail);
 
             // Create email content
             String htmlContent = createEmailContent(ownerDetails.get("name"), ownerDetails.get("username"), ownerDetails.get("password"));
@@ -45,88 +52,151 @@ public class EmailService {
     }
 
     private String createEmailContent(String fullName, String username, String password) {
-        return "<!DOCTYPE html>" +
-                "<html lang='en'>" +
-                "<head>" +
-                "    <meta charset='UTF-8'>" +
-                "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
-                "    <title>Welcome to " + SOFTWARE_NAME + "</title>" +
-                "    <style>" +
-                "        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }" +
-                "        .header { background-color: #2c3e50; color: white; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0; }" +
-                "        .content { background-color: #f8f9fa; padding: 30px 20px; border-radius: 0 0 8px 8px; }" +
-                "        .credentials-box { background-color: white; border: 2px solid #3498db; border-radius: 8px; padding: 20px; margin: 20px 0; }" +
-                "        .credential-item { margin: 15px 0; padding: 10px; background-color: #f1f2f6; border-radius: 4px; }" +
-                "        .credential-label { font-weight: bold; color: #2c3e50; }" +
-                "        .credential-value { font-family: monospace; font-size: 16px; color: #e74c3c; background-color: white; padding: 5px 8px; border-radius: 3px; border: 1px solid #ddd; }" +
-                "        .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 4px; margin: 20px 0; }" +
-                "        .footer { text-align: center; margin-top: 30px; color: #7f8c8d; font-size: 12px; }" +
-                "        .button { display: inline-block; padding: 12px 24px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; margin: 10px 0; }" +
-                "        .security-tips { background-color: #e8f8f5; border-left: 4px solid #27ae60; padding: 15px; margin: 20px 0; }" +
-                "    </style>" +
-                "</head>" +
-                "<body>" +
-                "    <div class='header'>" +
-                "        <h1>" + COMPANY_NAME + "</h1>" +
-                "        <h2>Welcome to " + SOFTWARE_NAME + "!</h2>" +
-                "    </div>" +
-                "    <div class='content'>" +
-                "        <h3>Hello " + fullName + ",</h3>" +
-                "        <p>Welcome to " + SOFTWARE_NAME + "! Your account has been successfully created. Below are your login credentials:</p>" +
-                "        " +
-                "        <div class='credentials-box'>" +
-                "            <h4>🔐 Your Login Credentials</h4>" +
-                "            <div class='credential-item'>" +
-                "                <div class='credential-label'>Username:</div>" +
-                "                <div class='credential-value'>" + username + "</div>" +
-                "            </div>" +
-                "            <div class='credential-item'>" +
-                "                <div class='credential-label'>Password:</div>" +
-                "                <div class='credential-value'>" + password + "</div>" +
-                "            </div>" +
-                "        </div>" +
-                "        " +
-                "        <div class='warning'>" +
-                "            <strong>⚠️ Important Security Notice:</strong><br>" +
-                "            Please change your password after your first login for security purposes." +
-                "        </div>" +
-                "        " +
-                "        <div style='text-align: center;'>" +
-                "            <a href='" + COMPANY_WEBSITE + "/login' class='button'>Login Now</a>" +
-                "        </div>" +
-                "        " +
-                "        <div class='security-tips'>" +
-                "            <h4>🛡️ Security Best Practices:</h4>" +
-                "            <ul>" +
-                "                <li>Keep your credentials confidential</li>" +
-                "                <li>Use a strong, unique password</li>" +
-                "                <li>Enable two-factor authentication if available</li>" +
-                "                <li>Log out after each session</li>" +
-                "            </ul>" +
-                "        </div>" +
-                "        " +
-                "        <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>" +
-                "        " +
-                "        <p>Best regards,<br>" +
-                "        The " + COMPANY_NAME + " Team</p>" +
-                "    </div>" +
-                "    <div class='footer'>" +
-                "        <p>© 2024 " + COMPANY_NAME + ". All rights reserved.</p>" +
-                "        <p>Contact us: <a href='mailto:" + SUPPORT_EMAIL + "'>" + SUPPORT_EMAIL + "</a> | " +
-                "        Visit: <a href='" + COMPANY_WEBSITE + "'>" + COMPANY_WEBSITE + "</a></p>" +
-                "        <p><em>This is an automated message. Please do not reply to this email.</em></p>" +
-                "    </div>" +
-                "</body>" +
-                "</html>";
+        return """
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>AR IoT Solutions Credentials</title>
+                </head>
+                <body style="margin:0;padding:0;background:#eef2f7;font-family:Arial,sans-serif;color:#1e293b;">
+                    <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="background:#eef2f7;padding:24px 12px;">
+                        <tr>
+                            <td align="center">
+                                <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border-radius:22px;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,0.10);">
+                                    <tr>
+                                        <td style="background:linear-gradient(135deg,#2e3192 0%%,#1f225f 55%%,#f37021 100%%);padding:28px 32px 24px;text-align:center;">
+                                            <div style="font-size:26px;line-height:1.2;font-weight:800;color:#ffffff;letter-spacing:0.4px;">AR IoT Solutions</div>
+                                            <div style="margin-top:8px;font-size:14px;line-height:1.5;color:rgba(255,255,255,0.88);">Pay As You Go access details</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:32px;">
+                                            <div style="font-size:16px;line-height:1.8;color:#475569;">
+                                                Hello <strong style="color:#1e293b;">%s</strong>,
+                                            </div>
+                                            <div style="margin-top:12px;font-size:16px;line-height:1.8;color:#475569;">
+                                                Your account has been created successfully. Use the credentials below to sign in to the AR IoT Solutions platform.
+                                            </div>
+
+                                            <div style="margin:28px 0 22px;padding:24px;border-radius:18px;background:#f8fafc;border:1px solid #dbe5f0;">
+                                                <div style="font-size:13px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#64748b;margin-bottom:16px;">Login Credentials</div>
+
+                                                <div style="padding:14px 16px;border-radius:14px;background:#ffffff;border:1px solid #e2e8f0;margin-bottom:12px;">
+                                                    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#64748b;">Username</div>
+                                                    <div style="margin-top:8px;font-size:18px;font-weight:700;color:#2e3192;word-break:break-word;">%s</div>
+                                                </div>
+
+                                                <div style="padding:14px 16px;border-radius:14px;background:#ffffff;border:1px solid #e2e8f0;">
+                                                    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#64748b;">Password</div>
+                                                    <div style="margin-top:8px;font-size:18px;font-weight:700;color:#f37021;word-break:break-word;">%s</div>
+                                                </div>
+                                            </div>
+
+                                            <div style="padding:16px 18px;border-left:4px solid #f37021;background:#fff7ed;border-radius:12px;font-size:14px;line-height:1.7;color:#7c2d12;">
+                                                For security, please change your password after your first login and do not share your credentials with anyone.
+                                            </div>
+
+                                            <div style="margin-top:22px;padding:16px 18px;border-radius:12px;background:#eff6ff;font-size:14px;line-height:1.7;color:#1d4ed8;">
+                                                Keep this email safe in case you need to refer to your initial login details later.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:0 32px 28px;">
+                                            <div style="height:1px;background:#e2e8f0;"></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:0 32px 30px;text-align:center;font-size:12px;line-height:1.7;color:#64748b;">
+                                            Powered by <span style="font-weight:700;color:#2e3192;">AR IoT Solutions</span><br>
+                                            This is an automated email. Please do not reply.
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+                """.formatted(fullName, username, password);
     }
 
     public void sendOTP(String email, String otp) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(email);
-        msg.setSubject("Your Login OTP");
-        msg.setText("Your OTP is: " + otp + "\nValid for 5 minutes.");
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        mailSender.send(msg);
+            helper.setTo(email);
+            helper.setSubject("AR IoT Solutions - Your Login OTP");
+            helper.setFrom(fromEmail);
+
+            String htmlContent = createOtpEmailContent(otp);
+            helper.setText(htmlContent, true);
+            helper.addInline(OTP_LOGO_CONTENT_ID, new ClassPathResource("static/images/ariot_logo.jpeg"));
+
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send OTP email", e);
+        }
+    }
+
+    private String createOtpEmailContent(String otp) {
+        return """
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>AR IoT Solutions OTP</title>
+                </head>
+                <body style="margin:0;padding:0;background:#eef2f7;font-family:Arial,sans-serif;color:#1e293b;">
+                    <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="background:#eef2f7;padding:24px 12px;">
+                        <tr>
+                            <td align="center">
+                                <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border-radius:22px;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,0.10);">
+                                    <tr>
+                                        <td style="background:linear-gradient(135deg,#2e3192 0%%,#1f225f 55%%,#f37021 100%%);padding:28px 32px 24px;text-align:center;">
+                                            <img src="cid:%s" alt="AR IoT Solutions" style="width:170px;max-width:100%%;display:block;margin:0 auto 18px;">
+                                            <div style="font-size:26px;line-height:1.2;font-weight:800;color:#ffffff;letter-spacing:0.4px;">AR IoT Solutions</div>
+                                            <div style="margin-top:8px;font-size:14px;line-height:1.5;color:rgba(255,255,255,0.88);">Secure Login Verification</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:32px;">
+                                            <div style="font-size:16px;line-height:1.7;color:#475569;">
+                                                An OTP has been generated for your login request. Use the code below to continue signing in.
+                                            </div>
+
+                                            <div style="margin:28px 0 22px;padding:22px 20px;border-radius:18px;background:#f8fafc;border:1px solid #dbe5f0;text-align:center;">
+                                                <div style="font-size:13px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#64748b;">Your One-Time Password</div>
+                                                <div style="margin-top:14px;font-size:34px;font-weight:800;letter-spacing:8px;color:#2e3192;">%s</div>
+                                                <div style="margin-top:14px;font-size:13px;color:#64748b;">Valid for 5 minutes only</div>
+                                            </div>
+
+                                            <div style="padding:16px 18px;border-left:4px solid #f37021;background:#fff7ed;border-radius:12px;font-size:14px;line-height:1.7;color:#7c2d12;">
+                                                If you did not request this OTP, you can safely ignore this email. For your security, do not share this code with anyone.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:0 32px 28px;">
+                                            <div style="height:1px;background:#e2e8f0;"></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:0 32px 30px;text-align:center;font-size:12px;line-height:1.7;color:#64748b;">
+                                            Powered by <span style="font-weight:700;color:#2e3192;">AR IoT Solutions</span><br>
+                                            This is an automated verification email. Please do not reply.
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+                """.formatted(OTP_LOGO_CONTENT_ID, otp);
     }
 }
-

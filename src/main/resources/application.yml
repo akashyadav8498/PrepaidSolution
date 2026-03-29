@@ -6,10 +6,10 @@ spring:
     active: dev
 
   mail:
-    host: smtp.gmail.com
+    host: smtp.hostinger.com
     port: 587
-    username: akashyadav.8498@gmail.com
-    password: hwmsjjclrstgzsoy
+    username: info@ariotsolutions.com
+    password: Amit@8679
     properties:
       mail:
         smtp:

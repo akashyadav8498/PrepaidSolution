@@ -5,12 +5,22 @@ import com.example.PrepaidSolution.repository.UsersRepository;
 import com.example.PrepaidSolution.service.EmailService;
 import com.example.PrepaidSolution.service.OTPService;
 import com.example.PrepaidSolution.util.Utility;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @org.springframework.web.bind.annotation.RestController
@@ -18,10 +28,8 @@ import java.util.Map;
 public class RestController {
 
     private final UsersRepository usersRepository;
-
     private final OTPService otpService;
-
-    private EmailService emailService;
+    private final EmailService emailService;
 
     @PostMapping("/addUser")
     public Users createUser(@RequestBody Users user) {
@@ -29,28 +37,107 @@ public class RestController {
         return usersRepository.save(user);
     }
 
-
     @PostMapping("/sendOTP")
     public ResponseEntity<?> sendOTP(@RequestBody Map<String, String> req) {
+        String email = normalizeEmail(req.get("email"));
 
-        String email = req.get("email");
+        if (email.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email is required."));
+        }
 
-        String otp = otpService.generateOtp(email);
-        emailService.sendOTP(email, otp);
+        if (usersRepository.findByEmailIgnoreCase(email).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "No user found for this email."));
+        }
 
-        return ResponseEntity.ok("OTP sent");
+        OTPService.OtpGenerationResult result = otpService.generateOtp(email);
+        if (!result.allowed()) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(Map.of(
+                    "message", result.message(),
+                    "sendCount", result.sendCount(),
+                    "maxAttempts", OTPService.MAX_SEND_ATTEMPTS,
+                    "resendPromptDelaySeconds", OTPService.RESEND_PROMPT_DELAY_SECONDS
+            ));
+        }
+
+        emailService.sendOTP(email, result.otp());
+
+        return ResponseEntity.ok(Map.of(
+                "message", result.message(),
+                "sendCount", result.sendCount(),
+                "maxAttempts", OTPService.MAX_SEND_ATTEMPTS,
+                "resendPromptDelaySeconds", OTPService.RESEND_PROMPT_DELAY_SECONDS
+        ));
     }
 
     @PostMapping("/verifyOTP")
-    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> req) {
+    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> req,
+                                       HttpServletRequest httpServletRequest) {
+        String email = normalizeEmail(req.get("email"));
+        String otp = req.getOrDefault("otp", "").trim();
 
-        String email = req.get("email");
-        String otp = req.get("otp");
-
-        if (otpService.validateOtp(email, otp)) {
-            return ResponseEntity.ok("Login Success");
+        if (email.isBlank() || otp.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email and OTP are required."));
         }
 
-        return ResponseEntity.status(401).body("Invalid OTP");
+        Users user = usersRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "No user found for this email."));
+        }
+
+        if (!otpService.validateOtp(email, otp)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid or expired OTP."));
+        }
+
+        String authority = "ROLE_" + user.getRole().name();
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        user.getUsername(),
+                        null,
+                        List.of(new SimpleGrantedAuthority(authority))
+                );
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        HttpSession httpSession = httpServletRequest.getSession(true);
+        httpSession.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                securityContext
+        );
+
+        String role = user.getRole().name();
+
+        httpSession.setAttribute("username", user.getUsername());
+        httpSession.setAttribute("role", role);
+
+        otpService.clearOtp(email);
+
+        int httpStatusCode = 200;
+        String message = "Login successful.";
+        String redirectUrl = "";
+
+        if(role.equalsIgnoreCase("owner")) redirectUrl = "/owner";
+        else if(role.equalsIgnoreCase("tenant")) redirectUrl = "/tenant";
+        else {
+            httpStatusCode = 403;
+            message = "This page is not accessible to admin.";
+        }
+
+        return new ResponseEntity<>(
+                Map.of(
+                        "message", message,
+                        "redirectUrl", redirectUrl
+                ),
+                HttpStatusCode.valueOf(httpStatusCode)
+        );
+    }
+
+    private String normalizeEmail(String email) {
+        return email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
     }
 }

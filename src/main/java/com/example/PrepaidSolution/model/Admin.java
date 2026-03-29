@@ -21,7 +21,7 @@ public class Admin {
     @OneToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private Users user;
+    private Users users;
 
     private String name;
     private String email;

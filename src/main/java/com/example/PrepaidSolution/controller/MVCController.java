@@ -28,6 +28,16 @@ public class MVCController {
 
     private final MeterTypeRepository meterTypeRepository;
 
+    @GetMapping("/tenant")
+    public String tenant() {
+        return "tenant";
+    }
+
+    @GetMapping("/owner")
+    public String owner() {
+        return "owner";
+    }
+
     @GetMapping("/admin")
     public String admin(HttpServletRequest httpServletRequest, Model model) {
 

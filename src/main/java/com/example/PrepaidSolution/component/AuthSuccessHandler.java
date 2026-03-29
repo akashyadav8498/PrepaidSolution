@@ -32,7 +32,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
                 redirectUrl = "/admin";
                 session.setAttribute("role", Users.Role.ADMIN.toString());
                 break;
-            } else if (auth.getAuthority().equals("ROLE_OWNER")) {
+            } /*else if (auth.getAuthority().equals("ROLE_OWNER")) {
                 redirectUrl = "/owner";
                 session.setAttribute("role", Users.Role.OWNER.toString());
                 break;
@@ -40,7 +40,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
                 redirectUrl = "/tenant";
                 session.setAttribute("role", Users.Role.TENANT.toString());
                 break;
-            }
+            }*/
         }
 
         response.sendRedirect(redirectUrl);
