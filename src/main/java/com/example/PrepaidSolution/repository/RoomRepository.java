@@ -2,6 +2,7 @@ package com.example.PrepaidSolution.repository;
 
 import com.example.PrepaidSolution.model.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,4 +12,7 @@ import java.util.Set;
 public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findAllByPgIdEqualsAndStatus(Long pgId, Room.Status status);
     List<Room> findByPgId(Long pgId);
+
+    @Query("SELECT COUNT(r) FROM Room r WHERE r.pg.owner.id = :ownerId")
+    int countRoomsByOwnerId(Long ownerId);
 }
