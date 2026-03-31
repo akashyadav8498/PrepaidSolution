@@ -22,9 +22,12 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin","/owner","/tenant","/sendOTP","/verifyOTP", "/index.html","/admin_index.html","/dashboard","/api/meter/rooms/by-pg/{pgId}",
-                                "/api/meter/add_tenant","/admin_dashboard.html","/", "/service-worker.js", "/manifest.json", "/addUser","/api/meter/dashboard",
-                                "/api/meter/get_onload_data", "/api/meter/{meterId}", "/api/meter/pg/by-owner/{ownerId}","/api/meter/add_meter/{roomId}").permitAll()
+                        .requestMatchers("/admin","/owner","/tenant","/sendOTP","/verifyOTP", "/index.html","/admin_index.html",
+                                "/dashboard","/api/meter/rooms/by-pg/{pgId}", "/api/meter/add_tenant","/admin_dashboard.html","/",
+                                "/service-worker.js", "/manifest.json", "/addUser","/api/meter/dashboard", "/api/meter/get_onload_data",
+                                "/api/meter/{meterId}", "/api/meter/pg/by-owner/{ownerId}","/api/meter/add_meter/{roomId}",
+                                "/api/owners/{ownerId}/stats","/api/owners/{ownerId}/pgs"
+                        ).permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form

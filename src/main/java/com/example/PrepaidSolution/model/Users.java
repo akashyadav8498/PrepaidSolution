@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -15,6 +17,9 @@ public class Users {
 
     @Column
     private String username;
+
+    @Column
+    private String email;
 
     @Column
     private String password;
@@ -29,14 +34,21 @@ public class Users {
         ADMIN
     }
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     private Admin admin;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     private Owner owner;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     private Tenant tenant;
 
 }
-
