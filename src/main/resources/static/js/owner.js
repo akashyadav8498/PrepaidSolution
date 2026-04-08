@@ -1,9 +1,18 @@
-function loadOwnerData() {
-  let ownerId = 2;
-  fetch(`/api/owners/${ownerId}/stats`)
+let ownerData;
+
+document.addEventListener("DOMContentLoaded", function () {
+  loadOwnerData();
+});
+
+async function loadOwnerData() {
+  fetch(`/api/owners/stats`)
     .then((response) => response.json())
     .then((data) => {
       console.log("Data:", data);
+      ownerData = data;
+
+      renderPGDropDown();
+
       document.getElementById("totalRooms").textContent = `${data.totalRooms}`;
       document.getElementById("totalPgs").textContent = `${data.totalPgs}`;
       document.getElementById("totalTenants").textContent = `${data.totalTenants}`;
@@ -13,20 +22,84 @@ function loadOwnerData() {
       document.getElementById("ownerProfileMobile").textContent = `${data.ownerMobile}`;
       document.getElementById("ownerProfileEmail").textContent = `${data.ownerEmail}`;
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => console.log("Error:", error));
 }
 
-async function loadPGs() {
-  const ownerId = 2;
+function renderRooms(rooms) {
+  const container = document.getElementById("rooms-list-grid");
 
-  const response = await fetch(`/api/owners/${ownerId}/pgs`);
-  const pgs = await response.json();
+  container.innerHTML = ""; // clear old
 
+  if (!rooms || rooms.length === 0) {
+    container.innerHTML = "<p>No rooms found</p>";
+    return;
+  }
+
+  rooms.forEach((room) => {
+    const isPositive = room.balance >= 0;
+    const relayStatus = room.relayStatus === true;
+    const connectionStatus = room.connectionStatus === true;
+    const eb = room.eb;
+    const dg = room.dg;
+
+    const statusText = relayStatus ? "CONNECTED" : "DISCONNECTED";
+    const relayColor = relayStatus ? "var(--success)" : "var(--danger)";
+    console.log(relayColor, relayStatus,room);
+    const connectionText = connectionStatus ? "Online" : "Offline";
+    const connectionColor = connectionStatus ? "var(--success)" : "var(--danger)";
+
+    const bgColor = isPositive ? "#ecfdf5" : "#fef2f2";
+    const borderColor = isPositive ? "#10b98133" : "#ef444433";
+    const textColor = isPositive ? "#064e3b" : "#7f1d1d";
+    const labelColor = isPositive ? "#065f46" : "#991b1b";
+
+    const div = document.createElement("div");
+
+    div.setAttribute("onclick", 
+    `openRoomDetails('${room.roomNumber}', '${room.tenantName}', '${room.balance}', '${statusText}', '${connectionText}', '${room.meterId}', '${eb}', '${dg}', '${bgColor}', '${borderColor}', '${relayColor}', '${connectionColor}')`);
+
+    div.style = `
+      padding: 12px 5px;
+      border-radius: 12px;
+      background: ${bgColor};
+      border: 1px solid ${borderColor};
+      transition: transform 0.1s ease;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    `;
+
+    div.onmousedown = () => (div.style.transform = "scale(0.95)");
+    div.onmouseup = () => (div.style.transform = "scale(1)");
+
+    div.innerHTML = `
+      <div style="text-align: center">
+        <p style="font-size: 0.5rem; color: ${labelColor}; font-weight: 700; text-transform: uppercase; margin-bottom: 2px">Room</p>
+        <p style="font-size: 0.9rem; color: ${textColor}; font-weight: 900">${room.roomNumber}</p>
+      </div>
+
+      <div style="width: 1px; height: 28px; background: ${borderColor}"></div>
+
+      <div style="text-align: center">
+        <p style="font-size: 0.5rem; color: ${labelColor}; font-weight: 700; text-transform: uppercase; margin-bottom: 2px">Balance</p>
+        <p style="font-size: 0.9rem; font-weight: 900; color: ${textColor}">
+          ₹${room.balance}
+        </p>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function renderPGDropDown() {
   const optionsContainer = document.getElementById("pgOptions");
 
   optionsContainer.innerHTML = "";
 
-  pgs.forEach((pg) => {
+  ownerData.ownerPGs.forEach((pg) => {
     const option = document.createElement("div");
     option.textContent = pg.name;
     option.dataset.id = pg.id;
@@ -37,6 +110,14 @@ async function loadPGs() {
       optionsContainer.style.display = "none";
 
       console.log("Selected PG ID:", pg.id);
+
+      fetch(`/api/owners/pg/${pg.id}/rooms`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Rooms Data:", data);
+          renderRooms(data); //  dynamic render
+        })
+        .catch((err) => console.error("Error:", err));
     });
 
     optionsContainer.appendChild(option);
@@ -54,11 +135,6 @@ document.addEventListener("click", (e) => {
   if (!e.target.closest(".custom-dropdown")) {
     options.style.display = "none";
   }
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  loadOwnerData();
-  loadPGs();
 });
 
 function navTo(viewId, btn) {
@@ -108,7 +184,7 @@ function hideLogoutModal() {
 }
 
 function logout() {
-  window.location.href = "/";
+  window.location.href = "/logout";
 }
 
 // Small tweak to existing navTo to close dropdown
@@ -120,18 +196,24 @@ navTo = function (viewId, btn) {
 
 const wrapper = document.getElementById("main-scroll-wrapper");
 
-function openRoomDetails(roomNo, tenant, balance, conn, power, meter, eb, dg, bgColor, borderColor, statusColor) {
+function openRoomDetails(roomNo, tenant, balance, relay, connection, meter, eb, dg, bgColor, borderColor, relayColor, connectionColor) {
   // 1. Fill Data
+  console.log("first",relayColor);
   document.getElementById("det-room-no").innerText = "Room No: " + roomNo;
   document.getElementById("det-tenant").innerText = "Tenant: " + tenant;
-  document.getElementById("det-balance").innerText = balance;
+  document.getElementById("det-balance").innerText = "₹" + balance;
   document.getElementById("det-meter-id").innerText = meter;
   document.getElementById("det-eb").innerText = eb;
   document.getElementById("det-dg").innerText = dg;
+  document.getElementById("det-relay-status").innerHTML = relay;
+  document.getElementById("det-connection-status").innerHTML = connection;
 
-  const connBadge = document.getElementById("det-conn-status");
-  connBadge.innerText = conn;
-  connBadge.style.background = statusColor;
+  const relayBadge = document.getElementById("det-relay-status");
+  relayBadge.style.background = relayColor;
+  console.log(relayColor);
+
+  const connectionBadge = document.getElementById("det-connection-status");
+  connectionBadge.style.color = connectionColor;
 
   const details = document.getElementById("room-details-card");
   details.style.background = bgColor;

@@ -13,4 +13,5 @@ public interface LiveMeterReadingsRepository
         extends JpaRepository<LiveMeterReadings, Long> {
 
     List<LiveMeterReadings> findAllByMeterId(String meterId, Sort id);
+    LiveMeterReadings findTopByMeterIdOrderByCreatedAtDesc(String meterId);
 }

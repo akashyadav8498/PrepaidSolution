@@ -2,16 +2,12 @@ package com.example.PrepaidSolution.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "room")
-@Getter
-@Setter
 public class Room {
 
     @Id
@@ -40,5 +36,60 @@ public class Room {
         OCCUPIED,
         VACANT
     }
-}
 
+    // ============================
+    // ✅ GETTERS
+    // ============================
+
+    public Long getId() {
+        return id;
+    }
+
+    public PG getPg() {
+        return pg;
+    }
+
+    public List<Tenant> getTenants() {
+        return tenants;
+    }
+
+    public String getRoomNo() {
+        return roomNo;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    // ============================
+    // ✅ SETTERS
+    // ============================
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setPg(PG pg) {
+        this.pg = pg;
+    }
+
+    public void setTenants(List<Tenant> tenants) {
+        this.tenants = tenants;
+    }
+
+    public void setRoomNo(String roomNo) {
+        this.roomNo = roomNo;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+}

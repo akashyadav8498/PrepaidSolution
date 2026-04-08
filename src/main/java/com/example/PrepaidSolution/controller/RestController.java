@@ -5,7 +5,9 @@ import com.example.PrepaidSolution.repository.UsersRepository;
 import com.example.PrepaidSolution.service.EmailService;
 import com.example.PrepaidSolution.service.OTPService;
 import com.example.PrepaidSolution.util.Utility;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 import java.util.List;
 import java.util.Locale;
@@ -70,9 +74,11 @@ public class RestController {
         ));
     }
 
+    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     @PostMapping("/verifyOTP")
     public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> req,
-                                       HttpServletRequest httpServletRequest) {
+                                       HttpServletRequest httpServletRequest,
+                                       HttpServletResponse httpServletResponse) {
         String email = normalizeEmail(req.get("email"));
         String otp = req.getOrDefault("otp", "").trim();
 
@@ -95,7 +101,7 @@ public class RestController {
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        user.getUsername(),
+                        user.getEmail(),
                         null,
                         List.of(new SimpleGrantedAuthority(authority))
                 );
@@ -103,6 +109,7 @@ public class RestController {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
+        securityContextRepository.saveContext(securityContext, httpServletRequest, httpServletResponse);
 
         HttpSession httpSession = httpServletRequest.getSession(true);
         httpSession.setAttribute(
@@ -112,7 +119,7 @@ public class RestController {
 
         String role = user.getRole().name();
 
-        httpSession.setAttribute("username", user.getUsername());
+        httpSession.setAttribute("email", user.getEmail());
         httpSession.setAttribute("role", role);
 
         otpService.clearOtp(email);

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -42,6 +43,9 @@ public class MeterManagementService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private BalanceRepository balanceRepository;
 
     public Meter saveMeter(Meter meter, Long roomId) {
 
@@ -217,12 +221,12 @@ public class MeterManagementService {
         user.setUsername(username);
         user.setPassword(Utility.passwordEncoder.encode(password));
         user.setRole(Users.Role.OWNER);
+        user.setEmail(ownerEmail); // <- this line
         Users savedUser = usersRepository.save(user);
 
         Owner owner = new Owner();
         owner.setUsers(savedUser);
         owner.setName(ownerName);
-        owner.setEmail(ownerEmail);
         owner.setAddress(ownerAddress);
         owner.setMobile(ownerMobile);
         ownerRepository.save(owner);
@@ -290,6 +294,7 @@ public class MeterManagementService {
 
     @Transactional
     public Map<String, String> saveTenant(Map<String, String> requestMap) {
+
         Long tenantRoom = Long.valueOf(requestMap.get("tenantRoom"));
         String tenantName = requestMap.get("tenantName");
         String tenantEmail = requestMap.get("tenantEmail");
@@ -306,27 +311,52 @@ public class MeterManagementService {
             throw new RuntimeException("Room already occupied");
         }
 
+        // ============================
+        // ✅ Create User
+        // ============================
         Users user = new Users();
         user.setUsername(username);
         user.setPassword(Utility.passwordEncoder.encode(password));
         user.setRole(Users.Role.TENANT);
+        user.setEmail(tenantEmail); // <--
+
         Users savedUser = usersRepository.save(user);
 
+        // ============================
+        // ✅ Create Tenant
+        // ============================
         Tenant tenant = new Tenant();
         tenant.setMobile(tenantMobile);
         tenant.setUsers(savedUser);
         tenant.setName(tenantName);
-        tenant.setEmail(tenantEmail);
         tenant.setAddress(tenantAddress);
         tenant.setRoom(room);
-        tenantRepository.save(tenant);
 
+        Tenant savedTenant = tenantRepository.save(tenant);
+
+        // ============================
+        // ✅ Create Balance
+        // ============================
+        Balance balance = new Balance();
+        balance.setTenant(savedTenant); // ✅ ONLY THIS
+        balance.setCurrentBalance(0.0);
+        balance.setUpdatedAt(LocalDateTime.now());
+
+        balanceRepository.save(balance);
+
+        // ============================
+        // ✅ Update Room Status
+        // ============================
         room.setStatus(Room.Status.OCCUPIED);
         roomRepository.save(room);
 
-        return Map.of("username", username, "password", password, "name", tenantName, "email", tenantEmail);
+        return Map.of(
+                "username", username,
+                "password", password,
+                "name", tenantName,
+                "email", tenantEmail
+        );
     }
-
     public ResponseEntity<?> getRooms(String pgId) {
         List<Room> rooms = roomRepository.findAllByPgIdEqualsAndStatus(Long.valueOf(pgId), Room.Status.VACANT);
         List<Map<String, String>> roomList = rooms.stream()
