@@ -96,30 +96,37 @@ function renderRooms(rooms) {
 
 function renderPGDropDown() {
   const optionsContainer = document.getElementById("pgOptions");
+  const pgs = ownerData.ownerPGs;
 
+  // Clear existing options
   optionsContainer.innerHTML = "";
 
-  ownerData.ownerPGs.forEach((pg) => {
+  // Helper function to handle the selection logic
+  const selectPG = (pg) => {
+    document.getElementById("selectedPg").textContent = pg.name;
+    optionsContainer.style.display = "none";
+
+    fetch(`/api/owners/pg/${pg.id}/rooms`)
+      .then((res) => res.json())
+      .then((data) => {
+        renderRooms(data);
+      })
+      .catch((err) => console.error("Error fetching rooms:", err));
+  };
+
+  // Case 1: Only one PG - Select and render automatically
+  if (pgs.length === 1) {
+    selectPG(pgs[0]);
+    return; // Exit early
+  }
+
+  // Case 2: Multiple PGs - Build the dropdown
+  pgs.forEach((pg) => {
     const option = document.createElement("div");
     option.textContent = pg.name;
     option.dataset.id = pg.id;
 
-    option.addEventListener("click", () => {
-      document.getElementById("selectedPg").textContent = pg.name;
-
-      optionsContainer.style.display = "none";
-
-      console.log("Selected PG ID:", pg.id);
-
-      fetch(`/api/owners/pg/${pg.id}/rooms`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("Rooms Data:", data);
-          renderRooms(data); //  dynamic render
-        })
-        .catch((err) => console.error("Error:", err));
-    });
-
+    option.addEventListener("click", () => selectPG(pg));
     optionsContainer.appendChild(option);
   });
 }
