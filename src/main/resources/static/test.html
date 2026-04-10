@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test</title>
+</head>
+<body>
+
+<h2>Low Balance Notification</h2>
+
+<div id="notification"
+     style="display:none;
+            position:fixed;
+            top:20px;
+            right:20px;
+            background:#ff4d4d;
+            color:white;
+            padding:15px 20px;
+            border-radius:8px;
+            font-weight:bold;
+            box-shadow:0 0 10px rgba(0,0,0,0.2);
+            min-width:250px;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;">
+
+    <span id="notification-text"></span>
+
+    <span id="close-btn"
+          style="cursor:pointer;
+                 border:2px solid white;
+                 border-radius:50%;
+                 width:20px;
+                 height:20px;
+                 display:flex;
+                 align-items:center;
+                 justify-content:center;
+                 font-size:16px;">
+        &times;
+    </span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+
+<script>
+    const tenantId = 6;
+    const socket = new SockJS('/ws');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function () {
+
+    console.log("✅ Connected");
+
+    // ⚠️ LOW BALANCE
+    stompClient.subscribe('/topic/low-balance/' + tenantId, function (message) {
+        console.log("⚠️ Low Balance:", message.body);
+        showNotification(message.body, "warning");
+    });
+
+    // 💰 BALANCE ADDED
+    stompClient.subscribe('/topic/balance-added/' + tenantId, function (message) {
+        console.log("💰 Added:", message.body);
+        showNotification(message.body, "success");
+    });
+});
+
+    function showNotification(text, type) {
+
+    const box = document.getElementById("notification");
+    const textEl = document.getElementById("notification-text");
+
+    textEl.innerText = text;
+
+    // Change color based on type
+    if (type === "warning") {
+        box.style.background = "#ff4d4d"; // red
+    } else if (type === "success") {
+        box.style.background = "#28a745"; // green
+    }
+
+    box.style.display = "flex";
+    }
+
+    // Close button logic
+    document.getElementById("close-btn").onclick = function () {
+        document.getElementById("notification").style.display = "none";
+    };
+</script>
+
+</body>
+</html>

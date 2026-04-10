@@ -30,6 +30,13 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+
+        <!-- Enables real-time communication (WebSockets) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>

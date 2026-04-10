@@ -22,6 +22,10 @@ public class Balance {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    // Prevents repeated notifications
+    @Column(nullable = false)
+    private boolean lowBalanceNotified = false;
+
     public Balance() {}
 
     public Balance(Tenant tenant) {
@@ -29,9 +33,7 @@ public class Balance {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // ============================
-    // ✅ GETTERS
-    // ============================
+    // GETTERS
 
     public Long getTenantId() {
         return tenantId;
@@ -45,13 +47,15 @@ public class Balance {
         return currentBalance;
     }
 
+    public boolean isLowBalanceNotified() {
+        return lowBalanceNotified;
+    }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    // ============================
-    // ✅ SETTERS
-    // ============================
+    // SETTERS
 
     public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
@@ -63,6 +67,10 @@ public class Balance {
 
     public void setCurrentBalance(double currentBalance) {
         this.currentBalance = currentBalance;
+    }
+
+    public void setLowBalanceNotified(boolean lowBalanceNotified) {
+        this.lowBalanceNotified = lowBalanceNotified;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
