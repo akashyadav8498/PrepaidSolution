@@ -1,28 +1,259 @@
 let ownerData;
+let unreadCount = 0;
 
+// Entry point → runs when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
   loadOwnerData();
 });
 
+
+// ==========================================
+// STEP 1: Load Owner Data (ASYNC CONTROL)
+// ==========================================
 async function loadOwnerData() {
-  fetch(`/api/owners/stats`)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log("Data:", data);
-      ownerData = data;
+  try {
+    // Using await → ensures code waits until API response comes
+    const response = await fetch(`/api/owners/stats`);
+    const data = await response.json();
 
-      renderPGDropDown();
+    console.log("Data:", data);
 
-      document.getElementById("totalRooms").textContent = `${data.totalRooms}`;
-      document.getElementById("totalPgs").textContent = `${data.totalPgs}`;
-      document.getElementById("totalTenants").textContent = `${data.totalTenants}`;
-      document.getElementById("totalMeters").textContent = `${data.totalMeters}`;
-      document.getElementById("welcomeName").textContent = `${data.ownerName.split(" ")[0]}`;
-      document.getElementById("ownerProfileName").textContent = `${data.ownerName}`;
-      document.getElementById("ownerProfileMobile").textContent = `${data.ownerMobile}`;
-      document.getElementById("ownerProfileEmail").textContent = `${data.ownerEmail}`;
-    })
-    .catch((error) => console.log("Error:", error));
+    ownerData = data;
+
+    // ==========================================
+    // Now everything runs AFTER data is ready
+    // ==========================================
+
+    renderPGDropDown(); // existing function
+
+    dynamicOwnerDataFields(data); // moved DOM updates to separate function
+
+    // Connect WebSocket AFTER we have ownerId
+    connectWebSocket(data.ownerId);
+
+    // load unread count from DB
+    loadUnreadCount(data.ownerId);
+
+  } catch (error) {
+    console.log("Error:", error);
+  }
+}
+
+
+// ==========================================
+// STEP 2: Update UI Fields (MODULAR)
+// ==========================================
+function dynamicOwnerDataFields(data) {
+
+  document.getElementById("totalRooms").textContent = `${data.totalRooms}`;
+  document.getElementById("totalPgs").textContent = `${data.totalPgs}`;
+  document.getElementById("totalTenants").textContent = `${data.totalTenants}`;
+  document.getElementById("totalMeters").textContent = `${data.totalMeters}`;
+
+  document.getElementById("welcomeName").textContent = `${data.ownerName.split(" ")[0]}`;
+
+  document.getElementById("ownerProfileName").textContent = `${data.ownerName}`;
+  document.getElementById("ownerProfileMobile").textContent = `${data.ownerMobile}`;
+  document.getElementById("ownerProfileEmail").textContent = `${data.ownerEmail}`;
+}
+
+
+// ==========================================
+// STEP 3: WebSocket Connection (IMPORTANT)
+// ==========================================
+function connectWebSocket(ownerId) {
+  // 🔥 Ensure ownerId exists before connecting
+  if (!ownerId) {
+    console.error("❌ OwnerId not found, WebSocket not connected");
+    return;
+  }
+
+  const socket = new SockJS('/ws');
+  const stompClient = Stomp.over(socket);
+
+  stompClient.connect({}, function () {
+
+    console.log("✅ WebSocket Connected for owner:", ownerId);
+
+    // Unified topic (your new architecture)
+    stompClient.subscribe('/topic/owner/' + ownerId, function (message) {
+
+      // Parse DTO JSON
+      const data = JSON.parse(message.body);
+
+      console.log("📩 Notification:", data);
+
+      // Increase unread count
+      unreadCount++;
+
+      // Update badge UI
+      updateNotificationBadge();
+
+      // Handle based on type
+      if (data.type === "LOW_BALANCE") {
+        showNotification(
+          data.tenantName + " → " + data.message,
+          "warning"
+        );
+      } 
+      else if (data.type === "BALANCE_ADDED") {
+        showNotification(
+          data.tenantName + " → " + data.message,
+          "success"
+        );
+      }
+    });
+  });
+}
+
+async function loadUnreadCount(ownerId) {
+
+  try {
+    const response = await fetch(
+      `/api/notifications/unread-count?recipientId=${ownerId}&recipientType=OWNER`
+    );
+
+    const count = await response.json();
+
+    // set global count
+    unreadCount = count;
+
+    updateNotificationBadge();
+
+  } catch (error) {
+    console.log("Error loading unread count:", error);
+  }
+}
+
+async function markNotificationsAsRead() {
+  try {
+
+    // call mark-read API
+    await fetch(
+      `/api/notifications/mark-read?recipientId=${ownerData.ownerId}&recipientType=OWNER`,
+      {
+        method: "POST"
+      }
+    );
+
+    // reset badge locally
+    unreadCount = 0;
+    updateNotificationBadge();
+
+  } catch (error) {
+    console.log("Error marking notifications:", error);
+  }
+}
+
+async function loadNotifications() {
+  try {
+    const response = await fetch(
+      `/api/notifications/latest?recipientId=${ownerData.ownerId}&recipientType=OWNER`
+    );
+
+    const notifications = await response.json();
+
+    const container = document.getElementById("notifications-container");
+
+    container.innerHTML = ""; // clear old
+
+    notifications.forEach(n => {
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      // border color based on type
+      if (n.type === "LOW_BALANCE") {
+        card.style.borderLeft = "4px solid red";
+      } else {
+        card.style.borderLeft = "4px solid green";
+      }
+
+      const date = new Date(n.createdAt);
+
+      card.innerHTML = `
+        <p style="font-size:0.7rem;color:var(--muted);margin-bottom:5px">
+          ${formatDate(date)}
+        </p>
+        <p style="font-size:0.85rem">
+          ${n.message}
+        </p>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    console.log("Error loading notifications:", error);
+  }
+}
+
+function formatDate(date) {
+
+  const options = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  };
+
+  return date.toLocaleString("en-IN", options);
+}
+
+function handleNotificationClick() {
+  markNotificationsAsRead(); // already done
+  loadNotifications(); // 
+  navTo('view-alerts', null);
+}
+
+
+// ==========================================
+// STEP 4: Notification UI
+// ==========================================
+function showNotification(text, type) {
+
+  const box = document.getElementById("notification");
+  const textEl = document.getElementById("notification-text");
+
+  textEl.innerText = text;
+
+  // Dynamic color based on type
+  if (type === "warning") {
+    box.style.background = "#ff4d4d";
+  } else {
+    box.style.background = "#28a745";
+  }
+
+  box.style.display = "flex";
+}
+
+
+// ==========================================
+// STEP 5: Close Button
+// ==========================================
+document.getElementById("close-btn").onclick = function () {
+  document.getElementById("notification").style.display = "none";
+};
+
+
+function updateNotificationBadge() {
+
+  const badge = document.getElementById("notification-badge");
+
+  if (!badge) return;
+
+  if (unreadCount > 0) {
+    badge.style.display = "flex";
+    badge.innerText = unreadCount;
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+function resetNotifications() {
+  unreadCount = 0;
+  updateNotificationBadge();
 }
 
 function renderRooms(rooms) {

@@ -8,6 +8,8 @@ import com.example.PrepaidSolution.repository.TenantRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
+
 @Service // Marks this as business logic layer
 public class BalanceService {
 
@@ -23,63 +25,17 @@ public class BalanceService {
     private TenantRepository tenantRepository;
 
 
-    // ==========================================
-    // MAIN METHOD (MOST IMPORTANT)
-    // ==========================================
+
+    // MAIN METHOD
     public void updateBalance(Long tenantId, double newBalance) {
 
-        // Fetch balance from DB using primary key
-        // Under the hood:
-        // → Hibernate runs SELECT query
+        // Fetch balance
         Balance balance = balanceRepository.findById(tenantId)
                 .orElseThrow(() -> new RuntimeException("Balance not found"));
 
-        // Update balance in object (still not saved to DB)
+        // Update balance + time
         balance.setCurrentBalance(newBalance);
-
-
-        // =============================
-        // LOW BALANCE LOGIC
-        // =============================
-
-        // Condition:
-        // 1. Balance < 100
-        // 2. Notification not already sent
-        System.out.println("Checking low balance for tenant: " + tenantId + " balance: " + newBalance);
-        if (newBalance < 100 && !balance.isLowBalanceNotified()) {
-
-            Tenant tenant = tenantRepository.findById(tenantId)
-                    .orElseThrow(() -> new RuntimeException("Tenant not found"));
-
-            String name = tenant.getName();
-
-            // Send WebSocket notification
-            notificationService.sendLowBalanceAlert(tenantId, name, newBalance);
-
-            // Mark as notified to prevent spam
-            balance.setLowBalanceNotified(true);
-        }
-
-        // Reset flag if balance becomes normal again
-        if (newBalance >= 100) {
-            balance.setLowBalanceNotified(false);
-        }
-
-        // Save updated object to DB
-        // Under the hood:
-        // → Hibernate generates UPDATE query
-        balanceRepository.save(balance);
-    }
-
-
-    // ==========================================
-    // ADD MONEY (FAKE PAYMENT)
-    // ==========================================
-    public void addBalance(Long tenantId, double amount) {
-
-        // Fetch existing balance
-        Balance balance = balanceRepository.findById(tenantId)
-                .orElseThrow(() -> new RuntimeException("Balance not found"));
+        balance.setUpdatedAt(LocalDateTime.now());
 
         // Fetch tenant
         Tenant tenant = tenantRepository.findById(tenantId)
@@ -87,17 +43,74 @@ public class BalanceService {
 
         String name = tenant.getName();
 
-        // Get current balance
-        double current = balance.getCurrentBalance();
+        // Null safety check for relationship chain
+        if (tenant.getRoom() == null ||
+                tenant.getRoom().getPg() == null ||
+                tenant.getRoom().getPg().getOwner() == null) {
 
-        // Add amount
+            throw new RuntimeException("Owner mapping not found for tenant");
+        }
+
+        // Get ownerId (as per your structure)
+        Long ownerId = tenant.getRoom().getPg().getOwner().getId();
+
+        // ============================
+        // LOW BALANCE TRIGGER
+        // ============================
+        if (newBalance < 100 && !balance.isLowBalanceNotified()) {
+
+            notificationService.sendLowBalanceAlert(
+                    tenantId,
+                    ownerId,
+                    name,
+                    newBalance
+            );
+
+            // Mark as notified
+            balance.setLowBalanceNotified(true);
+        }
+
+        // If balance becomes healthy again → reset flag
+        if (newBalance >= 100 && balance.isLowBalanceNotified()) {
+
+            balance.setLowBalanceNotified(false);
+        }
+
+        // Save final state
+        balanceRepository.save(balance);
+    }
+
+
+    // ADD MONEY
+    public void addBalance(Long tenantId, double amount) {
+
+        // Get balance
+        Balance balance = balanceRepository.findById(tenantId)
+                .orElseThrow(() -> new RuntimeException("Balance not found"));
+
+        //  Get tenant
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new RuntimeException("Tenant not found"));
+
+        //  Extract name
+        String name = tenant.getName();
+
+        // Get ownerId
+        Long ownerId = tenant.getRoom().getPg().getOwner().getId();
+
+        double current = balance.getCurrentBalance();
         double newBalance = current + amount;
 
+        // 🔥 Send notification (NEW DTO METHOD)
+        notificationService.sendBalanceAdded(
+                tenantId,
+                ownerId,
+                name,
+                amount,
+                newBalance
+        );
 
-        // SEND NOTIFICATION FOR ADD
-        notificationService.sendBalanceAdded(tenantId, name, amount, newBalance);
-
-        // Reuse update logic (VERY IMPORTANT DESIGN)
+        // Update balance
         updateBalance(tenantId, newBalance);
     }
 

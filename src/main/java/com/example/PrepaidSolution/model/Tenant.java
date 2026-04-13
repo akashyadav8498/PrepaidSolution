@@ -3,6 +3,7 @@ package com.example.PrepaidSolution.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.awt.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -91,4 +92,5 @@ public class Tenant {
     public void setRoom(Room room) {
         this.room = room;
     }
+
 }

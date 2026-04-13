@@ -192,6 +192,7 @@ public class OwnerService {
         List<PG> pgs = pgRepository.findByOwnerId(ownerId);
 
         Map<String, Object> response = new HashMap<>();
+        response.put("ownerId",ownerId);
         response.put("totalPgs", totalPgs);
         response.put("totalRooms", totalRooms);
         response.put("totalTenants", totalTenants);

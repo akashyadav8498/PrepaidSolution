@@ -45,6 +45,7 @@
 
 <script>
     const tenantId = 6;
+    const ownerId = 2;
     const socket = new SockJS('/ws');
     const stompClient = Stomp.over(socket);
 
@@ -52,16 +53,26 @@
 
     console.log("✅ Connected");
 
-    // ⚠️ LOW BALANCE
-    stompClient.subscribe('/topic/low-balance/' + tenantId, function (message) {
-        console.log("⚠️ Low Balance:", message.body);
-        showNotification(message.body, "warning");
-    });
+    stompClient.subscribe('/topic/owner/' + ownerId, function (message) {
 
-    // 💰 BALANCE ADDED
-    stompClient.subscribe('/topic/balance-added/' + tenantId, function (message) {
-        console.log("💰 Added:", message.body);
-        showNotification(message.body, "success");
+        // 🔥 Convert JSON string → JS object
+        const data = JSON.parse(message.body);
+
+        console.log("📩 Full Payload:", data);
+
+        // Decide UI based on type
+        if (data.type === "LOW_BALANCE") {
+            showNotification(
+                data.tenantName + " → " + data.message,
+                "warning"
+            );
+        } 
+        else if (data.type === "BALANCE_ADDED") {
+            showNotification(
+                data.tenantName + " → " + data.message,
+                "success"
+            );
+        }
     });
 });
 
