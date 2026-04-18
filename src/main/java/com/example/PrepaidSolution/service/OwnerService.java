@@ -166,14 +166,8 @@ public class OwnerService {
 
 
 
-    public Map<String, Object> getOwnerStats() {
-            // 1. & 2. Get User Identity from Spring Security
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public Map<String, Object> getOwnerStats(String email) {
 
-        // email from Auth principal (we have saved in OTP controller)
-        String email = auth.getName();
-
-        // 3. Fetch user (safe to use Email ignore case)
         Users user = usersRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("User not found for: " + email));
 
@@ -201,7 +195,7 @@ public class OwnerService {
         response.put("ownerMobile", owner.getMobile());
         response.put("ownerEmail", email);
         response.put("ownerPGs", pgs);
-
+        System.out.println(pgs);
         return response;
     }
 

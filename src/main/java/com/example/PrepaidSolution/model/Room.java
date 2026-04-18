@@ -37,6 +37,10 @@ public class Room {
         VACANT
     }
 
+    @OneToOne(mappedBy = "room")
+    @JsonIgnore
+    private Meter meter;
+
     // ============================
     // ✅ GETTERS
     // ============================
@@ -63,6 +67,10 @@ public class Room {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public Meter getMeter(){
+        return meter;
     }
 
     // ============================

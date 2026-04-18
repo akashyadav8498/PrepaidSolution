@@ -226,6 +226,10 @@ function showNotification(text, type) {
   }
 
   box.style.display = "flex";
+
+  setTimeout(() =>{
+    box.style.display = "none";
+  },3000);
 }
 
 

@@ -32,29 +32,22 @@ public class MVCController {
     private final MeterTypeRepository meterTypeRepository;
 
     @GetMapping("/")
-    public String handleRootRedirect() {
-        // 1. Get the current authentication from the security context
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public String handleRootRedirect(HttpServletRequest request) {
 
-        // 2. Check if the user is logged in (and not an anonymous guest)
-        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-
-            // 3. Logic to check roles and redirect accordingly
-            // We check the authorities string (e.g., ROLE_OWNER)
-            boolean isOwner = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_OWNER"));
-
-            boolean isTenant = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_TENANT"));
-
-            if (isOwner) {
-                return "redirect:/owner"; // Sends browser to localhost:8080/owner
-            } else if (isTenant) {
-                return "redirect:/tenant"; // Sends browser to localhost:8080/tenant
+        HttpSession session = request.getSession(false);
+       // check if user is logged in
+        if(session != null ){
+            String role = (String) session.getAttribute("role");
+            String email = (String) session.getAttribute("email");
+            if( role != null && email!= null){
+                if(role.equalsIgnoreCase("OWNER")) {
+                    return "redirect:/owner";
+                }else if(role.equalsIgnoreCase("TENANT")) {
+                    return "redirect:/tenant";
+                }
             }
         }
-
-        // 4. If NOT logged in, show the landing/login page
+        // If NOT logged in, show the landing/login page
         // 'forward' keeps the URL as '/' but shows index.html content
         return "forward:/index.html";
     }
@@ -86,13 +79,38 @@ public class MVCController {
 
     @GetMapping("/owner")
     public String owner(HttpServletRequest httpServletRequest, Model model){
-        return "owner";
+        HttpSession session = httpServletRequest.getSession(false);
+        if(session != null){
+            String email = (String) session.getAttribute("email");
+            if(email != null){
+                return "owner";
+            }
+        }
+        return "forward:/index.html";
     }
+
+//    @GetMapping("/owner")
+//    public String owner(HttpServletRequest httpServletRequest, Model model){
+//        return "owner";
+//    }
 
     @GetMapping("/tenant")
     public String tenant(HttpServletRequest httpServletRequest, Model model){
-        return "tenant";
+        HttpSession session = httpServletRequest.getSession(false);
+        if(session != null){
+            String email = (String) session.getAttribute("email");
+            if(email != null){
+                return "tenant";
+            }
+        }
+        return "forward:/index.html";
     }
+
+//    @GetMapping("/tenant")
+//    public String tenant(HttpServletRequest httpServletRequest, Model model){
+//        return "tenant";
+//    }
+
 
 
 }

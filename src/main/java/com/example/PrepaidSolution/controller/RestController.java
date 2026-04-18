@@ -74,11 +74,9 @@ public class RestController {
         ));
     }
 
-    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     @PostMapping("/verifyOTP")
     public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> req,
-                                       HttpServletRequest httpServletRequest,
-                                       HttpServletResponse httpServletResponse) {
+                                       HttpServletRequest httpServletRequest) {
         String email = normalizeEmail(req.get("email"));
         String otp = req.getOrDefault("otp", "").trim();
 
@@ -97,11 +95,12 @@ public class RestController {
                     .body(Map.of("message", "Invalid or expired OTP."));
         }
 
-        String authority = "ROLE_" + user.getRole().name();
+        String role = user.getRole().name();
+        String authority = "ROLE_" + role;
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        user.getEmail(),
+                        user.getUsername(),
                         null,
                         List.of(new SimpleGrantedAuthority(authority))
                 );
@@ -109,7 +108,6 @@ public class RestController {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
-        securityContextRepository.saveContext(securityContext, httpServletRequest, httpServletResponse);
 
         HttpSession httpSession = httpServletRequest.getSession(true);
         httpSession.setAttribute(
@@ -117,7 +115,6 @@ public class RestController {
                 securityContext
         );
 
-        String role = user.getRole().name();
 
         httpSession.setAttribute("email", user.getEmail());
         httpSession.setAttribute("role", role);

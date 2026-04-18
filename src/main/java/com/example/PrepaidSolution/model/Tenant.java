@@ -29,6 +29,10 @@ public class Tenant {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @OneToOne(mappedBy = "tenant")
+    @JsonIgnore
+    private Balance balance;
+
     // ============================
     // ✅ GETTERS
     // ============================
@@ -59,6 +63,10 @@ public class Tenant {
 
     public Room getRoom() {
         return room;
+    }
+
+    public Balance getBalance(){
+        return balance;
     }
 
     // ============================

@@ -30,7 +30,10 @@ public class Owner {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PG> pgs;
+
+
 
 }
 

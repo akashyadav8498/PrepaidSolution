@@ -7,6 +7,7 @@ import com.example.PrepaidSolution.model.Room;
 import com.example.PrepaidSolution.model.Tenant;
 import com.example.PrepaidSolution.service.OwnerService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 @RequestMapping("/api/owners")
 @RequiredArgsConstructor
@@ -30,8 +32,10 @@ public class OwnerController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<?> getOwnerStats() {
-        return ResponseEntity.ok(ownerService.getOwnerStats());
+    public ResponseEntity<?> getOwnerStats(HttpSession session) {
+        String email = (String) session.getAttribute("email");
+        System.out.println("Email: ->" + email);
+        return ResponseEntity.ok(ownerService.getOwnerStats(email));
     }
 
     @GetMapping("/{ownerId}/pgs")

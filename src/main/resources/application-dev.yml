@@ -10,11 +10,21 @@ spring:
     username: root
     password: root
 
+#server:
+#  servlet:
+#    session:
+#      timeout: 30d
+#      cookie:
+#        max-age: 2592000   # 30 days
+#        http-only: true
+#        same-site: lax
+
 server:
   servlet:
     session:
-      timeout: 30d
+      timeout: 1m
       cookie:
-        max-age: 30d
+        max-age: 60
         http-only: true
         same-site: lax
+
