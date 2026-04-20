@@ -20,7 +20,7 @@ public class NotificationService {
     // Sends notification when money is added
     public void sendBalanceAdded(Long tenantId, Long ownerId, String name, double amount, double newBalance) {
 
-        String message = name + "has added ₹ " + amount + ". Balance: ₹" + newBalance;
+        String message = name + " has added ₹ " + amount + ". Balance: ₹" + newBalance;
 
         // create DTO payload
         NotificationPayload payload = new NotificationPayload(

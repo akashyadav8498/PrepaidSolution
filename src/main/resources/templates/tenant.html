@@ -428,13 +428,31 @@
           </div>
 
           <div class="header-actions">
-            <button class="icon-btn" onclick="navTo('view-alerts', null)">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-              </svg>
-              <span style="position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; background: var(--danger); border-radius: 50%; border: 1px solid white"></span>
-            </button>
+              <button class="icon-btn" onclick="handleNotificationClick()" style="position: relative;">
+
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                      </svg>
+                            <!-- 🔥 Dynamic badge -->
+                            <span id="notification-badge"
+                                  style="display:none;
+                                        position:absolute;
+                                        top:1px;
+                                        right:-2px;
+                                        min-width:16px;
+                                        height:16px;
+                                        background:red;
+                                        color:white;
+                                        font-size:10px;
+                                        border-radius:50%;
+                                        align-items:center;
+                                        justify-content:center;
+                                        padding:2px;">
+                            </span>
+              </button>
+            
 
             <div class="profile-dropdown">
               <button class="icon-btn" onclick="toggleDropdown()">
@@ -446,6 +464,7 @@
               <div id="profileMenu" class="dropdown-menu">
                 <div class="dropdown-item" onclick="navTo('view-profile', null)"><span>👤</span> My Profile</div>
                 <div class="dropdown-item" onclick="navTo('view-customer-care', null)"><span>📞</span> Customer Care</div>
+
                 <div class="dropdown-item text-danger" onclick="showLogoutModal()"><span>🚪</span> Logout</div>
               </div>
             </div>
@@ -530,15 +549,10 @@
         </div>
 
         <div id="view-alerts" class="view">
-          <div class="section-title">Notifications</div>
-          <div class="card" style="border-left: 4px solid var(--primary)">
-            <p style="font-size: 0.7rem; color: var(--muted); margin-bottom: 5px">25-06-2025 / 3:34 PM</p>
-            <p style="font-size: 0.85rem">Your account for Room No. A007, Meter No. 801234 has been credited with ₹2000.</p>
-          </div>
-          <div class="card" style="border-left: 4px solid var(--danger)">
-            <p style="font-size: 0.7rem; color: var(--muted); margin-bottom: 5px">23-06-2025 / 10:12 AM</p>
-            <p style="font-size: 0.85rem; color: var(--danger)">Low Balance Alert: Your balance is ₹88.56.</p>
-          </div>
+              <div class="section-title">Notifications</div>
+
+              <!-- dynamic content will come here -->
+              <div id="notifications-container"></div>
         </div>
 
         <div id="view-profile" class="view">
@@ -574,66 +588,39 @@
         </nav>
       </div>
     </div>
+
+        <!--notification html-->
+    <div id="notification"
+     style="display:none;
+            position:fixed;
+            top:70px;
+            right:20px;
+            left: 20px;
+            background:#ff4d4d;
+            color:white;
+            padding:15px 20px;
+            border-radius:8px;
+            font-weight:bold;
+            box-shadow:0 0 10px rgba(0,0,0,0.2);
+            min-width:250px;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;">
+
+        <span id="notification-text"></span>
+
+        <span id="close-btn"
+              style="cursor:pointer;
+                    border:2px solid white;
+                    border-radius:50%;
+                    width:20px;
+                    height:20px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:12px;">
+            ×
+        </span>
+    </div>
   </body>
-  <script>
-    function navTo(viewId, btn) {
-      // 1. Switch Views
-      document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
-      const target = document.getElementById(viewId);
-      if (target) target.classList.add("active");
-
-      // 2. Update Button State
-      document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
-      if (btn) {
-        btn.classList.add("active");
-
-        // 3. Smoothly center the button in the scroll view
-        btn.scrollIntoView({
-          behavior: "smooth",
-          inline: "center",
-          block: "nearest",
-        });
-      }
-    }
-
-    // Toggle Profile Dropdown
-    function toggleDropdown() {
-      document.getElementById("profileMenu").classList.toggle("show");
-    }
-
-    // Close dropdown when clicking outside
-    window.onclick = function (event) {
-      if (!event.target.closest(".profile-dropdown")) {
-        var dropdowns = document.getElementsByClassName("dropdown-menu");
-        for (var i = 0; i < dropdowns.length; i++) {
-          dropdowns[i].classList.remove("show");
-        }
-      }
-    };
-
-    // Logout Modal Logic
-    function showLogoutModal() {
-      document.getElementById("logoutModal").style.display = "flex";
-    }
-
-    function hideLogoutModal() {
-      document.getElementById("logoutModal").style.display = "none";
-    }
-
-    function logout() {
-      window.location.href = "/";
-    }
-
-    // Small tweak to existing navTo to close dropdown
-    const originalNavTo = navTo;
-    navTo = function (viewId, btn) {
-      originalNavTo(viewId, btn);
-      document.getElementById("profileMenu").classList.remove("show");
-    };
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js").catch((error) => console.error("Service worker registration failed", error));
-      });
-    }
-  </script>
 </html>

@@ -62,7 +62,7 @@ function dynamicOwnerDataFields(data) {
 // STEP 3: WebSocket Connection (IMPORTANT)
 // ==========================================
 function connectWebSocket(ownerId) {
-  // 🔥 Ensure ownerId exists before connecting
+  // Ensure ownerId exists before connecting
   if (!ownerId) {
     console.error("❌ OwnerId not found, WebSocket not connected");
     return;

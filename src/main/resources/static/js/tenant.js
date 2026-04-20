@@ -1,3 +1,6 @@
+let unreadCount = 0;
+let tenantData;
+
 async function loadTenantData() {
   try {
     const response = await fetch("/api/tenants/tenant-data", {
@@ -10,7 +13,9 @@ async function loadTenantData() {
     }
 
     const data = await response.json();
-    console.log(data);
+    console.log("Data:", data);
+
+    tenantData = data;
     return data;
   } catch (error) {
     console.error("Error", error.message);
@@ -47,9 +52,259 @@ function dynamicTenantData(data) {
   document.getElementById("tenant-email").textContent = data.tenantEmail;
 }
 
+async function loadUnreadCount(tenantId) {
+
+  try {
+    const response = await fetch(
+      `/api/notifications/unread-count?recipientId=${tenantId}&recipientType=TENANT`
+    );
+
+    const count = await response.json();
+
+    // set global count
+    unreadCount = count;
+
+    updateNotificationBadge();
+
+  } catch (error) {
+    console.log("Error loading unread count:", error);
+  }
+}
+
+async function markNotificationsAsRead() {
+  try {
+
+    // call mark-read API
+    await fetch(
+      `/api/notifications/mark-read?recipientId=${tenantData.tenantId}&recipientType=TENANT`,
+      {
+        method: "POST"
+      }
+    );
+
+    // reset badge locally
+    resetNotifications();
+
+  } catch (error) {
+    console.log("Error marking notifications:", error);
+  }
+}
+
+async function loadNotifications() {
+  try {
+    const response = await fetch(
+      `/api/notifications/latest?recipientId=${tenantData.tenantId}&recipientType=TENANT`
+    );
+
+    const notifications = await response.json();
+
+    const container = document.getElementById("notifications-container");
+
+    container.innerHTML = ""; // clear old
+
+    notifications.forEach(n => {
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      // border color based on type
+      if (n.type === "LOW_BALANCE") {
+        card.style.borderLeft = "4px solid red";
+      } else {
+        card.style.borderLeft = "4px solid green";
+      }
+
+      const date = new Date(n.createdAt);
+
+      card.innerHTML = `
+        <p style="font-size:0.7rem;color:var(--muted);margin-bottom:5px">
+          ${formatDate(date)}
+        </p>
+        <p style="font-size:0.85rem">
+          ${n.message}
+        </p>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    console.log("Error loading notifications:", error);
+  }
+}
+
+function formatDate(date) {
+
+  const options = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  };
+
+  return date.toLocaleString("en-IN", options);
+}
+
+function handleNotificationClick() {
+  markNotificationsAsRead(); 
+  loadNotifications();  
+  navTo('view-alerts', null);
+}
+
+function showNotification(text, type) {
+
+  const box = document.getElementById("notification");
+  const textEl = document.getElementById("notification-text");
+
+  textEl.innerText = text;
+
+  // Dynamic color based on type
+  if (type === "warning") {
+    box.style.background = "#ff4d4d";
+  } else {
+    box.style.background = "#28a745";
+  }
+
+  box.style.display = "flex";
+
+  setTimeout(() =>{
+    box.style.display = "none";
+  },3000);
+}
+
+document.getElementById("close-btn").onclick = function () {
+  document.getElementById("notification").style.display = "none";
+};
+
+function updateNotificationBadge() {
+
+  const badge = document.getElementById("notification-badge");
+
+  if (!badge) return;
+
+  if (unreadCount > 0) {
+    badge.style.display = "flex";
+    badge.innerText = unreadCount;
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+function resetNotifications() {
+  unreadCount = 0;
+  updateNotificationBadge();
+}
+
+// add script tag in head <------------------------------------------------------------------------------------------------
+// Websocket Connection (IMPORTANT)
+function connectWebSocket(tenantId){
+  if(!tenantId){
+    console.error("❌ TenantId not found, WebSocket not connected")
+    return;
+  }
+
+  const socket = new SockJS('/ws');
+  const stompClient = Stomp.over(socket);
+
+  stompClient.connect({}, function(){
+
+    console.log("✅ WebSocket Connected for Tenant:", tenantId);
+
+    stompClient.subscribe('/topic/tenant/' + tenantId, function(message){
+      // Parse DTO JSON
+      const data = JSON.parse(message.body);
+      console.log("Notification Data:", data);
+
+      // Increase unread count
+      unreadCount++;
+
+      // Update badge UI
+      updateNotificationBadge();
+
+      if(data.type === "LOW_BALANCE"){
+        showNotification(
+          data.tenantName + " → " + data.message,
+          "warning"
+        );
+      }else if(data.type === "BALANCE_ADDED"){
+        showNotification(
+          data.tenantName + " → " + data.message,
+          "success"
+        );
+      }
+    });
+  })
+}
+
+    function navTo(viewId, btn) {
+      // 1. Switch Views
+      document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add("active");
+
+      // 2. Update Button State
+      document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
+      if (btn) {
+        btn.classList.add("active");
+
+        // 3. Smoothly center the button in the scroll view
+        btn.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+      }
+    }
+
+    // Toggle Profile Dropdown
+    function toggleDropdown() {
+      document.getElementById("profileMenu").classList.toggle("show");
+    }
+
+    // Close dropdown when clicking outside
+    window.onclick = function (event) {
+      if (!event.target.closest(".profile-dropdown")) {
+        var dropdowns = document.getElementsByClassName("dropdown-menu");
+        for (var i = 0; i < dropdowns.length; i++) {
+          dropdowns[i].classList.remove("show");
+        }
+      }
+    };
+
+    // Logout Modal Logic
+    function showLogoutModal() {
+      document.getElementById("logoutModal").style.display = "flex";
+    }
+
+    function hideLogoutModal() {
+      document.getElementById("logoutModal").style.display = "none";
+    }
+
+    // function logout() {
+    //   window.location.href = "/";
+    // }
+
+    // Small tweak to existing navTo to close dropdown
+    let originalNavTo = navTo;
+    navTo = function (viewId, btn) {
+      originalNavTo(viewId, btn);
+      document.getElementById("profileMenu").classList.remove("show");
+    };
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch((error) => console.error("Service worker registration failed", error));
+      });
+    }
+
 async function firstFunction() {
   const data = await loadTenantData();
   dynamicTenantData(data);
+
+  // Connect WebSocket AFTER we have ownerId
+    connectWebSocket(data.tenantId);
+
+    loadUnreadCount(data.tenantId);
 }
 
 document.addEventListener("DOMContentLoaded", function () {

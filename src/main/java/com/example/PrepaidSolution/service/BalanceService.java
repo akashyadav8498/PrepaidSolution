@@ -101,7 +101,7 @@ public class BalanceService {
         double current = balance.getCurrentBalance();
         double newBalance = current + amount;
 
-        // 🔥 Send notification (NEW DTO METHOD)
+        // Send notification (NEW DTO METHOD)
         notificationService.sendBalanceAdded(
                 tenantId,
                 ownerId,
