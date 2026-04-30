@@ -21,7 +21,7 @@ public class BalanceController {
     // ADD MONEY (FAKE PAYMENT)
     // ==========================================
     @PostMapping("/add")
-    public String addBalance(@RequestBody Map<String, Object> request) {
+    public Map<String,Object> addBalance(@RequestBody Map<String, Object> request) {
 
         // Extract tenantId from JSON
         Long tenantId = Long.valueOf(request.get("tenantId").toString());
@@ -30,9 +30,12 @@ public class BalanceController {
         double amount = Double.parseDouble(request.get("amount").toString());
 
         // Call service to add balance
-        balanceService.addBalance(tenantId, amount);
+        double updatedBalance = balanceService.addBalance(tenantId, amount);
 
-        return "Balance added successfully";
+        return Map.of(
+                "message", "Balance added successfully",
+                "balance", updatedBalance
+        );
     }
 
 

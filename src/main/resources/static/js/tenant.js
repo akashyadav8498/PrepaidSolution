@@ -22,29 +22,26 @@ async function loadTenantData() {
   }
 }
 
-async function logout(){
-    try{
+async function logout() {
+  try {
+    await fetch("/api/tenants/logout", {
+      method: "POST",
+      credentials: "include",
+    });
 
-        await fetch("/api/tenants/logout",{
-            method: "POST",
-            credentials: "include"
-        });
-
-        // redirect after logout
-        window.location.href = "/";
-    }catch(error){
-        console.log("Logout failed", error);
-    }
+    // redirect after logout
+    window.location.href = "/";
+  } catch (error) {
+    console.log("Logout failed", error);
+  }
 }
 
 function dynamicTenantData(data) {
   document.getElementById("section-title-name").textContent = data.tenantName;
-  document.getElementById("current-balance").textContent ="₹" + data.tenantCurrentBalance;
+  document.getElementById("current-balance").textContent = "₹" + data.tenantCurrentBalance;
 
   const meterSerialElement = document.getElementById("meter-serialNo");
-  data.tenantMeterSerialNumber === null ? 
-  (meterSerialElement.textContent = "NA") :
-   (meterSerialElement.textContent = data.tenantMeterSerialNumber);
+  data.tenantMeterSerialNumber === null ? (meterSerialElement.textContent = "NA") : (meterSerialElement.textContent = data.tenantMeterSerialNumber);
 
   document.getElementById("room-no").textContent = data.tenantRoomNumber;
   document.getElementById("tenant-name").textContent = data.tenantName;
@@ -53,11 +50,8 @@ function dynamicTenantData(data) {
 }
 
 async function loadUnreadCount(tenantId) {
-
   try {
-    const response = await fetch(
-      `/api/notifications/unread-count?recipientId=${tenantId}&recipientType=TENANT`
-    );
+    const response = await fetch(`/api/notifications/unread-count?recipientId=${tenantId}&recipientType=TENANT`);
 
     const count = await response.json();
 
@@ -65,7 +59,6 @@ async function loadUnreadCount(tenantId) {
     unreadCount = count;
 
     updateNotificationBadge();
-
   } catch (error) {
     console.log("Error loading unread count:", error);
   }
@@ -73,18 +66,13 @@ async function loadUnreadCount(tenantId) {
 
 async function markNotificationsAsRead() {
   try {
-
     // call mark-read API
-    await fetch(
-      `/api/notifications/mark-read?recipientId=${tenantData.tenantId}&recipientType=TENANT`,
-      {
-        method: "POST"
-      }
-    );
+    await fetch(`/api/notifications/mark-read?recipientId=${tenantData.tenantId}&recipientType=TENANT`, {
+      method: "POST",
+    });
 
     // reset badge locally
     resetNotifications();
-
   } catch (error) {
     console.log("Error marking notifications:", error);
   }
@@ -92,9 +80,7 @@ async function markNotificationsAsRead() {
 
 async function loadNotifications() {
   try {
-    const response = await fetch(
-      `/api/notifications/latest?recipientId=${tenantData.tenantId}&recipientType=TENANT`
-    );
+    const response = await fetch(`/api/notifications/latest?recipientId=${tenantData.tenantId}&recipientType=TENANT`);
 
     const notifications = await response.json();
 
@@ -102,8 +88,7 @@ async function loadNotifications() {
 
     container.innerHTML = ""; // clear old
 
-    notifications.forEach(n => {
-
+    notifications.forEach((n) => {
       const card = document.createElement("div");
       card.className = "card";
 
@@ -127,33 +112,30 @@ async function loadNotifications() {
 
       container.appendChild(card);
     });
-
   } catch (error) {
     console.log("Error loading notifications:", error);
   }
 }
 
 function formatDate(date) {
-
   const options = {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
   };
 
   return date.toLocaleString("en-IN", options);
 }
 
 function handleNotificationClick() {
-  markNotificationsAsRead(); 
-  loadNotifications();  
-  navTo('view-alerts', null);
+  markNotificationsAsRead();
+  loadNotifications();
+  navTo("view-alerts", null);
 }
 
 function showNotification(text, type) {
-
   const box = document.getElementById("notification");
   const textEl = document.getElementById("notification-text");
 
@@ -168,9 +150,9 @@ function showNotification(text, type) {
 
   box.style.display = "flex";
 
-  setTimeout(() =>{
+  setTimeout(() => {
     box.style.display = "none";
-  },3000);
+  }, 3000);
 }
 
 document.getElementById("close-btn").onclick = function () {
@@ -178,7 +160,6 @@ document.getElementById("close-btn").onclick = function () {
 };
 
 function updateNotificationBadge() {
-
   const badge = document.getElementById("notification-badge");
 
   if (!badge) return;
@@ -198,20 +179,19 @@ function resetNotifications() {
 
 // add script tag in head <------------------------------------------------------------------------------------------------
 // Websocket Connection (IMPORTANT)
-function connectWebSocket(tenantId){
-  if(!tenantId){
-    console.error("❌ TenantId not found, WebSocket not connected")
+function connectWebSocket(tenantId) {
+  if (!tenantId) {
+    console.error("❌ TenantId not found, WebSocket not connected");
     return;
   }
 
-  const socket = new SockJS('/ws');
+  const socket = new SockJS("/ws");
   const stompClient = Stomp.over(socket);
 
-  stompClient.connect({}, function(){
-
+  stompClient.connect({}, function () {
     console.log("✅ WebSocket Connected for Tenant:", tenantId);
 
-    stompClient.subscribe('/topic/tenant/' + tenantId, function(message){
+    stompClient.subscribe("/topic/tenant/" + tenantId, function (message) {
       // Parse DTO JSON
       const data = JSON.parse(message.body);
       console.log("Notification Data:", data);
@@ -222,90 +202,158 @@ function connectWebSocket(tenantId){
       // Update badge UI
       updateNotificationBadge();
 
-      if(data.type === "LOW_BALANCE"){
-        showNotification(
-          data.tenantName + " → " + data.message,
-          "warning"
-        );
-      }else if(data.type === "BALANCE_ADDED"){
-        showNotification(
-          data.tenantName + " → " + data.message,
-          "success"
-        );
+      if (data.type === "LOW_BALANCE") {
+        showNotification(data.tenantName + " → " + data.message, "warning");
+      } else if (data.type === "BALANCE_ADDED") {
+        showNotification(data.tenantName + " → " + data.message, "success");
       }
     });
-  })
+  });
 }
 
-    function navTo(viewId, btn) {
-      // 1. Switch Views
-      document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
-      const target = document.getElementById(viewId);
-      if (target) target.classList.add("active");
+function navTo(viewId, btn) {
+  // 1. Switch Views
+  document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
+  const target = document.getElementById(viewId);
+  if (target) target.classList.add("active");
 
-      // 2. Update Button State
-      document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
-      if (btn) {
-        btn.classList.add("active");
+  // 2. Update Button State
+  document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
+  if (btn) {
+    btn.classList.add("active");
 
-        // 3. Smoothly center the button in the scroll view
-        btn.scrollIntoView({
-          behavior: "smooth",
-          inline: "center",
-          block: "nearest",
-        });
-      }
+    // 3. Smoothly center the button in the scroll view
+    btn.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }
+}
+
+// Toggle Profile Dropdown
+function toggleDropdown() {
+  document.getElementById("profileMenu").classList.toggle("show");
+}
+
+// Close dropdown when clicking outside
+window.onclick = function (event) {
+  if (!event.target.closest(".profile-dropdown")) {
+    var dropdowns = document.getElementsByClassName("dropdown-menu");
+    for (var i = 0; i < dropdowns.length; i++) {
+      dropdowns[i].classList.remove("show");
     }
+  }
+};
 
-    // Toggle Profile Dropdown
-    function toggleDropdown() {
-      document.getElementById("profileMenu").classList.toggle("show");
-    }
+// Logout Modal Logic
+function showLogoutModal() {
+  document.getElementById("logoutModal").style.display = "flex";
+}
 
-    // Close dropdown when clicking outside
-    window.onclick = function (event) {
-      if (!event.target.closest(".profile-dropdown")) {
-        var dropdowns = document.getElementsByClassName("dropdown-menu");
-        for (var i = 0; i < dropdowns.length; i++) {
-          dropdowns[i].classList.remove("show");
-        }
-      }
-    };
+function hideLogoutModal() {
+  document.getElementById("logoutModal").style.display = "none";
+}
 
-    // Logout Modal Logic
-    function showLogoutModal() {
-      document.getElementById("logoutModal").style.display = "flex";
-    }
+// function logout() {
+//   window.location.href = "/";
+// }
 
-    function hideLogoutModal() {
-      document.getElementById("logoutModal").style.display = "none";
-    }
-
-    // function logout() {
-    //   window.location.href = "/";
-    // }
-
-    // Small tweak to existing navTo to close dropdown
-    let originalNavTo = navTo;
-    navTo = function (viewId, btn) {
-      originalNavTo(viewId, btn);
-      document.getElementById("profileMenu").classList.remove("show");
-    };
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js").catch((error) => console.error("Service worker registration failed", error));
-      });
-    }
+// Small tweak to existing navTo to close dropdown
+let originalNavTo = navTo;
+navTo = function (viewId, btn) {
+  originalNavTo(viewId, btn);
+  document.getElementById("profileMenu").classList.remove("show");
+};
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js").catch((error) => console.error("Service worker registration failed", error));
+  });
+}
 
 async function firstFunction() {
   const data = await loadTenantData();
   dynamicTenantData(data);
 
   // Connect WebSocket AFTER we have ownerId
-    connectWebSocket(data.tenantId);
+  connectWebSocket(data.tenantId);
 
-    loadUnreadCount(data.tenantId);
+  loadUnreadCount(data.tenantId);
 }
+
+function openRechargeModal() {
+  const modal = document.getElementById("rechargeModal");
+  modal.style.display = "block";
+
+  setTimeout(() => {
+    modal.classList.add("active");
+  }, 10);
+}
+
+function closeRechargeModal() {
+  const modal = document.getElementById("rechargeModal");
+  modal.classList.remove("active");
+
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 300);
+}
+
+function increaseAmount() {
+  const input = document.getElementById("amountInput");
+  input.value = parseInt(input.value || 0) + 10;
+}
+
+function decreaseAmount() {
+  const input = document.getElementById("amountInput");
+  let val = parseInt(input.value || 0);
+  if (val > 0) input.value = val - 10;
+}
+
+async function recharge() {
+  const amount = document.getElementById("amountInput").value;
+
+  // Basic validation
+  if (!amount || amount <= 0) {
+    alert("Enter a valid amount");
+    return;
+  }
+
+  try {
+    const response = await fetch("/balance/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tenantId: tenantData.tenantId,
+        amount: amount,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to recharge");
+    }
+
+    const data = await response.json();
+    console.log("Recharge sucess:", data);
+
+    document.getElementById("current-balance").innerText = "₹" + data.balance;
+
+    closeRechargeModal();
+  } catch (error) {
+    console.log("Error:", error);
+    alert("Recharge failed");
+  }
+}
+
+/* Close when clicking outside */
+window.onclick = function (event) {
+  const modal = document.getElementById("rechargeModal");
+  if (event.target === modal) {
+    closeRechargeModal();
+  }
+};
 
 document.addEventListener("DOMContentLoaded", function () {
   firstFunction();

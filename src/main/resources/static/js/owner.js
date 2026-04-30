@@ -1,4 +1,6 @@
 let ownerData;
+let currentTenantId = 0;
+let currentPg;
 let unreadCount = 0;
 
 // Entry point → runs when DOM is ready
@@ -279,7 +281,6 @@ function renderRooms(rooms) {
 
     const statusText = relayStatus ? "CONNECTED" : "DISCONNECTED";
     const relayColor = relayStatus ? "var(--success)" : "var(--danger)";
-    console.log(relayColor, relayStatus,room);
     const connectionText = connectionStatus ? "Online" : "Offline";
     const connectionColor = connectionStatus ? "var(--success)" : "var(--danger)";
 
@@ -291,7 +292,7 @@ function renderRooms(rooms) {
     const div = document.createElement("div");
 
     div.setAttribute("onclick", 
-    `openRoomDetails('${room.roomNumber}', '${room.tenantName}', '${room.balance}', '${statusText}', '${connectionText}', '${room.meterId}', '${eb}', '${dg}', '${bgColor}', '${borderColor}', '${relayColor}', '${connectionColor}')`);
+    `openRoomDetails('${room.roomNumber}', ${room.tenantId}, '${room.tenantName}', '${room.balance}', '${statusText}', '${connectionText}', '${room.meterId}', '${eb}', '${dg}', '${bgColor}', '${borderColor}', '${relayColor}', '${connectionColor}')`);
 
     div.style = `
       padding: 12px 5px;
@@ -329,6 +330,21 @@ function renderRooms(rooms) {
   });
 }
 
+async function loadRooms(pg) {
+  try {
+    const res = await fetch(`/api/owners/pg/${pg.id}/rooms`);
+
+    const data = await res.json();
+
+    renderRooms(data);
+    console.log("Rooms Data:", data);
+    roomsData = data;
+
+  } catch (err) {
+    console.error("Error fetching rooms:", err);
+  }
+}
+
 function renderPGDropDown() {
   const optionsContainer = document.getElementById("pgOptions");
   const pgs = ownerData.ownerPGs;
@@ -340,13 +356,8 @@ function renderPGDropDown() {
   const selectPG = (pg) => {
     document.getElementById("selectedPg").textContent = pg.name;
     optionsContainer.style.display = "none";
-
-    fetch(`/api/owners/pg/${pg.id}/rooms`)
-      .then((res) => res.json())
-      .then((data) => {
-        renderRooms(data);
-      })
-      .catch((err) => console.error("Error fetching rooms:", err));
+    currentPg = pg;
+    loadRooms(pg);
   };
 
   // Case 1: Only one PG - Select and render automatically
@@ -438,7 +449,7 @@ navTo = function (viewId, btn) {
 
 const wrapper = document.getElementById("main-scroll-wrapper");
 
-function openRoomDetails(roomNo, tenant, balance, relay, connection, meter, eb, dg, bgColor, borderColor, relayColor, connectionColor) {
+function openRoomDetails(roomNo, tenantId, tenant, balance, relay, connection, meter, eb, dg, bgColor, borderColor, relayColor, connectionColor) {
   // 1. Fill Data
   console.log("first",relayColor);
   document.getElementById("det-room-no").innerText = "Room No: " + roomNo;
@@ -449,6 +460,8 @@ function openRoomDetails(roomNo, tenant, balance, relay, connection, meter, eb, 
   document.getElementById("det-dg").innerText = dg;
   document.getElementById("det-relay-status").innerHTML = relay;
   document.getElementById("det-connection-status").innerHTML = connection;
+
+  currentTenantId = tenantId;
 
   const relayBadge = document.getElementById("det-relay-status");
   relayBadge.style.background = relayColor;
@@ -509,4 +522,71 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/service-worker.js").catch((error) => console.error("Service worker registration failed", error));
   });
+}
+
+function openRechargeModal() {
+  const modal = document.getElementById("rechargeModal");
+  modal.style.display = "block";
+
+  setTimeout(() => {
+    modal.classList.add("active");
+  }, 10);
+}
+
+function closeRechargeModal() {
+  const modal = document.getElementById("rechargeModal");
+  modal.classList.remove("active");
+
+  setTimeout(() => {
+    modal.style.display = "none";
+  }, 300);
+}
+
+function increaseAmount() {
+  const input = document.getElementById("amountInput");
+  input.value = parseInt(input.value || 0) + 10;
+}
+
+function decreaseAmount() {
+  const input = document.getElementById("amountInput");
+  let val = parseInt(input.value || 0);
+  if (val > 0) input.value = val - 10;
+}
+
+async function recharge() {
+  const amount = document.getElementById("amountInput").value;
+
+  // Basic validation
+  if (!amount || amount <= 0) {
+    alert("Enter a valid amount");
+    return;
+  }
+
+  try {
+    const response = await fetch("/balance/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tenantId: currentTenantId,
+        amount: amount,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to recharge");
+    }
+
+    const data = await response.json();
+    console.log("Recharge sucess:", data);
+
+    document.getElementById("det-balance").innerText = "₹" + data.balance;
+    await loadRooms(currentPg);
+     
+    closeRechargeModal();
+  } catch (error) {
+    console.log("Error:", error);
+    alert("Recharge failed");
+  }
 }

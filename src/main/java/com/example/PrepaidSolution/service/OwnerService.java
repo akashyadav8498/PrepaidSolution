@@ -75,6 +75,7 @@ public class OwnerService {
                 tenant = room.getTenants().get(0);
             }
             String tenantName = (tenant != null) ? tenant.getName() : "Unknown";
+            Long tenantId = (tenant != null) ? tenant.getId() : null;
 
             // Balance
             double balance = 0.0;
@@ -151,6 +152,7 @@ public class OwnerService {
             // DTO
             RoomDetailsDTO dto = new RoomDetailsDTO(
                     roomNumber,
+                    tenantId,
                     tenantName,
                     balance,
                     meterId,

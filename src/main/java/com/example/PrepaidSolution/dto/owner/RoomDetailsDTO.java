@@ -3,6 +3,7 @@ package com.example.PrepaidSolution.dto.owner;
 public class RoomDetailsDTO {
 
     private String roomNumber;
+    private Long tenantId;
     private String tenantName;
     private double balance;
     private String meterId;
@@ -11,8 +12,10 @@ public class RoomDetailsDTO {
     private Double eb;
     private Double dg;
 
-    public RoomDetailsDTO(String roomNumber, String tenantName, double balance, String meterId, boolean relayStatus,boolean connectionStatus, double eb, double dg) {
+
+    public RoomDetailsDTO(String roomNumber,Long tenantId, String tenantName,  double balance, String meterId, boolean relayStatus,boolean connectionStatus, double eb, double dg) {
         this.roomNumber = roomNumber;
+        this.tenantId = tenantId;
         this.tenantName = tenantName;
         this.balance = balance;
         this.meterId = meterId;
@@ -26,6 +29,10 @@ public class RoomDetailsDTO {
 
     public String getRoomNumber() {
         return roomNumber;
+    }
+
+    public Long getTenantId(){
+        return tenantId;
     }
 
     public String getTenantName() {

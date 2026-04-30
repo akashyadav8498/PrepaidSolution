@@ -82,7 +82,7 @@ public class BalanceService {
 
 
     // ADD MONEY
-    public void addBalance(Long tenantId, double amount) {
+    public double  addBalance(Long tenantId, double amount) {
 
         // Get balance
         Balance balance = balanceRepository.findById(tenantId)
@@ -112,6 +112,7 @@ public class BalanceService {
 
         // Update balance
         updateBalance(tenantId, newBalance);
+        return newBalance;
     }
 
 
