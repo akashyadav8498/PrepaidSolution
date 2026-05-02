@@ -7,8 +7,8 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    username: akay8498
-    password: ME@r@bb!tmq8498
+    username: guest
+    password: guest
 
 server:
   port: 8080
