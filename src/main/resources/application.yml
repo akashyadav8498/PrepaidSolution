@@ -54,18 +54,18 @@ bridge:
     mandatory-publishing: true
     declare-topology: true
     main:
-      exchange: ${BRIDGE_RABBIT_MAIN_EXCHANGE:bridge.main.exchange}
+      exchange: ${BRIDGE_RABBIT_MAIN_EXCHANGE:device.data.exchange}
       exchange-type: ${BRIDGE_RABBIT_MAIN_EXCHANGE_TYPE:topic}
-      queue: ${BRIDGE_RABBIT_MAIN_QUEUE:bridge.main.queue}
-      routing-key: ${BRIDGE_RABBIT_MAIN_ROUTING_KEY:bridge.main}
+      queue: ${BRIDGE_RABBIT_MAIN_QUEUE:device.data.queue}
+      routing-key: ${BRIDGE_RABBIT_MAIN_ROUTING_KEY:device.data}
       durable: true
       auto-declare: true
       queue-type: ${BRIDGE_RABBIT_MAIN_QUEUE_TYPE:classic}
     audit:
-      exchange: ${BRIDGE_RABBIT_AUDIT_EXCHANGE:bridge.audit.exchange}
+      exchange: ${BRIDGE_RABBIT_AUDIT_EXCHANGE:device.log.exchange}
       exchange-type: ${BRIDGE_RABBIT_AUDIT_EXCHANGE_TYPE:topic}
-      queue: ${BRIDGE_RABBIT_AUDIT_QUEUE:bridge.audit.queue}
-      routing-key: ${BRIDGE_RABBIT_AUDIT_ROUTING_KEY:bridge.audit}
+      queue: ${BRIDGE_RABBIT_AUDIT_QUEUE:device.log.queue}
+      routing-key: ${BRIDGE_RABBIT_AUDIT_ROUTING_KEY:device.log}
       durable: true
       auto-declare: true
       queue-type: ${BRIDGE_RABBIT_AUDIT_QUEUE_TYPE:classic}

@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class RabbitMQConfig {
 
-    public static final String QUEUE = "bridge.main.queue";
-    public static final String EXCHANGE = "bridge.main.exchange";
-    public static final String ROUTING = "bridge.main.routing.key";
+    public static final String QUEUE = "device.data.queue";
+    public static final String EXCHANGE = "device.data.exchange";
+    public static final String ROUTING = "device.data.routing.key";
 
     @Bean
     public Queue meterQueue() {
