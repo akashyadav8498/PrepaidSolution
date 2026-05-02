@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/prepaid_solution
     username: app_user
-    password: ME@live_db8498
+    password: ME@@ppu$er8498
 
   rabbitmq:
     host: localhost
