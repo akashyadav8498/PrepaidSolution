@@ -494,6 +494,78 @@
         font-size: 16px;
         cursor: pointer;
       }
+
+      .energy-card {
+        margin-bottom: 15px;
+        padding: 18px 20px;
+        border-radius: 16px;
+        background: #ffffff;
+
+        /* consistent with modern cards */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* LEFT */
+      .energy-left {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .energy-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      /* STATUS */
+      .status-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: #444;
+      }
+
+      .status-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #22c55e;
+      }
+
+      /* RIGHT */
+      .energy-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* GAUGE */
+      .gauge {
+        width: 110px;
+        height: 55px;
+        border-radius: 110px 110px 0 0;
+        background: conic-gradient(#3b82f6 0deg 140deg, #93c5fd 140deg 180deg, #e5e7eb 180deg 360deg);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .gauge::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 85px;
+        height: 42px;
+        background: #ffffff;
+        border-radius: 85px 85px 0 0;
+      }
     </style>
   </head>
   <body>
@@ -568,15 +640,36 @@
             <div class="balance-val" id="current-balance"></div>
             <div style="font-size: 0.7rem; opacity: 0.9">Meter ID: <span id="meter-serialNo"></span> | Room: <span id="room-no"></span></div>
           </div>
+
+          <div class="energy-card">
+            <div class="energy-left">
+              <p class="energy-title">Energy Source : <strong>EB</strong></p>
+
+              <div class="status-row">
+                <span>Connection</span>
+                <span class="status-dot"></span>
+              </div>
+
+              <div class="status-row">
+                <span>Power Status</span>
+                <span class="status-dot"></span>
+              </div>
+            </div>
+
+            <div class="energy-right">
+              <div class="gauge"></div>
+            </div>
+          </div>
+
           <div class="card">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
               <div>
                 <div style="font-size: 0.7rem; color: var(--muted)">EB Reading</div>
-                <div style="font-weight: 800; color: var(--secondary)">225.43 kWh</div>
+                <div style="font-weight: 800; color: var(--secondary)">123kwh</div>
               </div>
               <div style="border-left: 1px solid #eee; padding-left: 15px">
                 <div style="font-size: 0.7rem; color: var(--muted)">DG Reading</div>
-                <div style="font-weight: 800; color: var(--secondary)">210.23 kWh</div>
+                <div style="font-weight: 800; color: var(--secondary)">223kwh</div>
               </div>
             </div>
             <button class="btn-primary" onclick="openRechargeModal()">RECHARGE NOW</button>

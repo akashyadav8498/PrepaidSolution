@@ -118,6 +118,10 @@ public class OwnerService {
                                 relayStatus = ((rls & 3) != 0); // (bitwise)
                             }
 
+                            // (rls & 3) != 0
+                            //If last 2 bits are anything except 00 → TRUE
+                            //If last 2 bits are 00 → FALSE
+
                             if (liveData.has("kwh1")) {
                                 eb = liveData.get("kwh1").asDouble();
                             }
