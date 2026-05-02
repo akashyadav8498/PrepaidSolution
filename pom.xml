@@ -119,6 +119,7 @@
     </dependencies>
 
 	<build>
+        <finalName>prepaid-solution-webapp</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
