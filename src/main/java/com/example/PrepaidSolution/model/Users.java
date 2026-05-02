@@ -52,4 +52,3 @@ public class Users {
     private Tenant tenant;
 
 }
-
