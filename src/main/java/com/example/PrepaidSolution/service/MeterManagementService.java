@@ -222,7 +222,6 @@ public class MeterManagementService {
         Owner owner = new Owner();
         owner.setUsers(savedUser);
         owner.setName(ownerName);
-        owner.setEmail(ownerEmail);
         owner.setAddress(ownerAddress);
         owner.setMobile(ownerMobile);
         ownerRepository.save(owner);
@@ -316,7 +315,6 @@ public class MeterManagementService {
         tenant.setMobile(tenantMobile);
         tenant.setUsers(savedUser);
         tenant.setName(tenantName);
-        tenant.setEmail(tenantEmail);
         tenant.setAddress(tenantAddress);
         tenant.setRoom(room);
         tenantRepository.save(tenant);

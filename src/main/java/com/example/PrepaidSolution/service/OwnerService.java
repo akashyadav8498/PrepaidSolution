@@ -46,7 +46,7 @@ public class OwnerService {
                 .orElseThrow(() -> new RuntimeException("Owner not found"));
 
         String ownerName = owner.getName();
-        String ownerEmail = owner.getEmail();
+//        String ownerEmail = owner.getEmail();
         String ownerMobile = owner.getMobile();
 
         Map<String, Object> response = new HashMap<>();
@@ -55,7 +55,7 @@ public class OwnerService {
         response.put("totalTenants", totalTenants);
         response.put("totalMeters", totalMeters);
         response.put("ownerName", ownerName);
-        response.put("ownerEmail", ownerEmail);
+//        response.put("ownerEmail", ownerEmail);
         response.put("ownerMobile", ownerMobile);
 
         return response;
