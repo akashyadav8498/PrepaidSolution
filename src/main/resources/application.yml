@@ -2,9 +2,6 @@ spring:
   application:
     name: PrepaidSolution
 
-  profiles:
-    active: dev
-
   mail:
     host: smtp.hostinger.com
     port: 587
