@@ -23,7 +23,6 @@ public class Tenant {
     private Users users;
 
     private String name;
-    private String email;
     private String address;
     private String mobile;
 
