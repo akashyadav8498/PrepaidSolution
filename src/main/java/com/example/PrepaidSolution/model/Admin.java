@@ -24,7 +24,6 @@ public class Admin {
     private Users users;
 
     private String name;
-    private String email;
     private String mobile;
     private String address;
 
