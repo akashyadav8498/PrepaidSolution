@@ -113,10 +113,14 @@
         padding: 12px 20px;
         background: white;
         border-bottom: 1px solid #e2e8f0;
-        position: sticky;
+        position: fixed;
         top: 0;
         z-index: 100;
+        height: 67px;
+        gap: 5px;
+        width: 100%;
       }
+
       .header-brand {
         display: flex;
         flex-direction: column; /* Stacks the brand and sub-heading */
@@ -148,7 +152,7 @@
       /* --- CONTENT VIEWS --- */
       .view {
         display: none;
-        padding: 20px;
+        padding: 17px;
         padding-bottom: 90px;
       }
       .view.active {
@@ -171,11 +175,12 @@
         color: var(--secondary);
         margin-bottom: 15px;
         font-weight: 700;
+        padding-left: 5px;
       }
       .card {
         background: white;
         border-radius: 16px;
-        padding: 20px;
+        padding: 17px;
         margin-bottom: 15px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         border: 1px solid rgba(0, 0, 0, 0.05);
@@ -236,7 +241,7 @@
         border-radius: 10px;
         font-weight: 700;
         cursor: pointer;
-        margin-top: 10px;
+        margin-bottom: 10px;
       }
       .btn-primary:active {
         transform: scale(0.98);
@@ -514,6 +519,7 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        width: 100%;
       }
 
       .energy-title {
@@ -543,6 +549,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 100%;
       }
 
       /* GAUGE */
@@ -566,16 +573,216 @@
         background: #ffffff;
         border-radius: 85px 85px 0 0;
       }
+
+      .status-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .status {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+        letter-spacing: 1px;
+      }
+
+      /* Green */
+      .online,
+      .on {
+        background: #00d26a;
+      }
+
+      /* Red */
+      .offline,
+      .off {
+        background-color: #ff4d4f;
+      }
+
+      .gauge-card {
+        width: 100%;
+        max-width: 320px;
+        margin: auto;
+      }
+
+      .gauge-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .bg-arc {
+        fill: none;
+        stroke: #e5e7eb;
+        stroke-width: 16;
+      }
+
+      .progress-arc {
+        fill: none;
+        stroke: #3b82f6;
+        stroke-width: 16;
+        stroke-linecap: round;
+
+        stroke-dasharray: 252;
+        stroke-dashoffset: 252;
+
+        transition: stroke-dashoffset 0.8s ease;
+      }
+
+      #gaugeValue {
+        font-size: 22px;
+        font-weight: bold;
+      }
+
+      .logo-image {
+        width: 150px;
+      }
+
+      #recharge-btn-outer {
+        border-radius: 14px;
+        box-shadow: 0 6px 16px rgba(20, 195, 142, 0.35);
+        background: #00d26a;
+      }
+
+      #usage-heading1 {
+        padding-bottom: 8px;
+        font-weight: bold;
+      }
+
+      #usage-heading2 {
+        padding: 8px 0px;
+        font-weight: bold;
+      }
+
+      .view {
+        padding-top: 85px;
+      }
+
+      /* =========================
+        DAILY USAGE VIEW
+      ========================= */
+
+      .app-view {
+        display: none;
+      }
+
+      .app-view.active {
+        display: block;
+      }
+
+      /* wrapper */
+      /* .usage-history-wrapper {
+                padding: 14px 14px 90px;
+              } */
+
+      /* card */
+      .usage-history-card {
+        background: #ffffff;
+        border: 1.5px solid #d7d7d7;
+        border-left: 4px solid #2d2d9b;
+        border-radius: 22px;
+        padding: 16px;
+        margin-bottom: 16px;
+
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      /* date */
+      .usage-date {
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+
+        margin-bottom: 14px;
+      }
+
+      /* grid */
+      .usage-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px 14px;
+      }
+
+      /* item */
+      .usage-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* label */
+      .usage-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+
+        margin-bottom: 4px;
+      }
+
+      /* value */
+      .usage-value {
+        line-height: 1;
+        font-weight: 800;
+
+        color: #2d2d9b;
+      }
+
+      /* trend button */
+      .trend-btn {
+        width: 100%;
+        height: 54px;
+        border: none;
+        border-radius: 14px;
+        background: #00d26a;
+        color: white;
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 26px;
+        box-shadow: 0 6px 14px rgba(9, 207, 99, 0.28);
+        cursor: pointer;
+      }
+
+      .trend-btn:active {
+        transform: scale(0.98);
+      }
+
+      #daily-usage-heading {
+        color: #24277d;
+        padding: 0 15px 10px 5px;
+        font-size: 22px;
+        font-weight: bold;
+      }
+
+      #last-updated-time {
+        font-size: 14px;
+        color: #444;
+        margin: 0 0px 0 18px;
+      }
+
+      @media (min-width: 1024px) {
+        .app-header {
+          width: auto;
+          position: sticky;
+        }
+
+        .view {
+          padding-top: 17px;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="app-shell">
       <div id="main-app">
         <header class="app-header">
-          <div class="header-brand">
+          <img class="logo-image" src="/images/AIS_LOGO2.png" alt="AIS_Logo1" />
+          <!-- <div class="header-brand">
+            <img src="/images/ariot_logo.jpeg" alt="AIS_Logo2" />
             <div class="brand-main">AR <span>IoT</span> SOLUTIONS</div>
             <div class="brand-sub">Pay As You Go</div>
-          </div>
+          </div> -->
 
           <div class="header-actions">
             <button class="icon-btn" onclick="handleNotificationClick()" style="position: relative">
@@ -608,14 +815,14 @@
             <div class="profile-dropdown">
               <button class="icon-btn" onclick="toggleDropdown()">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
               </button>
               <div id="profileMenu" class="dropdown-menu">
                 <div class="dropdown-item" onclick="navTo('view-profile', null)"><span>👤</span> My Profile</div>
                 <div class="dropdown-item" onclick="navTo('view-customer-care', null)"><span>📞</span> Customer Care</div>
-
                 <div class="dropdown-item text-danger" onclick="showLogoutModal()"><span>🚪</span> Logout</div>
               </div>
             </div>
@@ -638,30 +845,45 @@
           <div class="card balance-box">
             <div class="balance-label">Available Balance</div>
             <div class="balance-val" id="current-balance"></div>
+            <button id="recharge-btn-outer" class="btn-primary" onclick="openRechargeModal()">RECHARGE NOW</button>
             <div style="font-size: 0.7rem; opacity: 0.9">Meter ID: <span id="meter-serialNo"></span> | Room: <span id="room-no"></span></div>
           </div>
 
           <div class="energy-card">
             <div class="energy-left">
-              <p class="energy-title">Energy Source : <strong>EB</strong></p>
+              <p class="energy-title">Energy Source : <strong id="energy-source">--</strong></p>
 
               <div class="status-row">
                 <span>Connection</span>
-                <span class="status-dot"></span>
+                <span class="status online" id="connection-status">-----</span>
               </div>
 
               <div class="status-row">
-                <span>Power Status</span>
-                <span class="status-dot"></span>
+                <span>Relay Status</span>
+                <span class="status on" id="relay-status">--</span>
               </div>
             </div>
 
-            <div class="energy-right">
+            <!-- <div class="energy-right">
               <div class="gauge"></div>
+            </div> -->
+
+            <div class="energy-right">
+              <div class="gauge-card">
+                <svg viewBox="0 0 200 120" class="gauge-svg">
+                  <!-- background arc -->
+                  <path d="M20 100 A80 80 0 0 1 180 100" class="bg-arc" />
+
+                  <!-- progress arc -->
+                  <path d="M20 100 A80 80 0 0 1 180 100" class="progress-arc" id="progressArc" />
+
+                  <text x="100" y="90" text-anchor="middle" id="gaugeValue">0 W</text>
+                </svg>
+              </div>
             </div>
           </div>
 
-          <div class="card">
+          <!-- <div class="card">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
               <div>
                 <div style="font-size: 0.7rem; color: var(--muted)">EB Reading</div>
@@ -673,7 +895,34 @@
               </div>
             </div>
             <button class="btn-primary" onclick="openRechargeModal()">RECHARGE NOW</button>
+          </div> -->
+
+          <div class="card">
+            <p id="usage-heading1">Today Usage:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
+              <div>
+                <div style="font-size: 0.7rem; color: var(--muted)">EB Reading</div>
+                <div id="today-eb-reading" style="font-weight: 800; color: var(--secondary)">-----</div>
+              </div>
+              <div style="border-left: 1px solid #eee; padding-left: 15px">
+                <div style="font-size: 0.7rem; color: var(--muted)">DG Reading</div>
+                <div id="today-dg-reading" style="font-weight: 800; color: var(--secondary)">-----</div>
+              </div>
+            </div>
+
+            <p id="usage-heading2">Total Usage:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
+              <div>
+                <div style="font-size: 0.7rem; color: var(--muted)">EB Reading</div>
+                <div id="total-eb-reading" style="font-weight: 800; color: var(--secondary)">------</div>
+              </div>
+              <div style="border-left: 1px solid #eee; padding-left: 15px">
+                <div style="font-size: 0.7rem; color: var(--muted)">DG Reading</div>
+                <div id="total-dg-reading" style="font-weight: 800; color: var(--secondary)">------</div>
+              </div>
+            </div>
           </div>
+          <p id="last-updated-time"></p>
         </div>
 
         <div id="rechargeModal" class="modal">
@@ -693,7 +942,7 @@
           </div>
         </div>
 
-        <div id="view-usage" class="view">
+        <div id="view-trends" class="view">
           <div class="section-title">Consumption Trends</div>
           <div class="card">
             <div style="font-size: 0.8rem; font-weight: 700; color: var(--muted)">LAST 30 DAYS (kWh)</div>
@@ -716,6 +965,68 @@
             </div>
           </div>
         </div>
+
+        <section id="view-usage" class="view">
+          <p class="section-title">Daily Usages</p>
+          <div class="usage-history-wrapper">
+            <!-- CARD -->
+            <div class="usage-history-card">
+              <div class="usage-date">19-02-2026 23:59</div>
+
+              <div class="usage-grid">
+                <div class="usage-item">
+                  <p class="usage-label">EB Reading(kWh)</p>
+                  <h3 class="usage-value">234.56</h3>
+                </div>
+
+                <div class="usage-item">
+                  <p class="usage-label">DG Reading(kWh)</p>
+                  <h3 class="usage-value">23.45</h3>
+                </div>
+
+                <div class="usage-item">
+                  <p class="usage-label">Average Load(kW)</p>
+                  <h3 class="usage-value">0.56</h3>
+                </div>
+
+                <div class="usage-item">
+                  <p class="usage-label">Closing Balance</p>
+                  <h3 class="usage-value">23.32</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD -->
+            <div class="usage-history-card">
+              <div class="usage-date">18-02-2026 23:59</div>
+
+              <div class="usage-grid">
+                <div class="usage-item">
+                  <p class="usage-label">EB Reading(kWh)</p>
+                  <h3 class="usage-value">230.23</h3>
+                </div>
+
+                <div class="usage-item">
+                  <p class="usage-label">DG Reading(kWh)</p>
+                  <h3 class="usage-value">20.23</h3>
+                </div>
+
+                <div class="usage-item">
+                  <p class="usage-label">Average Load(kW)</p>
+                  <h3 class="usage-value">0.16</h3>
+                </div>
+
+                <div class="usage-item">
+                  <p class="usage-label">Closing Balance</p>
+                  <h3 class="usage-value">43.32</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- BUTTON -->
+            <button class="trend-btn" onclick="navTo('view-trends', this)">TRENDS</button>
+          </div>
+        </section>
 
         <div id="view-history" class="view">
           <div class="section-title">Recharge History</div>

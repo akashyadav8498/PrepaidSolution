@@ -22,6 +22,61 @@ async function loadTenantData() {
   }
 }
 
+function updateGauge(value, maxlimit) {
+  const arc = document.getElementById("progressArc");
+  const valueText = document.getElementById("gaugeValue");
+  const circumference = 252;
+
+  const offset = circumference - (value / maxlimit) * circumference;
+
+  arc.style.strokeDashoffset = offset;
+
+  valueText.textContent = value + " W";
+}
+
+async function loadEnergyData() {
+  try {
+    let meterSerialNumber = "801235"; // for testing purpose only, later change it.
+    if (tenantData.tenantMeterSerialNumber != null) {
+      meterSerialNumber = tenantData.tenantMeterSerialNumber;
+    }
+
+    const response = await fetch(`/api/tenants/reading/${meterSerialNumber}`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch tenant enegry data");
+    }
+
+    const data = await response.json();
+    console.log("Energy Data:", data);
+
+    const energySource = data.dg ? "DG" : "EB";
+    document.getElementById("energy-source").textContent = energySource;
+    const connection = data.connectionStatus ? "ONLINE" : "OFFLINE";
+    const relayStatus = data.relayStatus ? "ON" : "OFF";
+
+    document.getElementById("connection-status").textContent = connection;
+    document.getElementById("relay-status").textContent = relayStatus;
+    document.getElementById("today-eb-reading").textContent = data.todayEbUsage + " kwh";
+    document.getElementById("today-dg-reading").textContent = data.totalDgReading + " kwh";
+    document.getElementById("total-eb-reading").textContent = data.totalEbReading + " kwh";
+    document.getElementById("total-dg-reading").textContent = data.totalDgReading + " kwh";
+
+    let value = data.lastReading.p1 > data.lastReading.p2 ? data.lastReading.p1 : data.lastReading.p2;
+
+    updateGauge(value, 500); // 500w is max limit. later sir will send it inside reading data.
+
+    const lastUpdated = new Date(data.lastUpdatedTime);
+
+    document.getElementById("last-updated-time").textContent = "Last Updated : " + lastUpdated.toLocaleString();
+  } catch (error) {
+    console.error("Error", error.message);
+  }
+}
+
 async function logout() {
   try {
     await fetch("/api/tenants/logout", {
@@ -237,14 +292,13 @@ function toggleDropdown() {
 }
 
 // Close dropdown when clicking outside
-window.onclick = function (event) {
-  if (!event.target.closest(".profile-dropdown")) {
-    var dropdowns = document.getElementsByClassName("dropdown-menu");
-    for (var i = 0; i < dropdowns.length; i++) {
-      dropdowns[i].classList.remove("show");
-    }
+document.addEventListener("click", function (event) {
+  const dropdown = document.querySelector(".profile-dropdown");
+
+  if (!dropdown.contains(event.target)) {
+    document.getElementById("profileMenu").classList.remove("show");
   }
-};
+});
 
 // Logout Modal Logic
 function showLogoutModal() {
@@ -279,6 +333,8 @@ async function firstFunction() {
   connectWebSocket(data.tenantId);
 
   loadUnreadCount(data.tenantId);
+
+  await loadEnergyData();
 }
 
 function openRechargeModal() {

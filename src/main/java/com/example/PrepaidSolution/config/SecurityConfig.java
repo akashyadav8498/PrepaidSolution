@@ -28,7 +28,8 @@ public class SecurityConfig {
                                 "/service-worker.js", "/manifest.json", "/addUser","/api/meter/dashboard", "/api/meter/get_onload_data",
                                 "/api/meter/{meterId}", "/api/meter/pg/by-owner/{ownerId}","/api/meter/add_meter/{roomId}",
                                 "/api/owners/stats","/api/owners/{ownerId}/pgs", "/api/owners/pg/{pgId}/rooms","/balance/add", "/balance/deduct",
-                                "/test.html", "/ws/**","/api/notifications/**", "/api/tenants/tenant-data", "/api/tenants/logout"
+                                "/test.html", "/ws/**","/api/notifications/**", "/api/tenants/tenant-data", "/api/tenants/logout",
+                                "/api/tenants/reading/{meterSerialNo}"
                         ).permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated()

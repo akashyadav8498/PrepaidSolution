@@ -1,5 +1,6 @@
 package com.example.PrepaidSolution.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.PrepaidSolution.model.LiveMeterReadings;
@@ -14,4 +15,9 @@ public interface LiveMeterReadingsRepository
 
     List<LiveMeterReadings> findAllByMeterId(String meterId, Sort id);
     LiveMeterReadings findTopByMeterIdOrderByCreatedAtDesc(String meterId);
+
+    LiveMeterReadings findTopByMeterIdAndCreatedAtBeforeOrderByCreatedAtDesc(
+            String meterId,
+            LocalDateTime dateTime
+    );
 }

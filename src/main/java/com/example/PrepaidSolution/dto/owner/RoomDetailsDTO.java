@@ -13,7 +13,7 @@ public class RoomDetailsDTO {
     private Double dg;
 
 
-    public RoomDetailsDTO(String roomNumber,Long tenantId, String tenantName,  double balance, String meterId, boolean relayStatus,boolean connectionStatus, double eb, double dg) {
+    public RoomDetailsDTO(String roomNumber,Long tenantId, String tenantName, double balance, String meterId, boolean relayStatus,boolean connectionStatus, double eb, double dg) {
         this.roomNumber = roomNumber;
         this.tenantId = tenantId;
         this.tenantName = tenantName;
